@@ -40,6 +40,7 @@ import org.jetbrains.kotlin.resolve.constants.evaluate.ConstantExpressionEvaluat
 import org.jetbrains.kotlin.resolve.descriptorUtil.module
 import org.jetbrains.kotlin.resolve.scopes.receivers.ExpressionReceiver
 import org.jetbrains.kotlin.serialization.deserialization.descriptors.DeserializedCallableMemberDescriptor
+import org.jetbrains.kotlin.types.AbstractTypeChecker
 import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.StubTypeForBuilderInference
 import org.jetbrains.kotlin.types.TypeUtils
@@ -515,7 +516,6 @@ class DiagnosticReporterByTrackingStrategy(
             BuilderInferencePosition -> {
                 // some error reported later?
             }
-            is CallableReferenceConstraintPosition<*> -> TODO()
             is DeclaredUpperBoundConstraintPosition<*> -> {
                 val originalCall = (position as DeclaredUpperBoundConstraintPositionImpl).kotlinCall
                 val typeParameterDescriptor = position.typeParameter
@@ -533,13 +533,27 @@ class DiagnosticReporterByTrackingStrategy(
             is DelegatedPropertyConstraintPosition<*> -> {
                 // DELEGATE_SPECIAL_FUNCTION_NONE_APPLICABLE, reported later
             }
-            is IncorporationConstraintPosition -> TODO()
-            is InjectedAnotherStubTypeConstraintPosition<*> -> TODO()
             is KnownTypeParameterConstraintPosition<*> -> {
                 // UPPER_BOUND_VIOLATED, reported later?
             }
-            is LHSArgumentConstraintPosition<*, *> -> TODO()
-            SimpleConstraintSystemConstraintPosition -> TODO()
+            is CallableReferenceConstraintPosition<*>,
+            is IncorporationConstraintPosition,
+            is InjectedAnotherStubTypeConstraintPosition<*>,
+            is LHSArgumentConstraintPosition<*, *>,
+            SimpleConstraintSystemConstraintPosition -> {
+                if (AbstractTypeChecker.RUN_SLOW_ASSERTIONS) {
+                    throw AssertionError("Constraint error in unexpected position: $position")
+                } else {
+                    report(
+                        TYPE_MISMATCH_IN_CONSTRAINT.on(
+                            psiKotlinCall.psiCall.callElement,
+                            error.upperKotlinType,
+                            error.lowerKotlinType,
+                            position
+                        )
+                    )
+                }
+            }
         }
     }
 

@@ -524,6 +524,11 @@ public class DefaultErrorMessages {
                 "Constraint error in receiver type argument: inferred type is {1} but {0} was expected",
                 RENDER_TYPE, RENDER_TYPE
         );
+        MAP.put(
+                TYPE_MISMATCH_IN_CONSTRAINT,
+                "Type mismatch in constraint system: actual type is {1} but {0} was expected. Constraint position is {2}",
+                RENDER_TYPE, RENDER_TYPE, TO_STRING
+        );
         MAP.put(LOCAL_EXTENSION_PROPERTY, "Local extension properties are not allowed");
         MAP.put(LOCAL_VARIABLE_WITH_GETTER, "Local variables are not allowed to have getters");
         MAP.put(LOCAL_VARIABLE_WITH_SETTER, "Local variables are not allowed to have setters");

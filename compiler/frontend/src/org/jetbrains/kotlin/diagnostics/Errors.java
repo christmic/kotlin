@@ -26,6 +26,7 @@ import org.jetbrains.kotlin.name.Name;
 import org.jetbrains.kotlin.psi.*;
 import org.jetbrains.kotlin.resolve.VarianceConflictDiagnosticData;
 import org.jetbrains.kotlin.resolve.calls.inference.InferenceErrorData;
+import org.jetbrains.kotlin.resolve.calls.inference.model.ConstraintPosition;
 import org.jetbrains.kotlin.resolve.calls.model.ResolvedCall;
 import org.jetbrains.kotlin.resolve.calls.tower.WrongResolutionToClassifier;
 import org.jetbrains.kotlin.resolve.calls.util.BuilderLambdaLabelingInfo;
@@ -916,6 +917,7 @@ public interface Errors {
     DiagnosticFactory2<PsiElement, KotlinType, KotlinType> TYPE_MISMATCH_WARNING_FOR_INCORRECT_CAPTURE_APPROXIMATION = DiagnosticFactory2.create(WARNING);
     DiagnosticFactory2<PsiElement, KotlinType, KotlinType> RECEIVER_TYPE_MISMATCH_WARNING_FOR_INCORRECT_CAPTURE_APPROXIMATION = DiagnosticFactory2.create(WARNING);
     DiagnosticFactory2<PsiElement, KotlinType, KotlinType> RECEIVER_TYPE_MISMATCH = DiagnosticFactory2.create(ERROR);
+    DiagnosticFactory3<PsiElement, KotlinType, KotlinType, ConstraintPosition> TYPE_MISMATCH_IN_CONSTRAINT = DiagnosticFactory3.create(ERROR);
 
     // Type inference
 
