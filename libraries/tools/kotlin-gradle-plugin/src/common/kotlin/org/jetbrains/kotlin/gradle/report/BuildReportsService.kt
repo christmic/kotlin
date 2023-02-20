@@ -6,10 +6,15 @@
 package org.jetbrains.kotlin.gradle.report
 
 import org.gradle.api.Project
+import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.Task
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.invocation.Gradle
 import org.gradle.api.logging.Logging
+import org.gradle.api.provider.ListProperty
+import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
+import org.gradle.api.services.BuildServiceParameters
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
@@ -20,11 +25,16 @@ import org.gradle.tooling.events.FinishEvent
 import org.gradle.tooling.events.OperationCompletionListener
 import org.gradle.tooling.events.task.TaskFinishEvent
 import org.jetbrains.kotlin.build.report.metrics.ValueType
+import org.jetbrains.kotlin.build.report.statistic.HttpReportService
+import org.jetbrains.kotlin.build.report.statistic.FileReportService
+import org.jetbrains.kotlin.build.report.statistic.HttpReportService
+import org.jetbrains.kotlin.build.report.statistic.HttpReportServiceImpl
 import org.jetbrains.kotlin.gradle.plugin.BuildEventsListenerRegistryHolder
 import org.jetbrains.kotlin.gradle.plugin.getKotlinPluginVersion
 import org.jetbrains.kotlin.gradle.plugin.stat.BuildFinishStatisticsData
 import org.jetbrains.kotlin.gradle.plugin.stat.CompileStatisticsData
 import org.jetbrains.kotlin.gradle.plugin.stat.GradleBuildStartParameters
+import org.jetbrains.kotlin.gradle.plugin.stat.StatTag
 import org.jetbrains.kotlin.gradle.plugin.stat.StatTag
 import org.jetbrains.kotlin.gradle.report.data.BuildExecutionData
 import org.jetbrains.kotlin.gradle.tasks.withType
@@ -49,10 +59,11 @@ internal interface UsesBuildReportsService : Task {
 abstract class BuildReportsService : BuildService<BuildReportsService.Parameters>, AutoCloseable, OperationCompletionListener {
 
     private val log = Logging.getLogger(this.javaClass)
+    private val loggerAdapter = GradleLoggerAdapter(log)
 
     private val startTime = System.nanoTime()
     private val buildUuid = UUID.randomUUID().toString()
-    private var executorService: ExecutorService = Executors.newSingleThreadExecutor()
+    private val executorService: ExecutorService = Executors.newSingleThreadExecutor()
 
     private val tags = LinkedHashSet<String>()
     private var customValues = 0 // doesn't need to be thread-safe
@@ -60,6 +71,7 @@ abstract class BuildReportsService : BuildService<BuildReportsService.Parameters
     init {
         log.info("Build report service is registered. Unique build id: $buildUuid")
     }
+
 
     interface Parameters : BuildServiceParameters {
         val startParameters: Property<GradleBuildStartParameters>
@@ -74,7 +86,13 @@ abstract class BuildReportsService : BuildService<BuildReportsService.Parameters
         val additionalTags: ListProperty<StatTag>
     }
 
-    override fun close() {
+
+    @Suppress("UNCHECKED_CAST")
+    fun close(
+        buildOperationRecords: Collection<BuildOperationRecord>,
+        failureMessages: List<String?>,
+        parameters: BuildMetricsService.Parameters
+    ) {
         val buildData = BuildExecutionData(
             startParameters = parameters.startParameters.get(),
             failureMessages = parameters.buildMetricsService.orNull?.failureMessages?.toList() ?: emptyList(),
@@ -84,10 +102,32 @@ abstract class BuildReportsService : BuildService<BuildReportsService.Parameters
         val reportingSettings = parameters.reportingSettings.get()
 
         reportingSettings.httpReportSettings?.also {
-            executorService.submit { reportBuildFinish() } //
+            executorService.submit { reportBuildFinish(parameters) } //
         }
         reportingSettings.fileReportSettings?.also {
-            reportBuildStatInFile(it, buildData)
+            FileReportService.reportBuildStatInFile(
+                it.buildReportDir,
+                parameters.projectName.get(),
+                it.includeMetricsInReport,
+                //TODO
+                buildOperationRecords.mapNotNull {
+                    prepareData(
+                        taskResult = null,
+                        it.path,
+                        it.startTimeMs,
+                        it.startTimeMs,
+                        parameters.projectName.get(),
+                        buildUuid,
+                        parameters.label.orNull,
+                        parameters.kotlinVersion.get(),
+                        it,
+                        parameters.additionalTags.get()
+                    )
+                },
+                parameters.startParameters.get(),
+                failureMessages.filter { !it.isNullOrEmpty() } as List<String>,
+                loggerAdapter
+            )
         }
 
         reportingSettings.singleOutputFile?.also { singleOutputFile ->
@@ -98,21 +138,11 @@ abstract class BuildReportsService : BuildService<BuildReportsService.Parameters
         executorService.shutdown()
     }
 
-    override fun onFinish(event: FinishEvent?) {
-        addHttpReport(event)
+    fun onFinish(event: TaskFinishEvent, buildOperation: BuildOperationRecord?, parameters: BuildMetricsService.Parameters) {
+        addHttpReport(event, buildOperation, parameters)
     }
 
-    private fun reportBuildStatInFile(fileReportSettings: FileReportSettings, buildData: BuildExecutionData) {
-        val ts = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(Calendar.getInstance().time)
-        val reportFile = fileReportSettings.buildReportDir.resolve("${parameters.projectName.get()}-build-$ts.txt")
-
-        PlainTextBuildReportWriter(
-            outputFile = reportFile,
-            printMetrics = fileReportSettings.includeMetricsInReport
-        ).process(buildData, log)
-    }
-
-    private fun reportBuildFinish() {
+    private fun reportBuildFinish(parameters: BuildMetricsService.Parameters) {
         val httpReportSettings = parameters.reportingSettings.get().httpReportSettings ?: return
 
         val branchName = if (httpReportSettings.includeGitBranchName) {
@@ -137,7 +167,7 @@ abstract class BuildReportsService : BuildService<BuildReportsService.Parameters
             gitBranch = branchName
         )
 
-        parameters.httpService.orNull?.sendData(buildFinishData, log)
+        parameters.httpService.orNull?.sendData(buildFinishData, loggerAdapter)
     }
 
     private fun GradleBuildStartParameters.includeVerboseEnvironment(verboseEnvironment: Boolean): GradleBuildStartParameters {
@@ -154,7 +184,11 @@ abstract class BuildReportsService : BuildService<BuildReportsService.Parameters
         }
     }
 
-    private fun addHttpReport(event: FinishEvent?) {
+    private fun addHttpReport(
+        event: TaskFinishEvent,
+        buildOperationRecord: BuildOperationRecord?,
+        parameters: BuildMetricsService.Parameters
+    ) {
         parameters.httpService.orNull?.also { httpService ->
             if (event is TaskFinishEvent) {
                 val data =
@@ -169,7 +203,7 @@ abstract class BuildReportsService : BuildService<BuildReportsService.Parameters
                     )
                 data?.also {
                     executorService.submit {
-                        httpService.sendData(data, log)
+                        httpService.sendData(data, loggerAdapter)
                     }
                 }
             }
@@ -178,15 +212,21 @@ abstract class BuildReportsService : BuildService<BuildReportsService.Parameters
     }
 
 
-    private fun addBuildScanReport(event: FinishEvent?, buildScan: BuildScanExtensionHolder) {
+    private fun addBuildScanReport(
+        event: FinishEvent?,
+        buildOperationRecord: BuildOperationRecord,
+        parameters: BuildMetricsService.Parameters,
+        buildScanExtension: BuildScanExtensionHolder
+    ) {
         val buildScanSettings = parameters.reportingSettings.orNull?.buildScanReportSettings
-        if (buildScanSettings != null && buildScan.buildScan != null) {
+        if (buildScanSettings != null && parameters.buildScanEnabled.get()) {
             if (event is TaskFinishEvent) {
                 val (collectDataDuration, compileStatData) = measureTimeMillisWithResult {
                     prepareData(
-                        event, parameters.projectName.get(), buildUuid, parameters.label.orNull,
+                        event,
+                        parameters.projectName.get(), buildUuid, parameters.label.orNull,
                         parameters.kotlinVersion.get(),
-                        parameters.buildMetricsService.get().buildOperationRecords,
+                        buildOperationRecord,
                         metricsToShow = buildScanSettings.metrics
                     )
                 }
@@ -289,7 +329,7 @@ abstract class BuildReportsService : BuildService<BuildReportsService.Parameters
         return splattedString
     }
 
-    private fun initBuildScanTags(buildScan: BuildScanExtensionHolder) {
+    internal fun initBuildScanTags(buildScan: BuildScanExtensionHolder, parameters: BuildMetricsService.Parameters) {
         buildScan.buildScan?.tag(buildUuid)
         parameters.label.orNull?.also {
             buildScan.buildScan?.tag(it)
@@ -336,7 +376,7 @@ abstract class BuildReportsService : BuildService<BuildReportsService.Parameters
                 it.parameters.kotlinVersion.set(kotlinVersion)
                 it.parameters.startParameters.set(getStartParameters(project))
                 it.parameters.reportingSettings.set(reportingSettings)
-                reportingSettings.httpReportSettings?.let { httpSettings -> it.parameters.httpService.set(HttpReportServiceImpl(httpSettings)) }
+                reportingSettings.httpReportSettings?.let { httpSettings -> it.parameters.httpService.set(HttpReportServiceImpl(httpSettings.url, httpSettings.user, httpSettings.password)) }
                 it.parameters.buildMetricsService = buildMetricsService
                 it.parameters.projectDir.set(project.rootProject.layout.projectDirectory)
 

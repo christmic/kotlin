@@ -57,6 +57,7 @@ class BuildMetricsReporterImpl : BuildMetricsReporter, Serializable {
         when (metric.type) {
             ValueType.NANOSECONDS -> myBuildMetrics.add(metric, System.nanoTime())
             ValueType.MILLISECONDS -> myBuildMetrics.add(metric, System.currentTimeMillis())
+            ValueType.TIME -> myBuildMetrics.add(metric, System.currentTimeMillis())
             else -> error("Unable to add time metric for '${metric.type}' type")
         }
 
