@@ -34,14 +34,7 @@ class IrLocalDelegatedPropertyReferenceImpl(
     override var setter: IrSimpleFunctionSymbol?,
     override var origin: IrStatementOrigin? = null,
 ) : IrLocalDelegatedPropertyReference() {
-    override val typeArguments: Array<IrType?>
-        get() = EMPTY_TYPE_ARGUMENTS
+    override val typeArguments: Array<IrType?> = initializeTypeArguments(0)
 
-    override val valueArguments: Array<IrExpression?>
-        get() = EMPTY_VALUE_ARGUMENTS
-
-    companion object {
-        private val EMPTY_TYPE_ARGUMENTS = emptyArray<IrType?>()
-        private val EMPTY_VALUE_ARGUMENTS = emptyArray<IrExpression?>()
-    }
+    override val valueArguments: Array<IrExpression?> = initializeParameterArguments(0)
 }

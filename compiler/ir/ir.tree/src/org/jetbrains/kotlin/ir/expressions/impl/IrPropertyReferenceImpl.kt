@@ -35,12 +35,7 @@ class IrPropertyReferenceImpl(
     override var setter: IrSimpleFunctionSymbol?,
     override var origin: IrStatementOrigin? = null,
 ) : IrPropertyReference() {
-    override val typeArguments: Array<IrType?> = arrayOfNulls(typeArgumentsCount)
+    override val typeArguments: Array<IrType?> = initializeTypeArguments(typeArgumentsCount)
 
-    override val valueArguments: Array<IrExpression?>
-        get() = EMPTY_VALUE_ARGUMENTS
-
-    companion object {
-        private val EMPTY_VALUE_ARGUMENTS = emptyArray<IrExpression?>()
-    }
+    override val valueArguments: Array<IrExpression?> = initializeParameterArguments(0)
 }

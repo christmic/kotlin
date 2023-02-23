@@ -32,22 +32,23 @@ abstract class KotlinIrLinker(
     private val exportedDependencies: List<ModuleDescriptor>,
     val symbolProcessor: IrSymbolDeserializer.(IrSymbol, IdSignature) -> IrSymbol = { s, _ -> s },
 ) : IrDeserializer, FileLocalAwareLinker {
+    val internationService = DefaultIrInternationService()
 
     // Kotlin-MPP related data. Consider some refactoring
     val expectIdSignatureToActualIdSignature = mutableMapOf<IdSignature, IdSignature>()
-    val topLevelActualIdSignatureToModuleDeserializer = mutableMapOf<IdSignature, IrModuleDeserializer>()
-    internal val expectSymbols = mutableMapOf<IdSignature, IrSymbol>()
-    internal val actualSymbols = mutableMapOf<IdSignature, IrSymbol>()
+    val topLevelActualIdSignatureToModuleDeserializer = hashMapOf<IdSignature, IrModuleDeserializer>()
+    internal val expectSymbols = hashMapOf<IdSignature, IrSymbol>()
+    internal val actualSymbols = hashMapOf<IdSignature, IrSymbol>()
 
-    val modulesWithReachableTopLevels = mutableSetOf<IrModuleDeserializer>()
+    val modulesWithReachableTopLevels = hashSetOf<IrModuleDeserializer>()
 
-    protected val deserializersForModules = mutableMapOf<String, IrModuleDeserializer>()
+    protected val deserializersForModules = hashMapOf<String, IrModuleDeserializer>()
 
     abstract val fakeOverrideBuilder: FakeOverrideBuilder
 
     abstract val translationPluginContext: TranslationPluginContext?
 
-    private val triedToDeserializeDeclarationForSymbol = mutableSetOf<IrSymbol>()
+    private val triedToDeserializeDeclarationForSymbol = hashSetOf<IrSymbol>()
 
     private lateinit var linkerExtensions: Collection<IrDeserializer.IrLinkerExtension>
 
@@ -221,6 +222,7 @@ abstract class KotlinIrLinker(
             deserializersForModules.values.asSequence().map { it.moduleFragment }
         }
 
+        internationService.clear()
         // TODO: fix IrPluginContext to make it not produce additional external reference
         // symbolTable.noUnboundLeft("unbound after fake overrides:")
     }

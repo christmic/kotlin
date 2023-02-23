@@ -36,7 +36,7 @@ public class JsCodegenBoxTestGenerated extends AbstractJsCodegenBoxTest {
         }
 
         @Test
-        @TestMetadata("genericAnnotations.kt")
+        Т@TestMetadata("genericAnnotations.kt")
         public void testGenericAnnotations() throws Exception {
             runTest("compiler/testData/codegen/box/annotations/genericAnnotations.kt");
         }

@@ -6,6 +6,7 @@ package org.jetbrains.kotlin.ir.backend.js.ic
 
 import org.jetbrains.kotlin.backend.common.CommonJsKLibResolver
 import org.jetbrains.kotlin.backend.common.phaser.PhaseConfig
+import org.jetbrains.kotlin.backend.common.serialization.DefaultIrInternationService
 import org.jetbrains.kotlin.backend.common.serialization.cityHash64
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.ir.backend.js.*
@@ -67,6 +68,8 @@ class CacheUpdater(
 
     private val icHasher = ICHasher()
 
+    private val internationService = DefaultIrInternationService()
+
     private val cacheRootDir = run {
         val configHash = icHasher.calculateConfigHash(compilerConfiguration)
         File(cacheDir, "version.${configHash.hash.lowBytes.toString(Character.MAX_RADIX)}")
@@ -123,7 +126,7 @@ class CacheUpdater(
             val file = File(libFile.path)
             val pathHash = file.absolutePath.cityHash64().toULong().toString(Character.MAX_RADIX)
             val libraryCacheDir = File(cacheRootDir, "${file.name}.$pathHash")
-            libFile to IncrementalCache(KotlinLoadedLibraryHeader(lib), libraryCacheDir)
+            libFile to IncrementalCache(KotlinLoadedLibraryHeader(lib, internationService), libraryCacheDir)
         }
 
         private val removedIncrementalCaches = buildList {
@@ -736,12 +739,13 @@ fun rebuildCacheForDirtyFiles(
     mainArguments: List<String>?,
     es6mode: Boolean
 ): Pair<IrModuleFragment, List<Pair<IrFile, JsIrProgramFragment>>> {
+    val internationService = DefaultIrInternationService()
     val emptyMetadata = object : KotlinSourceFileExports() {
         override val inverseDependencies = KotlinSourceFileMap<Set<IdSignature>>(emptyMap())
     }
 
     val libFile = KotlinLibraryFile(library)
-    val dirtySrcFiles = dirtyFiles?.map { KotlinSourceFile(it) } ?: KotlinLoadedLibraryHeader(library).sourceFileFingerprints.keys
+    val dirtySrcFiles = dirtyFiles?.map { KotlinSourceFile(it) } ?: KotlinLoadedLibraryHeader(library, internationService).sourceFileFingerprints.keys
 
     val modifiedFiles = mapOf(libFile to dirtySrcFiles.associateWith { emptyMetadata })
 
@@ -765,6 +769,7 @@ fun rebuildCacheForDirtyFiles(
 
     // Load declarations referenced during `context` initialization
     loadedIr.loadUnboundSymbols()
+    internationService.clear()
 
     val fragments = compilerWithIC.compile(loadedIr.loadedFragments.values, dirtyIrFiles, mainArguments).map { it() }
 

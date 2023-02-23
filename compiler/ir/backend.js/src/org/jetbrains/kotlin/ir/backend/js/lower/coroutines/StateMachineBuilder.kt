@@ -30,6 +30,7 @@ import org.jetbrains.kotlin.ir.util.deepCopyWithSymbols
 import org.jetbrains.kotlin.ir.util.isElseBranch
 import org.jetbrains.kotlin.ir.util.isSuspend
 import org.jetbrains.kotlin.ir.util.previousOffset
+import org.jetbrains.kotlin.ir.util.map
 import org.jetbrains.kotlin.ir.visitors.*
 
 class SuspendState(type: IrType) {
@@ -78,7 +79,7 @@ class StateMachineBuilder(
     private val setSuspendResultValue: (IrExpression) -> IrStatement
 ) : IrElementVisitorVoid {
 
-    private val loopMap = mutableMapOf<IrLoop, LoopBounds>()
+    private val loopMap = hashMapOf<IrLoop, LoopBounds>()
     private val unit = context.irBuiltIns.unitType
     private val anyN = context.irBuiltIns.anyNType
     private val nothing = context.irBuiltIns.nothingType
@@ -154,7 +155,7 @@ class StateMachineBuilder(
     private var currentBlock = entryState.entryBlock
 
     private val catchBlockStack = mutableListOf(rootExceptionTrap)
-    private val tryStateMap = mutableMapOf<IrExpression, TryState>()
+    private val tryStateMap = hashMapOf<IrExpression, TryState>()
     private val tryLoopStack = mutableListOf<IrExpression>()
 
     private fun buildExceptionTrapState(): SuspendState {
