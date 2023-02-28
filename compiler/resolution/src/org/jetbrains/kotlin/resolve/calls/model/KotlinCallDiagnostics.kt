@@ -138,13 +138,6 @@ object TypeCheckerHasRanIntoRecursion : KotlinCallDiagnostic(INAPPLICABLE) {
 }
 
 // Callable reference resolution
-class CallableReferenceNotCompatible(
-    argument: CallableReferenceResolutionAtom,
-    val candidate: CallableMemberDescriptor,
-    val expectedType: UnwrappedType?,
-    val callableReverenceType: UnwrappedType
-) : CallableReferenceInapplicableDiagnostic(argument)
-
 // supported by FE but not supported by BE now
 class CallableReferencesDefaultArgumentUsed(
     val argument: CallableReferenceResolutionAtom,
@@ -244,13 +237,13 @@ class SuperAsExtensionReceiver(val receiver: SimpleKotlinCallArgument) : KotlinC
 // candidates result
 class NoneCandidatesCallDiagnostic : KotlinCallDiagnostic(INAPPLICABLE) {
     override fun report(reporter: DiagnosticReporter) {
-        reporter.onCall(this)
+        throw AssertionError("NoneCandidatesCallDiagnostic.report should never be called")
     }
 }
 
 class ManyCandidatesCallDiagnostic(val candidates: Collection<ResolutionCandidate>) : KotlinCallDiagnostic(INAPPLICABLE) {
     override fun report(reporter: DiagnosticReporter) {
-        reporter.onCall(this)
+        throw AssertionError("ManyCandidatesCallDiagnostic.report should never be called")
     }
 }
 

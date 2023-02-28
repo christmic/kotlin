@@ -149,6 +149,15 @@ class DiagnosticReporterByTrackingStrategy(
                 val callElement = psiKotlinCall.psiCall.callElement
                 trace.report(UNSUPPORTED_CONTEXTUAL_DECLARATION_CALL.on(callElement))
             }
+
+            is AdaptedCallableReferenceIsUsedWithReflection, is NotCallableMemberReference, is CallableReferencesDefaultArgumentUsed -> {
+                // AdaptedCallableReferenceIsUsedWithReflection -> reported in onCallArgument
+                // NotCallableMemberReference -> UNSUPPORTED reported in DoubleColonExpressionResolver
+                // CallableReferencesDefaultArgumentUsed -> possible in 1.3 and earlier versions only
+                return
+            }
+
+            else -> throw AssertionError("Should not be here ($diagnostic)")
         }
     }
 
@@ -325,6 +334,14 @@ class DiagnosticReporterByTrackingStrategy(
                     )
                 )
             }
+
+            is NotCallableMemberReference, is NotCallableExpectedType -> {
+                // NotCallableMemberReference -> UNSUPPORTED is reported in DoubleColonExpressionResolver
+                // NotCallableExpectedType -> TYPE_MISMATCH is reported in reportConstraintErrorByPosition
+                return
+            }
+
+            else -> throw AssertionError("Should not be here ($diagnostic)")
         }
     }
 

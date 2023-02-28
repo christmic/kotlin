@@ -116,7 +116,7 @@ abstract class ResolutionDiagnostic(candidateApplicability: CandidateApplicabili
 
 class NoMatchingContextReceiver : ResolutionDiagnostic(INAPPLICABLE_WRONG_RECEIVER) {
     override fun report(reporter: DiagnosticReporter) {
-        reporter.onCall(this)
+        throw AssertionError("NoMatchingContextReceiver.report should never be called")
     }
 }
 
