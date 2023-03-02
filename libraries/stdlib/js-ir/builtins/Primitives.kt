@@ -370,10 +370,10 @@ public class Byte private constructor() : Number(), Comparable<Byte> {
     public override fun toDouble(): Double
 
     @kotlin.internal.IntrinsicConstEvaluation
-    public override fun equals(other: Any?): Boolean
+    public override fun toString(): String
 
     @kotlin.internal.IntrinsicConstEvaluation
-    public override fun toString(): String
+    public override fun equals(other: Any?): Boolean
 
     public override fun hashCode(): Int
 }
@@ -737,10 +737,10 @@ public class Short private constructor() : Number(), Comparable<Short> {
     public override fun toDouble(): Double
 
     @kotlin.internal.IntrinsicConstEvaluation
-    public override fun equals(other: Any?): Boolean
+    public override fun toString(): String
 
     @kotlin.internal.IntrinsicConstEvaluation
-    public override fun toString(): String
+    public override fun equals(other: Any?): Boolean
 
     public override fun hashCode(): Int
 }
@@ -1150,10 +1150,10 @@ public class Int private constructor() : Number(), Comparable<Int> {
     public override fun toDouble(): Double
 
     @kotlin.internal.IntrinsicConstEvaluation
-    public override fun equals(other: Any?): Boolean
+    public override fun toString(): String
 
     @kotlin.internal.IntrinsicConstEvaluation
-    public override fun toString(): String
+    public override fun equals(other: Any?): Boolean
 
     public override fun hashCode(): Int
 }
@@ -1485,10 +1485,10 @@ public class Float private constructor() : Number(), Comparable<Float> {
     public override fun toDouble(): Double
 
     @kotlin.internal.IntrinsicConstEvaluation
-    public override fun equals(other: Any?): Boolean
+    public override fun toString(): String
 
     @kotlin.internal.IntrinsicConstEvaluation
-    public override fun toString(): String
+    public override fun equals(other: Any?): Boolean
 
     public override fun hashCode(): Int
 }
@@ -1822,10 +1822,10 @@ public class Double private constructor() : Number(), Comparable<Double> {
     public override fun toDouble(): Double
 
     @kotlin.internal.IntrinsicConstEvaluation
-    public override fun equals(other: Any?): Boolean
+    public override fun toString(): String
 
     @kotlin.internal.IntrinsicConstEvaluation
-    public override fun toString(): String
+    public override fun equals(other: Any?): Boolean
 
     public override fun hashCode(): Int
 }
