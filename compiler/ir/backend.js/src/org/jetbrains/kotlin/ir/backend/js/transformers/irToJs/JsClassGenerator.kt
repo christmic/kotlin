@@ -28,8 +28,8 @@ class JsClassGenerator(private val irClass: IrClass, val context: JsGenerationCo
     private val classNameRef = className.makeRef()
     private val baseClass: IrType? = irClass.superTypes.firstOrNull { !it.classifierOrFail.isInterface }
 
-    private val classPrototypeRef by lazy { prototypeOf(classNameRef, context.staticContext) }
-    private val baseClassRef by lazy { // Lazy in case was not collected by namer during JsClassGenerator construction
+    private val classPrototypeRef by lazy(LazyThreadSafetyMode.NONE) { prototypeOf(classNameRef, context.staticContext) }
+    private val baseClassRef by lazy(LazyThreadSafetyMode.NONE) { // Lazy in case was not collected by namer during JsClassGenerator construction
         if (baseClass != null && !baseClass.isAny()) baseClass.getClassRef(context) else null
     }
     private val classBlock = JsCompositeBlock()

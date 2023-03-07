@@ -265,13 +265,13 @@ class JsIrBackendContext(
             private val getProgressionLastElementSymbols =
                 irBuiltIns.findFunctions(Name.identifier("getProgressionLastElement"), "kotlin", "internal")
 
-            override val getProgressionLastElementByReturnType: Map<IrClassifierSymbol, IrSimpleFunctionSymbol> by lazy {
+            override val getProgressionLastElementByReturnType: Map<IrClassifierSymbol, IrSimpleFunctionSymbol> by lazy(LazyThreadSafetyMode.NONE) {
                 getProgressionLastElementSymbols.associateBy { it.owner.returnType.classifierOrFail }
             }
 
             private val toUIntSymbols = irBuiltIns.findFunctions(Name.identifier("toUInt"), "kotlin")
 
-            override val toUIntByExtensionReceiver: Map<IrClassifierSymbol, IrSimpleFunctionSymbol> by lazy {
+            override val toUIntByExtensionReceiver: Map<IrClassifierSymbol, IrSimpleFunctionSymbol> by lazy(LazyThreadSafetyMode.NONE) {
                 toUIntSymbols.associateBy {
                     it.owner.extensionReceiverParameter?.type?.classifierOrFail
                         ?: error("Expected extension receiver for ${it.owner.render()}")
@@ -280,7 +280,7 @@ class JsIrBackendContext(
 
             private val toULongSymbols = irBuiltIns.findFunctions(Name.identifier("toULong"), "kotlin")
 
-            override val toULongByExtensionReceiver: Map<IrClassifierSymbol, IrSimpleFunctionSymbol> by lazy {
+            override val toULongByExtensionReceiver: Map<IrClassifierSymbol, IrSimpleFunctionSymbol> by lazy(LazyThreadSafetyMode.NONE) {
                 toULongSymbols.associateBy {
                     it.owner.extensionReceiverParameter?.type?.classifierOrFail
                         ?: error("Expected extension receiver for ${it.owner.render()}")

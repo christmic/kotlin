@@ -84,7 +84,7 @@ fun objectCreate(prototype: JsExpression, context: JsStaticContext) =
     )
 
 fun defineProperty(obj: JsExpression, name: String, getter: JsExpression?, setter: JsExpression?, context: JsStaticContext): JsExpression {
-    val undefined = jsUndefined(context, context.backendContext)
+    val undefined by lazy(LazyThreadSafetyMode.NONE) { jsUndefined(context, context.backendContext) }
     return JsInvocation(
         context
             .getNameForStaticFunction(context.backendContext.intrinsics.jsDefinePropertySymbol.owner)
@@ -383,7 +383,7 @@ fun translateCallArguments(
     val varargParameterIndex = function.realOverrideTarget.varargParameterIndex()
 
     val validWithNullArgs = expression.validWithNullArgs()
-    val jsUndefined = jsUndefined(context, context.staticContext.backendContext)
+    val jsUndefined by lazy(LazyThreadSafetyMode.NONE) { jsUndefined(context, context.staticContext.backendContext) }
 
     val arguments = buildList {
         for (i in 0 until size) {
@@ -391,8 +391,8 @@ fun translateCallArguments(
                 .checkOnNullability(validWithNullArgs || function.valueParameters[i].isBoxParameter)
 
             val jsArgument = when {
-                allowDropTailVoids && (providedIrArgument == null || providedIrArgument.isVoidGetter(context)) -> jsUndefined
-                else -> providedIrArgument?.accept(transformer, context) ?: jsUndefined
+                allowDropTailVoids && (providedIrArgument == null || providedIrArgument.isVoidGetter(context)) -> null
+                else -> providedIrArgument?.accept(transformer, context)
             }
 
             val isEmptyExternalVararg = validWithNullArgs &&
@@ -401,12 +401,14 @@ fun translateCallArguments(
                     jsArgument.expressions.isEmpty()
 
             if (isEmptyExternalVararg && i == size - 1) {
-                add(jsUndefined)
+                add(null)
             } else {
                 add(jsArgument)
             }
         }
-    }.dropLastWhile { it === jsUndefined }
+    }
+        .dropLastWhile { it === null }
+        .map { it ?: jsUndefined }
 
     check(!expression.symbol.isSuspend) { "Suspend functions should be lowered" }
     return arguments

@@ -85,7 +85,7 @@ class TestGenerator(val context: JsCommonBackendContext, val groupByPackage: Boo
     private fun generateTestCalls(irClass: IrClass, parentFunction: () -> IrSimpleFunction) {
         if (irClass.modality == Modality.ABSTRACT || irClass.isEffectivelyExternal() || irClass.isExpect) return
 
-        val suiteFunBody by lazy {
+        val suiteFunBody by lazy(LazyThreadSafetyMode.NONE) {
             context.suiteFun!!.createInvocation(irClass.name.asString(), parentFunction(), irClass.isIgnored)
         }
 

@@ -31,11 +31,11 @@ class ClassReferenceLowering(val context: JsCommonBackendContext) : BodyLowering
 
     private val reflectionSymbols get() = context.reflectionSymbols
 
-    private val primitiveClassProperties by lazy {
+    private val primitiveClassProperties by lazy(LazyThreadSafetyMode.NONE) {
         reflectionSymbols.primitiveClassesObject.owner.declarations.filterIsInstance<IrProperty>()
     }
 
-    private val primitiveClassFunctionClass by lazy {
+    private val primitiveClassFunctionClass by lazy(LazyThreadSafetyMode.NONE) {
         reflectionSymbols.primitiveClassesObject.owner.declarations
             .filterIsInstance<IrSimpleFunction>()
             .find { it.name == Name.identifier("functionClass") }!!
@@ -46,7 +46,7 @@ class ClassReferenceLowering(val context: JsCommonBackendContext) : BodyLowering
             ?: reflectionSymbols.primitiveClassesObject.owner.declarations
                 .filterIsInstance<IrSimpleFunction>().single { it.name == Name.special("<get-$name>") }
 
-    private val finalPrimitiveClasses by lazy {
+    private val finalPrimitiveClasses by lazy(LazyThreadSafetyMode.NONE) {
         mapOf(
             IrType::isBoolean to "booleanClass",
             IrType::isByte to "byteClass",
@@ -69,7 +69,7 @@ class ClassReferenceLowering(val context: JsCommonBackendContext) : BodyLowering
         }
     }
 
-    private val openPrimitiveClasses by lazy {
+    private val openPrimitiveClasses by lazy(LazyThreadSafetyMode.NONE) {
         mapOf(
             IrType::isAny to "anyClass",
             IrType::isNumber to "numberClass",

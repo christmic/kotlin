@@ -73,7 +73,7 @@ class MoveBodilessDeclarationsToSeparatePlaceLowering(private val context: JsIrB
     override fun transformFlat(declaration: IrDeclaration): List<IrDeclaration>? {
         val irFile = declaration.parent as? IrFile ?: return null
 
-        val externalPackageFragment by lazy {
+        val externalPackageFragment by lazy(LazyThreadSafetyMode.NONE) {
             context.externalPackageFragment.getOrPut(irFile.symbol) {
                 IrFileImpl(fileEntry = irFile.fileEntry, fqName = irFile.fqName, symbol = IrFileSymbolImpl(), module = irFile.module).also {
                     it.annotations += irFile.annotations
