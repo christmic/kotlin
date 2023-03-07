@@ -1,5 +1,6 @@
 package org.jetbrains.kotlin.backend.konan
 
+import org.jetbrains.kotlin.backend.konan.descriptors.isInteropLibrary
 import org.jetbrains.kotlin.backend.konan.driver.PhaseContext
 import org.jetbrains.kotlin.konan.KonanExternalToolFailure
 import org.jetbrains.kotlin.konan.exec.Command
@@ -9,6 +10,7 @@ import org.jetbrains.kotlin.konan.target.CompilerOutputKind
 import org.jetbrains.kotlin.konan.target.Family
 import org.jetbrains.kotlin.konan.target.LinkerOutputKind
 import org.jetbrains.kotlin.konan.target.presetName
+import org.jetbrains.kotlin.library.isInterop
 
 internal fun determineLinkerOutput(context: PhaseContext): LinkerOutputKind =
         when (context.config.produce) {
@@ -144,15 +146,33 @@ internal fun runLinkerCommands(context: PhaseContext, commands: List<Command>, c
         it.execute()
     }
 } catch (e: KonanExternalToolFailure) {
-    val extraUserInfo =
-            if (cachingInvolved)
-                """
-                        Please try to disable compiler caches and rerun the build. To disable compiler caches, add the following line to the gradle.properties file in the project's root directory:
-                            
-                            kotlin.native.cacheKind.${context.config.target.presetName}=none
-                            
-                        Also, consider filing an issue with full Gradle log here: https://kotl.in/issue
-                        """.trimIndent()
-            else ""
-    context.reportCompilationError("${e.toolName} invocation reported errors\n$extraUserInfo\n${e.message}")
+    println("$e")
+    val extraUserInfo = if (cachingInvolved)
+        """
+                    Please try to disable compiler caches and rerun the build. To disable compiler caches, add the following line to the gradle.properties file in the project's root directory:
+                        
+                        kotlin.native.cacheKind.${context.config.target.presetName}=none
+                        
+                    Also, consider filing an issue with full Gradle log here: https://kotl.in/issue
+                    """.trimIndent()
+    else null
+
+    val extraUserSetupInfo = if (e.toString().contains("ld:")) {
+        context.config.resolvedLibraries.getFullResolvedList()
+                .filter { it.library.isInterop }
+                .mapNotNull { library ->
+                    library.library.manifestProperties["userSetupHint"]?.let {
+                        "From ${library.library.libraryName}:\n$it"
+                    }
+                }
+                .takeIf { it.isNotEmpty() }
+                ?.joinToString(separator = "\n\n")
+                ?.let {
+                    "It seems your project produced link errors.\nProposed solutions:\n\n$it\n"
+                }
+    } else null
+
+    val extraInfo = listOfNotNull(extraUserInfo, extraUserSetupInfo).joinToString(separator = "")
+
+    context.reportCompilationError("${e.toolName} invocation reported errors\n$extraInfo\n${e.message}")
 }

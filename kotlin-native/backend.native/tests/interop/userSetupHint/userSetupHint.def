@@ -1,0 +1,10 @@
+language = Objective-C
+headerFilter = **/userSetupHint.h
+userSetupHint = <<HINT>>
+linkerOpts = -LnonExistent
+---
+void nonExistant();
+
+void test() {
+    nonExistant();
+}

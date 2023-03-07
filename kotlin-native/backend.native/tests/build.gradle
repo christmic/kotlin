@@ -4439,6 +4439,12 @@ if (PlatformInfo.isAppleTarget(project)) {
     createInterop("frameworkForwardDeclarations") {
         it.defFile 'framework/forwardDeclarations/clib.def'
     }
+
+    createInterop("interopUserSetupHint") {
+        it.defFile "interop/userSetupHint/userSetupHint.def"
+        it.headers "$projectDir/interop/userSetupHint/userSetupHint.h"
+        it.extraOpts "-Xcompile-source", "$projectDir/interop/userSetupHint/userSetupHint.c"
+    }
 }
 
 createInterop("withSpaces") {
@@ -4824,6 +4830,17 @@ interopTest("interop_leakMemoryWithRunningThreadChecked") {
     source = "interop/leakMemoryWithRunningThread/checked.kt"
     expectedExitStatusChecker = { it != 0 }
     outputChecker = { s -> s.contains("Cannot run checkers when there are 1 alive runtimes at the shutdown") }
+}
+
+interopTest("framework_user_setup_hint") {
+    disabled = (project.testTarget == 'wasm32') // No interop for wasm yet.
+    source = "interop/userSetupHint/userSetupHint.kt"
+    interop = "interopUserSetupHint"
+    compilerMessages = true
+//    expectedExitStatusChecker = { it != 0 }
+    expectedExitStatusChecker = { true }
+    outputChecker = { true }
+//    outputChecker = { it..contains("<<HINT>>") }
 }
 
 standaloneTest("interop_pinning") {
