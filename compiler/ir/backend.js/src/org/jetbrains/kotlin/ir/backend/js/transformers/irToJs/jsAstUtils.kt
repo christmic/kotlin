@@ -385,14 +385,14 @@ fun translateCallArguments(
     val validWithNullArgs = expression.validWithNullArgs()
     val jsUndefined by lazy(LazyThreadSafetyMode.NONE) { jsUndefined(context, context.staticContext.backendContext) }
 
-    val arguments = buildList {
-        for (i in 0 until size) {
-            val providedIrArgument = expression.getValueArgument(i)
-                .checkOnNullability(validWithNullArgs || function.valueParameters[i].isBoxParameter)
-
+    val arguments = (0 until size)
+        .mapIndexedTo(listWithStrictCapacity(size)) { i, _ ->
+            expression.getValueArgument(i).checkOnNullability(validWithNullArgs || function.valueParameters[i].isBoxParameter)
+        }
+        .mapIndexed { i, it ->
             val jsArgument = when {
-                allowDropTailVoids && (providedIrArgument == null || providedIrArgument.isVoidGetter(context)) -> null
-                else -> providedIrArgument?.accept(transformer, context)
+                allowDropTailVoids && (it == null || it.isVoidGetter(context)) -> null
+                else -> it?.accept(transformer, context)
             }
 
             val isEmptyExternalVararg = validWithNullArgs &&
@@ -400,14 +400,9 @@ fun translateCallArguments(
                     jsArgument is JsArrayLiteral &&
                     jsArgument.expressions.isEmpty()
 
-            if (isEmptyExternalVararg && i == size - 1) {
-                add(null)
-            } else {
-                add(jsArgument)
-            }
+            jsArgument.takeIf { !isEmptyExternalVararg || i != size - 1 }
         }
-    }
-        .dropLastWhile { it === null }
+        .dropLastWhile { it == null }
         .map { it ?: jsUndefined }
 
     check(!expression.symbol.isSuspend) { "Suspend functions should be lowered" }

@@ -10,6 +10,13 @@ import kotlin.math.min
 
 val EMPTY_LIST = SmartList<Nothing>()
 
+fun <T> listWithStrictCapacity(size: Int): MutableList<T> {
+    return when (size) {
+        0, 1 -> SmartList()
+        else -> ArrayList(size)
+    }
+}
+
 inline fun <T, R> Collection<T>.map(transform: (T) -> R): List<R> {
     if (isEmpty()) return EMPTY_LIST
     if (size == 1) return SmartList(transform(first()))
