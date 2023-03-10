@@ -144,7 +144,7 @@ interface IrTypeSystemContext : TypeSystemContext, TypeSystemCommonSuperTypesCon
 
     private fun getTypeParameters(typeConstructor: TypeConstructorMarker): List<IrTypeParameter> {
         return when (typeConstructor) {
-            is IrTypeParameterSymbol -> EMPTY_LIST
+            is IrTypeParameterSymbol -> emptyList()
             is IrClassSymbol -> extractTypeParameters(typeConstructor.owner)
             else -> error("unsupported type constructor")
         }
@@ -610,7 +610,7 @@ fun extractTypeParameters(parent: IrDeclarationParent): List<IrTypeParameter> {
                 else -> null
             }
     }
-    return result.ifEmpty { EMPTY_LIST }
+    return result.ifEmpty { emptyList() }
 }
 
 

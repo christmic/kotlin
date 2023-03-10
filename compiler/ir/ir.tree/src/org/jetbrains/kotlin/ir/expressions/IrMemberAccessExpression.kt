@@ -20,9 +20,6 @@ import org.jetbrains.kotlin.ir.visitors.IrElementTransformer
 import org.jetbrains.kotlin.ir.visitors.IrElementVisitor
 import org.jetbrains.kotlin.types.KotlinType
 
-private val EMPTY_TYPE_ARRAY = arrayOfNulls<IrType?>(0)
-private val EMPTY_PARAMETER_ARRAY = arrayOfNulls<IrExpression?>(0)
-
 // todo: autogenerate
 /**
  * A non-leaf IR tree element.
@@ -40,9 +37,6 @@ abstract class IrMemberAccessExpression<S : IrSymbol> : IrDeclarationReference()
 
     protected abstract val argumentsByParameterIndex: Array<IrExpression?>
     open val valueArgumentsCount: Int get() = argumentsByParameterIndex.size
-
-    protected fun initializeTypeArguments(size: Int) = if (size == 0) EMPTY_TYPE_ARRAY else arrayOfNulls(size)
-    protected fun initializeParameterArguments(size: Int) = if (size == 0) EMPTY_PARAMETER_ARRAY else arrayOfNulls(size)
 
     fun getValueArgument(index: Int): IrExpression? {
         if (index >= valueArgumentsCount) {

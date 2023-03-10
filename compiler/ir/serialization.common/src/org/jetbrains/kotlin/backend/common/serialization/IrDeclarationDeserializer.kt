@@ -169,7 +169,7 @@ class IrDeclarationDeserializer(
             deserializeAnnotations(proto.annotationList)
         )
 
-    private val SIMPLE_DYNAMIC_TYPE = IrDynamicTypeImpl(null, EMPTY_LIST, Variance.INVARIANT)
+    private val SIMPLE_DYNAMIC_TYPE = IrDynamicTypeImpl(null, emptyList(), Variance.INVARIANT)
 
     private fun deserializeDynamicType(proto: ProtoDynamicType): IrDynamicType {
         return if (proto.annotationCount == 0) {
@@ -458,7 +458,7 @@ class IrDeclarationDeserializer(
     }
 
     private fun deserializeTypeParameters(protos: List<ProtoTypeParameter>, isGlobal: Boolean): List<IrTypeParameter> {
-        if (protos.isEmpty()) return EMPTY_LIST
+        if (protos.isEmpty()) return emptyList()
         // NOTE: fun <C : MutableCollection<in T>, T : Any> Array<out T?>.filterNotNullTo(destination: C): C
         val result = ArrayList<IrTypeParameter>(protos.size)
         for (index in protos.indices) {
@@ -474,7 +474,7 @@ class IrDeclarationDeserializer(
     }
 
     private fun deserializeValueParameters(protos: List<ProtoValueParameter>): List<IrValueParameter> {
-        if (protos.isEmpty()) return EMPTY_LIST
+        if (protos.isEmpty()) return emptyList()
 
         val result = ArrayList<IrValueParameter>(protos.size)
 
