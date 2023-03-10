@@ -23,6 +23,7 @@ import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.ir.visitors.transformChildrenVoid
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.utils.addToStdlib.runIf
+import org.jetbrains.kotlin.utils.newHashMapWithExpectedSize
 
 object ES6_INIT_CALL : IrStatementOriginImpl("ES6_INIT_CALL")
 object ES6_CONSTRUCTOR_REPLACEMENT : IrDeclarationOriginImpl("ES6_CONSTRUCTOR_REPLACEMENT")
@@ -172,7 +173,7 @@ class ES6ConstructorLowering(val context: JsIrBackendContext) : DeclarationTrans
             override val map: MutableMap<IrValueSymbol, IrValueSymbol> = currentConstructor.valueParameters
                 .asSequence()
                 .zip(constructorReplacement.valueParameters.asSequence())
-                .associateTo(HashMap(currentConstructor.valueParameters.size)) { it.first.symbol to it.second.symbol }
+                .associateTo(newHashMapWithExpectedSize(currentConstructor.valueParameters.size)) { it.first.symbol to it.second.symbol }
 
             override fun visitReturn(expression: IrReturn): IrExpression {
                 return if (expression.returnTargetSymbol == currentConstructor.symbol) {
