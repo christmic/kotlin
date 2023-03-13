@@ -62,10 +62,10 @@ fun IrType.removeAnnotations(predicate: (IrConstructorCall) -> Boolean): IrType 
     when (this) {
         is IrSimpleType ->
             toBuilder().apply {
-                annotations = annotations.filterNot(predicate)
+                annotations = annotations.compactFilterNot(predicate)
             }.buildSimpleType()
         is IrDynamicType ->
-            IrDynamicTypeImpl(null, annotations.filterNot(predicate), Variance.INVARIANT)
+            IrDynamicTypeImpl(null, annotations.compactFilterNot(predicate), Variance.INVARIANT)
         else ->
             this
     }

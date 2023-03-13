@@ -63,7 +63,7 @@ class ES6ConstructorLowering(val context: JsIrBackendContext) : DeclarationTrans
     private fun IrConstructor.generateExportedConstructorIfNeed(factoryFunction: IrSimpleFunction): IrConstructor? {
         return runIf(isExported(context) && isPrimary) {
             apply {
-                valueParameters = valueParameters.filterNot { it.isBoxParameter }
+                valueParameters = valueParameters.compactFilterNot { it.isBoxParameter }
                 (body as? IrBlockBody)?.let {
                     val selfReplacedConstructorCall = JsIrBuilder.buildCall(factoryFunction.symbol).apply {
                         valueParameters.forEachIndexed { i, it -> putValueArgument(i, JsIrBuilder.buildGetValue(it.symbol)) }

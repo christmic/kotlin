@@ -102,7 +102,7 @@ class ExportModelGenerator(val context: JsIrBackendContext, val generateNamespac
         if (!constructor.isPrimary) return null
         val allValueParameters = listOfNotNull(constructor.extensionReceiverParameter) + constructor.valueParameters
         return ExportedConstructor(
-            parameters = allValueParameters.filterNot { it.isBoxParameter }.map { exportParameter(it) },
+            parameters = allValueParameters.compactFilterNot { it.isBoxParameter }.map { exportParameter(it) },
             visibility = constructor.visibility.toExportedVisibility()
         )
     }

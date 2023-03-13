@@ -52,13 +52,8 @@ inline fun <T> Collection<T>.filter(predicate: (T) -> Boolean): List<T> {
     }
 }
 
-inline fun <T> Collection<T>.filterNot(predicate: (T) -> Boolean): List<T> {
-    val result = filterNotTo(SmartList(), predicate)
-    return when (result.size) {
-        0 -> emptyList()
-        1 -> SmartList(result.first())
-        else -> result
-    }
+inline fun <T> Collection<T>.compactFilterNot(predicate: (T) -> Boolean): List<T> {
+    return filterNotTo(ArrayList<T>(), predicate).compact()
 }
 
 inline fun <reified T> Collection<*>.compactFilterIsInstance(): List<T> {
