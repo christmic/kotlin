@@ -652,8 +652,8 @@ class InteropCallableReferenceLowering(val context: JsIrBackendContext) : BodyLo
             }
         }
 
-        factoryDeclaration.valueParameters = constructor.valueParameters.map { it.copyTo(factoryDeclaration) }
-        factoryDeclaration.typeParameters = constructor.typeParameters.map {
+        factoryDeclaration.valueParameters = constructor.valueParameters.compactMap { it.copyTo(factoryDeclaration) }
+        factoryDeclaration.typeParameters = constructor.typeParameters.compactMap {
             it.copyToWithoutSuperTypes(factoryDeclaration).also { tp ->
                 // TODO: make sure it is done well
                 tp.superTypes += it.superTypes

@@ -164,7 +164,7 @@ class DeclarationGenerator(override val context: GeneratorContext) : Generator {
         }
 
         for (irTypeParameter in irTypeParametersOwner.typeParameters) {
-            irTypeParameter.superTypes = irTypeParameter.descriptor.upperBounds.map {
+            irTypeParameter.superTypes = irTypeParameter.descriptor.upperBounds.compactMap {
                 it.toIrType()
             }
         }

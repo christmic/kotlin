@@ -57,7 +57,7 @@ class UselessDeclarationsRemover(
         declaration.superTypes = declaration.superTypes
             .flatMap { it.classOrNull?.collectUsedSuperTypes() ?: emptyList() }
             .distinct()
-            .map { it.defaultType }
+            .compactMap { it.defaultType }
     }
 
     private fun IrClassSymbol.collectUsedSuperTypes(): Set<IrClassSymbol> {
@@ -67,7 +67,7 @@ class UselessDeclarationsRemover(
             } else {
                 owner.superTypes
                     .flatMap { it.takeIf { !it.isAny() }?.classOrNull?.collectUsedSuperTypes() ?: emptyList() }
-                    .toSet()
+                    .toHashSet()
             }
         }
     }

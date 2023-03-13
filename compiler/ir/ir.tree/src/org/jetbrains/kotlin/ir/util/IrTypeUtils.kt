@@ -92,7 +92,7 @@ fun IrType.substitute(params: List<IrTypeParameter>, arguments: List<IrType>): I
 fun IrType.substitute(substitutionMap: Map<IrTypeParameterSymbol, IrType>): IrType {
     if (this !is IrSimpleType || substitutionMap.isEmpty()) return this
 
-    val newAnnotations = annotations.map { it.deepCopyWithSymbols() }
+    val newAnnotations = annotations.compactMap { it.deepCopyWithSymbols() }
 
     substitutionMap[classifier]?.let { substitutedType ->
         // Add nullability and annotations from original type
@@ -101,7 +101,7 @@ fun IrType.substitute(substitutionMap: Map<IrTypeParameterSymbol, IrType>): IrTy
             .addAnnotations(newAnnotations)
     }
 
-    val newArguments = arguments.map {
+    val newArguments = arguments.compactMap {
         when (it) {
             is IrTypeProjection -> makeTypeProjection(it.type.substitute(substitutionMap), it.variance)
             is IrStarProjection -> it
@@ -127,7 +127,7 @@ private fun getImmediateSupertypes(irType: IrSimpleType): List<IrSimpleType> {
         }
     return originalSupertypes
         .filter { it.classOrNull != null }
-        .map { superType ->
+        .compactMap { superType ->
             superType.substitute(irClass.typeParameters, arguments) as IrSimpleType
         }
 }

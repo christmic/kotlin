@@ -129,11 +129,11 @@ class IrOverridingUtil(
         set(value) {
             when (this) {
                 is IrSimpleFunction -> this.overriddenSymbols =
-                    value.map { it as? IrSimpleFunctionSymbol ?: error("Unexpected function overridden symbol: $it") }
+                    value.compactMap { it as? IrSimpleFunctionSymbol ?: error("Unexpected function overridden symbol: $it") }
                 is IrProperty -> {
-                    val overriddenProperties = value.map { it as? IrPropertySymbol ?: error("Unexpected property overridden symbol: $it") }
+                    val overriddenProperties = value.compactMap { it as? IrPropertySymbol ?: error("Unexpected property overridden symbol: $it") }
                     val getter = this.getter ?: error("Property has no getter: ${render()}")
-                    getter.overriddenSymbols = overriddenProperties.map { it.owner.getter!!.symbol }
+                    getter.overriddenSymbols = overriddenProperties.compactMap { it.owner.getter!!.symbol }
                     this.setter?.let { setter ->
                         setter.overriddenSymbols = overriddenProperties.compactMapNotNull { it.owner.setter?.symbol }
                     }
@@ -254,7 +254,7 @@ class IrOverridingUtil(
             }
         }
 
-        fromCurrent.overriddenSymbols = overridden.map { it.original.symbol }
+        fromCurrent.overriddenSymbols = overridden.compactMap { it.original.symbol }
 
         return bound
     }
@@ -427,7 +427,7 @@ class IrOverridingUtil(
             }
         }
 
-        fakeOverride.overriddenSymbols = effectiveOverridden.map { it.original.symbol }
+        fakeOverride.overriddenSymbols = effectiveOverridden.compactMap { it.original.symbol }
 
         require(
             fakeOverride.overriddenSymbols.isNotEmpty()

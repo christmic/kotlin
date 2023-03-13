@@ -110,7 +110,7 @@ class IrDeclarationDeserializer(
     }
 
     internal fun deserializeAnnotations(annotations: List<ProtoConstructorCall>): List<IrConstructorCall> {
-        return annotations.map {
+        return annotations.compactMap {
             bodyDeserializer.deserializeAnnotation(it)
         }
     }
@@ -125,7 +125,7 @@ class IrDeclarationDeserializer(
         val symbol = deserializeIrSymbolAndRemap(proto.classifier)
             .checkSymbolType<IrClassifierSymbol>(fallbackSymbolKind = /* just the first possible option */ CLASS_SYMBOL)
 
-        val arguments = proto.argumentList.map { deserializeIrTypeArgument(it) }
+        val arguments = proto.argumentList.compactMap { deserializeIrTypeArgument(it) }
         val annotations = deserializeAnnotations(proto.annotationList)
         val abbreviation = if (proto.hasAbbreviation()) deserializeTypeAbbreviation(proto.abbreviation) else null
 
@@ -145,7 +145,7 @@ class IrDeclarationDeserializer(
         val symbol = deserializeIrSymbolAndRemap(proto.classifier)
             .checkSymbolType<IrClassifierSymbol>(fallbackSymbolKind = /* just the first possible option */ CLASS_SYMBOL)
 
-        val arguments = proto.argumentList.map { deserializeIrTypeArgument(it) }
+        val arguments = proto.argumentList.compactMap { deserializeIrTypeArgument(it) }
         val annotations = deserializeAnnotations(proto.annotationList)
         val abbreviation = if (proto.hasAbbreviation()) deserializeTypeAbbreviation(proto.abbreviation) else null
 
@@ -165,7 +165,7 @@ class IrDeclarationDeserializer(
         IrTypeAbbreviationImpl(
             deserializeIrSymbolAndRemap(proto.typeAlias).checkSymbolType(TYPEALIAS_SYMBOL),
             proto.hasQuestionMark,
-            proto.argumentList.map { deserializeIrTypeArgument(it) },
+            proto.argumentList.compactMap { deserializeIrTypeArgument(it) },
             deserializeAnnotations(proto.annotationList)
         )
 
@@ -379,7 +379,7 @@ class IrDeclarationDeserializer(
             }.usingParent {
                 typeParameters = deserializeTypeParameters(proto.typeParameterList, true)
 
-                superTypes = proto.superTypeList.map { deserializeIrType(it) }
+                superTypes = proto.superTypeList.compactMap { deserializeIrType(it) }
 
                 withExternalValue(isExternal) {
                     val oldDeclarations = declarations.toSet()
@@ -415,8 +415,8 @@ class IrDeclarationDeserializer(
         )
 
     private fun deserializeMultiFieldValueClassRepresentation(proto: ProtoIrMultiFieldValueClassRepresentation): MultiFieldValueClassRepresentation<IrSimpleType> {
-        val names = proto.underlyingPropertyNameList.map { deserializeName(it) }
-        val types = proto.underlyingPropertyTypeList.map { deserializeIrType(it) as IrSimpleType }
+        val names = proto.underlyingPropertyNameList.compactMap { deserializeName(it) }
+        val types = proto.underlyingPropertyTypeList.compactMap { deserializeIrType(it) as IrSimpleType }
         return MultiFieldValueClassRepresentation(names compactZip types)
     }
 
@@ -467,7 +467,7 @@ class IrDeclarationDeserializer(
         }
 
         for (i in protos.indices) {
-            result[i].superTypes = protos[i].superTypeList.map { deserializeIrType(it) }
+            result[i].superTypes = protos[i].superTypeList.compactMap { deserializeIrType(it) }
         }
 
         return result
@@ -624,7 +624,7 @@ class IrDeclarationDeserializer(
                     flags.isFakeOverride
                 )
             }.apply {
-                overriddenSymbols = proto.overriddenList.map { deserializeIrSymbolAndRemap(it).checkSymbolType(FUNCTION_SYMBOL) }
+                overriddenSymbols = proto.overriddenList.compactMap { deserializeIrSymbolAndRemap(it).checkSymbolType(FUNCTION_SYMBOL) }
             }
         }
 

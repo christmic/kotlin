@@ -141,7 +141,7 @@ abstract class AbstractSuspendFunctionsLowering<C : CommonBackendContext>(val co
             }.apply {
                 parent = irFunction.parent
                 createParameterDeclarations()
-                typeParameters = irFunction.typeParameters.map { typeParam ->
+                typeParameters = irFunction.typeParameters.compactMap { typeParam ->
                     typeParam.copyToWithoutSuperTypes(this).apply { superTypes += typeParam.superTypes }
                 }
             }
@@ -235,7 +235,7 @@ abstract class AbstractSuspendFunctionsLowering<C : CommonBackendContext>(val co
                 parent = coroutineClass
                 coroutineClass.declarations += this
 
-                typeParameters = stateMachineFunction.typeParameters.map { parameter ->
+                typeParameters = stateMachineFunction.typeParameters.compactMap { parameter ->
                     parameter.copyToWithoutSuperTypes(this, origin = DECLARATION_ORIGIN_COROUTINE_IMPL)
                         .apply { superTypes += parameter.superTypes }
                 }

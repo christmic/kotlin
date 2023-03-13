@@ -31,7 +31,7 @@ class IrTypeParameterRemapper(
                 null,
                 type.classifier.remap(),
                 type.nullability,
-                type.arguments.map { it.remap() },
+                type.arguments.compactMap { it.remap() },
                 type.annotations,
                 type.abbreviation?.remap()
             ).apply {
@@ -52,7 +52,7 @@ class IrTypeParameterRemapper(
         IrTypeAbbreviationImpl(
             typeAlias,
             hasQuestionMark,
-            arguments.map { it.remap() },
+            arguments.compactMap { it.remap() },
             annotations
         ).apply {
             annotations.forEach { it.remapTypes(this@IrTypeParameterRemapper) }

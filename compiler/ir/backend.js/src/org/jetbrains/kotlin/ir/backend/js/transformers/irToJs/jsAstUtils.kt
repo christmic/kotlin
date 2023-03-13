@@ -403,7 +403,7 @@ fun translateCallArguments(
             jsArgument.takeIf { !isEmptyExternalVararg || i != size - 1 }
         }
         .dropLastWhile { it == null }
-        .map { it ?: jsUndefined }
+        .compactMap { it ?: jsUndefined }
 
     check(!expression.symbol.isSuspend) { "Suspend functions should be lowered" }
     return arguments

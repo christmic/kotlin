@@ -28,7 +28,7 @@ class IrElementToJsStatementTransformer : BaseIrElementToJsNodeTransformer<JsSta
     }
 
     override fun visitBlockBody(body: IrBlockBody, context: JsGenerationContext): JsStatement {
-        return JsBlock(body.statements.map { it.accept(this, context) }).withSource(body, context, container = context.currentFunction)
+        return JsBlock(body.statements.compactMap { it.accept(this, context) }).withSource(body, context, container = context.currentFunction)
     }
 
     override fun visitBlock(expression: IrBlock, context: JsGenerationContext): JsStatement {
@@ -37,7 +37,7 @@ class IrElementToJsStatementTransformer : BaseIrElementToJsNodeTransformer<JsSta
         } ?: context
 
         val container = expression.innerInlinedBlockOrThis.statements
-        val statements = container.map { it.accept(this, newContext) }
+        val statements = container.compactMap { it.accept(this, newContext) }
 
         return if (expression is IrReturnableBlock) {
             val label = context.getNameForReturnableBlock(expression)
@@ -65,7 +65,7 @@ class IrElementToJsStatementTransformer : BaseIrElementToJsNodeTransformer<JsSta
         return if (expression.statements.isEmpty()) {
             JsEmpty
         } else {
-            JsBlock(expression.statements.map { it.accept(this, context) }).withSource(expression, context)
+            JsBlock(expression.statements.compactMap { it.accept(this, context) }).withSource(expression, context)
         }
     }
 

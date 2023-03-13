@@ -337,7 +337,7 @@ class JsClassGenerator(private val irClass: IrClass, val context: JsGenerationCo
             JsNameRef(context.getNameForStaticFunction(setMetadataFor)),
             listOf(ctor, name, metadataConstructor, parent, interfaces, associatedObjectKey, associatedObjects, suspendArity)
                 .dropLastWhile { it == null }
-                .map { it ?: undefined }
+                .compactMap { it ?: undefined }
         ).makeStmt()
 
     }
@@ -383,7 +383,7 @@ class JsClassGenerator(private val irClass: IrClass, val context: JsGenerationCo
         val arity = invokeFunctions
             .map { it.valueParameters.size }
             .distinct()
-            .map { JsIntLiteral(it) }
+            .compactMap { JsIntLiteral(it) }
 
         return JsArrayLiteral(arity).takeIf { arity.isNotEmpty() }
     }
@@ -466,7 +466,7 @@ private fun IrOverridableDeclaration<*>.overridesExternal(): Boolean {
 private val IrClassifierSymbol.isInterface get() = (owner as? IrClass)?.isInterface == true
 
 class JsIrClassModel(val klass: IrClass) {
-    val superClasses = klass.superTypes.map { it.classifierOrNull as IrClassSymbol }
+    val superClasses = klass.superTypes.compactMap { it.classifierOrNull as IrClassSymbol }
 
     val preDeclarationBlock = JsCompositeBlock()
     val postDeclarationBlock = JsCompositeBlock()

@@ -14,7 +14,6 @@ import org.jetbrains.kotlin.ir.expressions.impl.IrCompositeImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrConstImpl
 import org.jetbrains.kotlin.ir.types.classOrNull
 import org.jetbrains.kotlin.ir.util.getArgumentsWithIr
-import org.jetbrains.kotlin.ir.util.map
 import org.jetbrains.kotlin.ir.util.render
 
 

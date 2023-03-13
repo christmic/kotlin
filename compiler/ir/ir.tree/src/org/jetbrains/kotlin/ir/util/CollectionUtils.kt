@@ -16,7 +16,7 @@ fun <T> listWithStrictCapacity(size: Int): MutableList<T> {
     }
 }
 
-inline fun <T, R> Collection<T>.map(transform: (T) -> R): List<R> {
+inline fun <T, R> Collection<T>.compactMap(transform: (T) -> R): List<R> {
     if (isEmpty()) return emptyList()
     if (size == 1) return SmartList(transform(first()))
     return mapTo(ArrayList(size), transform)

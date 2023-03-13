@@ -30,7 +30,6 @@ import org.jetbrains.kotlin.ir.util.deepCopyWithSymbols
 import org.jetbrains.kotlin.ir.util.isElseBranch
 import org.jetbrains.kotlin.ir.util.isSuspend
 import org.jetbrains.kotlin.ir.util.previousOffset
-import org.jetbrains.kotlin.ir.util.map
 import org.jetbrains.kotlin.ir.visitors.*
 
 class SuspendState(type: IrType) {

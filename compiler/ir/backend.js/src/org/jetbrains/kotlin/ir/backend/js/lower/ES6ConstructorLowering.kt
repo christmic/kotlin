@@ -209,7 +209,7 @@ class ES6ConstructorLowering(val context: JsIrBackendContext) : DeclarationTrans
                             .apply {
                                 putValueArgument(0, irClass.getCurrentConstructorReference(constructorReplacement))
                                 putValueArgument(1, expression.symbol.owner.parentAsClass.jsConstructorReference(context))
-                                putValueArgument(2, irAnyArray(expression.valueArguments.map { it ?: context.getVoid() }))
+                                putValueArgument(2, irAnyArray(expression.valueArguments.compactMap { it ?: context.getVoid() }))
                                 putValueArgument(3, boxParameterGetter)
                             }
                     constructor.parentAsClass.symbol == context.irBuiltIns.anyClass ->

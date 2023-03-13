@@ -26,7 +26,7 @@ class SimpleTypeRemapper(
             type
         else {
             val symbol = symbolRemapper.getReferencedClassifier(type.classifier)
-            val arguments = type.arguments.map { remapTypeArgument(it) }
+            val arguments = type.arguments.compactMap { remapTypeArgument(it) }
             if (symbol == type.classifier && arguments == type.arguments)
                 type
             else {
@@ -51,7 +51,7 @@ class SimpleTypeRemapper(
         IrTypeAbbreviationImpl(
             symbolRemapper.getReferencedTypeAlias(typeAlias),
             hasQuestionMark,
-            arguments.map { remapTypeArgument(it) },
+            arguments.compactMap { remapTypeArgument(it) },
             annotations
         )
 }

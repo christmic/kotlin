@@ -64,7 +64,7 @@ class JsDefaultArgumentStubGenerator(override val context: JsIrBackendContext) :
 
         val variables = hashMapOf<IrValueParameter, IrValueParameter>()
 
-        valueParameters = valueParameters.map { param ->
+        valueParameters = valueParameters.compactMap { param ->
             param.takeIf { it.defaultValue != null }
                 ?.copyTo(this, isAssignable = true, origin = JsLoweredDeclarationOrigin.JS_SHADOWED_DEFAULT_PARAMETER)
                 ?.also { new -> variables[param] = new } ?: param

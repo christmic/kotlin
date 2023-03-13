@@ -153,7 +153,7 @@ abstract class AbstractSuspendFunctionsLowering<C : CommonBackendContext>(val co
 
     private fun IrBlockBodyBuilder.createCoroutineInstance(function: IrSimpleFunction, parameters: Collection<IrValueParameter>, coroutine: BuiltCoroutine): IrExpression {
         val constructor = coroutine.coroutineConstructor
-        val coroutineTypeArgs = function.typeParameters.map {
+        val coroutineTypeArgs = function.typeParameters.compactMap {
             IrSimpleTypeImpl(it.symbol, true, emptyList(), emptyList())
         }
 
@@ -229,7 +229,7 @@ abstract class AbstractSuspendFunctionsLowering<C : CommonBackendContext>(val co
             }.apply {
                 parent = function.parent
                 createParameterDeclarations()
-                typeParameters = function.typeParameters.map { typeParam ->
+                typeParameters = function.typeParameters.compactMap { typeParam ->
                     // TODO: remap types
                     typeParam.copyToWithoutSuperTypes(this).apply { superTypes += typeParam.superTypes }
                 }
@@ -307,7 +307,7 @@ abstract class AbstractSuspendFunctionsLowering<C : CommonBackendContext>(val co
                 parent = coroutineClass
                 coroutineClass.addChild(this)
 
-                typeParameters = stateMachineFunction.typeParameters.map { parameter ->
+                typeParameters = stateMachineFunction.typeParameters.compactMap { parameter ->
                     parameter.copyToWithoutSuperTypes(this, origin = DECLARATION_ORIGIN_COROUTINE_IMPL)
                         .apply { superTypes += parameter.superTypes }
                 }
@@ -342,7 +342,7 @@ abstract class AbstractSuspendFunctionsLowering<C : CommonBackendContext>(val co
                 parent = coroutineClass
                 coroutineClass.addChild(this)
 
-                typeParameters = function.typeParameters.map { parameter ->
+                typeParameters = function.typeParameters.compactMap { parameter ->
                     parameter.copyToWithoutSuperTypes(this, origin = DECLARATION_ORIGIN_COROUTINE_IMPL)
                         .apply { superTypes += parameter.superTypes }
                 }

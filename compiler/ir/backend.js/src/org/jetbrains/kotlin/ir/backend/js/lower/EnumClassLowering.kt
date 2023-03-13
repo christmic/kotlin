@@ -559,7 +559,7 @@ class EnumSyntheticFunctionsAndPropertiesLowering(
     }
 
     private fun IrBuilderWithScope.arrayOfEnumEntriesOf(enumClass: IrClass) =
-        irVararg(enumClass.defaultType, enumClass.enumEntries.map { irCall(it.getInstanceFun!!) })
+        irVararg(enumClass.defaultType, enumClass.enumEntries.compactMap { irCall(it.getInstanceFun!!) })
 }
 
 private val IrClass.enumEntries: List<IrEnumEntry>

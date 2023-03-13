@@ -10,7 +10,6 @@ import org.jetbrains.kotlin.ir.declarations.IrDeclarationParent
 import org.jetbrains.kotlin.ir.declarations.IrTypeParametersContainer
 import org.jetbrains.kotlin.ir.declarations.copyAttributes
 import org.jetbrains.kotlin.ir.expressions.IrConstructorCall
-import org.jetbrains.kotlin.ir.expressions.IrLoop
 import org.jetbrains.kotlin.ir.expressions.IrTypeOperatorCall
 import org.jetbrains.kotlin.ir.expressions.impl.IrTypeOperatorCallImpl
 import org.jetbrains.kotlin.ir.symbols.IrClassifierSymbol
@@ -54,7 +53,7 @@ internal class DeepCopyIrTreeWithSymbolsForInliner(
             arguments: List<IrTypeArgument>,
             erasedParameters: MutableSet<IrTypeParameterSymbol>?
         ) =
-            arguments.map { argument ->
+            arguments.compactMap { argument ->
                 (argument as? IrTypeProjection)?.let { proj ->
                     remapTypeAndOptionallyErase(proj.type, erasedParameters)?.let { newType ->
                         makeTypeProjection(newType, proj.variance)
@@ -112,7 +111,7 @@ internal class DeepCopyIrTreeWithSymbolsForInliner(
                 kotlinType = null
                 this.classifier = symbolRemapper.getReferencedClassifier(classifier)
                 arguments = remapTypeArguments(type.arguments, erasedParameters)
-                annotations = type.annotations.map { it.transform(copier, null) as IrConstructorCall }
+                annotations = type.annotations.compactMap { it.transform(copier, null) as IrConstructorCall }
             }
         }
     }

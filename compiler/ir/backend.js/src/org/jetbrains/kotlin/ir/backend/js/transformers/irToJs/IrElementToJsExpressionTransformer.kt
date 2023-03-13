@@ -37,7 +37,7 @@ class IrElementToJsExpressionTransformer : BaseIrElementToJsNodeTransformer<JsEx
 
     override fun visitVararg(expression: IrVararg, context: JsGenerationContext): JsExpression {
         assert(expression.elements.none { it is IrSpreadElement })
-        return JsArrayLiteral(expression.elements.map { it.accept(this, context) }).withSource(expression, context)
+        return JsArrayLiteral(expression.elements.compactMap { it.accept(this, context) }).withSource(expression, context)
     }
 
     override fun visitExpressionBody(body: IrExpressionBody, context: JsGenerationContext): JsExpression =
@@ -290,7 +290,7 @@ class IrElementToJsExpressionTransformer : BaseIrElementToJsNodeTransformer<JsEx
             IrDynamicOperator.INVOKE ->
                 JsInvocation(
                     expression.receiver.accept(this, data),
-                    expression.arguments.map { it.accept(this, data) }
+                    expression.arguments.compactMap { it.accept(this, data) }
                 )
 
             else -> compilationException(

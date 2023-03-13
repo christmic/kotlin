@@ -888,13 +888,13 @@ private fun IrTypeParameter.copySuperTypesFrom(source: IrTypeParameter, srcToDst
     val target = this
     val sourceParent = source.parent as IrTypeParametersContainer
     val targetParent = target.parent as IrTypeParametersContainer
-    target.superTypes = source.superTypes.map {
+    target.superTypes = source.superTypes.compactMap {
         it.remapTypeParameters(sourceParent, targetParent, srcToDstParameterMap)
     }
 }
 
 fun IrAnnotationContainer.copyAnnotations(): List<IrConstructorCall> {
-    return annotations.map { it.deepCopyWithSymbols(this as? IrDeclarationParent) }
+    return annotations.compactMap { it.deepCopyWithSymbols(this as? IrDeclarationParent) }
 }
 
 fun IrAnnotationContainer.copyAnnotationsWhen(filter: IrConstructorCall.() -> Boolean): List<IrConstructorCall> {
@@ -1002,7 +1002,7 @@ fun IrType.remapTypeParameters(
                     IrSimpleTypeImpl(
                         classifier.symbol,
                         nullability,
-                        arguments.map {
+                        arguments.compactMap {
                             when (it) {
                                 is IrTypeProjection -> makeTypeProjection(
                                     it.type.remapTypeParameters(source, target, srcToDstParameterMap),
@@ -1218,7 +1218,7 @@ fun IrFactory.createStaticFunctionWithReceivers(
         fun remap(type: IrType): IrType =
             type.remapTypeParameters(oldFunction, this, typeParameterMap)
 
-        typeParameters.forEach { it.superTypes = it.superTypes.map(::remap) }
+        typeParameters.forEach { it.superTypes = it.superTypes.compactMap(::remap) }
 
         annotations = oldFunction.annotations
 

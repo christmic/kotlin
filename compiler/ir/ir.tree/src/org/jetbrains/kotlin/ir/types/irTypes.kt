@@ -219,7 +219,7 @@ fun IrClassifierSymbol.typeWith(arguments: List<IrType>): IrSimpleType =
     IrSimpleTypeImpl(
         this,
         SimpleTypeNullability.NOT_SPECIFIED,
-        arguments.map { makeTypeProjection(it, Variance.INVARIANT) },
+        arguments.compactMap { makeTypeProjection(it, Variance.INVARIANT) },
         emptyList()
     )
 

@@ -19,7 +19,7 @@ import org.jetbrains.kotlin.ir.expressions.impl.IrCallImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrReturnImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrSetFieldImpl
 import org.jetbrains.kotlin.ir.types.IrType
-import org.jetbrains.kotlin.ir.util.map
+import org.jetbrains.kotlin.ir.util.compactMap
 import org.jetbrains.kotlin.ir.util.patchDeclarationParents
 import org.jetbrains.kotlin.ir.util.transformFlat
 import org.jetbrains.kotlin.name.Name
@@ -53,7 +53,7 @@ class CreateScriptFunctionsPhase(val context: CommonBackendContext) : FileLoweri
                 initializeStatements.let {
                     if (irScript.resultProperty == null || initializeStatements.lastOrNull()?.first?.correspondingPropertySymbol != irScript.resultProperty) it
                     else it.dropLast(1)
-                }.map { (field, expression) -> createIrSetField(field, expression) }
+                }.compactMap { (field, expression) -> createIrSetField(field, expression) }
             )
         }
 

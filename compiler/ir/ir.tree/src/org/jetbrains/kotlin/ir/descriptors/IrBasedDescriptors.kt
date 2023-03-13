@@ -42,7 +42,7 @@ import org.jetbrains.kotlin.util.collectionUtils.filterIsInstanceAnd
 abstract class IrBasedDeclarationDescriptor<T : IrDeclaration>(val owner: T) : DeclarationDescriptor {
     override val annotations: Annotations by lazy {
         val ownerAnnotations = (owner as? IrAnnotationContainer)?.annotations ?: return@lazy Annotations.EMPTY
-        Annotations.create(ownerAnnotations.map { it.toAnnotationDescriptor() })
+        Annotations.create(ownerAnnotations.compactMap { it.toAnnotationDescriptor() })
     }
 
     private fun IrConstructorCall.toAnnotationDescriptor(): AnnotationDescriptor {
@@ -61,7 +61,7 @@ abstract class IrBasedDeclarationDescriptor<T : IrDeclaration>(val owner: T) : D
         }
         return AnnotationDescriptorImpl(
             annotationClass.defaultType.toIrBasedKotlinType(),
-            symbol.owner.valueParameters.map { it.name to getValueArgument(it.index) }
+            symbol.owner.valueParameters.compactMap { it.name to getValueArgument(it.index) }
                 .filter { it.second != null }
                 .associate { it.first to it.second!!.toConstantValue() },
             source
@@ -84,7 +84,7 @@ abstract class IrBasedDeclarationDescriptor<T : IrDeclaration>(val owner: T) : D
             }
 
             is IrVararg -> {
-                val elements = elements.map { if (it is IrSpreadElement) error("$it is not expected") else it.toConstantValue() }
+                val elements = elements.compactMap { if (it is IrSpreadElement) error("$it is not expected") else it.toConstantValue() }
                 ArrayValue(elements) { moduleDescriptor ->
                     // TODO: substitute.
                     moduleDescriptor.builtIns.array.defaultType
@@ -264,7 +264,7 @@ open class IrBasedTypeParameterDescriptor(owner: IrTypeParameter) : TypeParamete
 
     override fun getVariance() = owner.variance
 
-    override fun getUpperBounds() = owner.superTypes.map { it.toIrBasedKotlinType() }
+    override fun getUpperBounds() = owner.superTypes.compactMap { it.toIrBasedKotlinType() }
 
     private val _typeConstructor: TypeConstructor by lazy {
         object : AbstractTypeConstructor(LockBasedStorageManager.NO_LOCKS) {
@@ -398,7 +398,7 @@ fun IrLocalDelegatedProperty.toIrBasedDescriptor() = IrBasedVariableDescriptorWi
 open class IrBasedSimpleFunctionDescriptor(owner: IrSimpleFunction) : SimpleFunctionDescriptor, DescriptorWithContainerSource,
     IrBasedCallableDescriptor<IrSimpleFunction>(owner) {
 
-    override fun getOverriddenDescriptors(): List<FunctionDescriptor> = owner.overriddenSymbols.map { it.owner.toIrBasedDescriptor() }
+    override fun getOverriddenDescriptors(): List<FunctionDescriptor> = owner.overriddenSymbols.compactMap { it.owner.toIrBasedDescriptor() }
 
     override fun getModality() = owner.modality
     override fun getName() = owner.name
@@ -410,7 +410,7 @@ open class IrBasedSimpleFunctionDescriptor(owner: IrSimpleFunction) : SimpleFunc
     }
 
     override fun getExtensionReceiverParameter() = owner.extensionReceiverParameter?.toIrBasedDescriptor() as? ReceiverParameterDescriptor
-    override fun getTypeParameters() = owner.typeParameters.map { it.toIrBasedDescriptor() }
+    override fun getTypeParameters() = owner.typeParameters.compactMap { it.toIrBasedDescriptor() }
     override fun getValueParameters() = owner.valueParameters
         .asSequence()
         .mapNotNull { it.toIrBasedDescriptor() as? ValueParameterDescriptor }
@@ -487,7 +487,7 @@ open class IrBasedClassConstructorDescriptor(owner: IrConstructor) : ClassConstr
     }
 
     override fun getTypeParameters() =
-        (owner.constructedClass.typeParameters + owner.typeParameters).map { it.toIrBasedDescriptor() }
+        (owner.constructedClass.typeParameters + owner.typeParameters).compactMap { it.toIrBasedDescriptor() }
 
     override fun getValueParameters() = owner.valueParameters.asSequence()
         .mapNotNull { it.toIrBasedDescriptor() as? ValueParameterDescriptor }
@@ -595,7 +595,7 @@ open class IrBasedClassDescriptor(owner: IrClass) : ClassDescriptor, IrBasedDecl
     override fun getSource() = owner.source
 
     override fun getConstructors() =
-        owner.declarations.filterIsInstanceAnd<IrConstructor> { !it.origin.isSynthetic }.map { it.toIrBasedDescriptor() }
+        owner.declarations.filterIsInstanceAnd<IrConstructor> { !it.origin.isSynthetic }.compactMap { it.toIrBasedDescriptor() }
 
     private val _defaultType: SimpleType by lazy {
         TypeUtils.makeUnsubstitutedType(this, unsubstitutedMemberScope, KotlinTypeFactory.EMPTY_REFINED_TYPE_FACTORY)
@@ -631,7 +631,7 @@ open class IrBasedClassDescriptor(owner: IrClass) : ClassDescriptor, IrBasedDecl
     override fun getUnsubstitutedPrimaryConstructor() =
         owner.declarations.filterIsInstance<IrConstructor>().singleOrNull { it.isPrimary }?.toIrBasedDescriptor()
 
-    override fun getDeclaredTypeParameters() = owner.typeParameters.map { it.toIrBasedDescriptor() }
+    override fun getDeclaredTypeParameters() = owner.typeParameters.compactMap { it.toIrBasedDescriptor() }
 
     override fun getSealedSubclasses(): Collection<ClassDescriptor> {
         TODO("not implemented")
@@ -653,7 +653,7 @@ open class IrBasedClassDescriptor(owner: IrClass) : ClassDescriptor, IrBasedDecl
         LazyTypeConstructor(
             this,
             ::collectTypeParameters,
-            { owner.superTypes.map { it.toIrBasedKotlinType() } },
+            { owner.superTypes.compactMap { it.toIrBasedKotlinType() } },
             LockBasedStorageManager.NO_LOCKS
         )
     }
@@ -781,7 +781,7 @@ open class IrBasedEnumEntryDescriptor(owner: IrEnumEntry) : ClassDescriptor, IrB
         ClassTypeConstructorImpl(
             this,
             emptyList(),
-            getCorrespondingClass().superTypes.map { it.toIrBasedKotlinType() },
+            getCorrespondingClass().superTypes.compactMap { it.toIrBasedKotlinType() },
             LockBasedStorageManager.NO_LOCKS
         )
     }
@@ -927,7 +927,7 @@ abstract class IrBasedPropertyAccessorDescriptor(owner: IrSimpleFunction) : IrBa
 
     override fun getOriginal(): IrBasedPropertyAccessorDescriptor = this
 
-    override fun getOverriddenDescriptors() = super.getOverriddenDescriptors().map { it as PropertyAccessorDescriptor }
+    override fun getOverriddenDescriptors() = super.getOverriddenDescriptors().compactMap { it as PropertyAccessorDescriptor }
 
     override fun getCorrespondingProperty(): PropertyDescriptor = owner.correspondingPropertySymbol!!.owner.toIrBasedDescriptor()
 
@@ -935,7 +935,7 @@ abstract class IrBasedPropertyAccessorDescriptor(owner: IrSimpleFunction) : IrBa
 }
 
 open class IrBasedPropertyGetterDescriptor(owner: IrSimpleFunction) : IrBasedPropertyAccessorDescriptor(owner), PropertyGetterDescriptor {
-    override fun getOverriddenDescriptors() = super.getOverriddenDescriptors().map { it as PropertyGetterDescriptor }
+    override fun getOverriddenDescriptors() = super.getOverriddenDescriptors().compactMap { it as PropertyGetterDescriptor }
 
     override fun getOriginal(): IrBasedPropertyGetterDescriptor = this
 
@@ -944,7 +944,7 @@ open class IrBasedPropertyGetterDescriptor(owner: IrSimpleFunction) : IrBasedPro
 }
 
 open class IrBasedPropertySetterDescriptor(owner: IrSimpleFunction) : IrBasedPropertyAccessorDescriptor(owner), PropertySetterDescriptor {
-    override fun getOverriddenDescriptors() = super.getOverriddenDescriptors().map { it as PropertySetterDescriptor }
+    override fun getOverriddenDescriptors() = super.getOverriddenDescriptors().compactMap { it as PropertySetterDescriptor }
 
     override fun getOriginal(): IrBasedPropertySetterDescriptor = this
 
@@ -979,7 +979,7 @@ open class IrBasedTypeAliasDescriptor(owner: IrTypeAlias) : IrBasedDeclarationDe
 
     override fun isInner(): Boolean = false
 
-    override fun getDeclaredTypeParameters(): List<TypeParameterDescriptor> = owner.typeParameters.map { it.toIrBasedDescriptor() }
+    override fun getDeclaredTypeParameters(): List<TypeParameterDescriptor> = owner.typeParameters.compactMap { it.toIrBasedDescriptor() }
 
     override fun getName(): Name = owner.name
 

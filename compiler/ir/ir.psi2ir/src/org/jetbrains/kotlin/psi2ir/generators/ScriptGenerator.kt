@@ -104,7 +104,7 @@ internal class ScriptGenerator(declarationGenerator: DeclarationGenerator) : Dec
 
             val explicitCallParams = descriptor.explicitConstructorParameters.map(::createValueParameter)
 
-            irScript.explicitCallParameters = descriptor.explicitConstructorParameters.map {
+            irScript.explicitCallParameters = descriptor.explicitConstructorParameters.compactMap {
                 IrVariableImpl(
                     UNDEFINED_OFFSET, UNDEFINED_OFFSET,
                     IrDeclarationOrigin.SCRIPT_CALL_PARAMETER, IrVariableSymbolImpl(),
@@ -114,7 +114,7 @@ internal class ScriptGenerator(declarationGenerator: DeclarationGenerator) : Dec
                 ).also { it.parent = irScript }
             }
 
-            irScript.implicitReceiversParameters = descriptor.implicitReceivers.map {
+            irScript.implicitReceiversParameters = descriptor.implicitReceivers.compactMap {
                 makeParameter(it.thisAsReceiverParameter, IrDeclarationOrigin.SCRIPT_IMPLICIT_RECEIVER, parametersIndex++)
             }
 

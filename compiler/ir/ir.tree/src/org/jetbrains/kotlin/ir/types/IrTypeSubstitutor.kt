@@ -39,7 +39,7 @@ abstract class AbstractIrTypeSubstitutor(private val irBuiltIns: IrBuiltIns) : T
         return when (irType) {
             is IrSimpleType ->
                 with(irType.toBuilder()) {
-                    arguments = irType.arguments.map { substituteTypeArgument(it) }
+                    arguments = irType.arguments.compactMap { substituteTypeArgument(it) }
                     buildSimpleType()
                 }
             is IrDynamicType,

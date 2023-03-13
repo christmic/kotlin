@@ -23,7 +23,6 @@ import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.ir.visitors.transformChildrenVoid
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.types.*
-import org.jetbrains.kotlin.util.collectionUtils.filterIsInstanceAnd
 
 class ClassReferenceLowering(val context: JsCommonBackendContext) : BodyLoweringPass {
 
@@ -179,7 +178,7 @@ class ClassReferenceLowering(val context: JsCommonBackendContext) : BodyLowering
             startOffset = UNDEFINED_OFFSET,
             endOffset = UNDEFINED_OFFSET,
             arrayElementType = context.reflectionSymbols.kTypeClass.defaultType,
-            arrayElements = type.arguments.map { createKTypeProjection(it, visitedTypeParams) }
+            arrayElements = type.arguments.compactMap { createKTypeProjection(it, visitedTypeParams) }
         )
 
         val isMarkedNullable = JsIrBuilder.buildBoolean(context.irBuiltIns.booleanType, type.isMarkedNullable())
@@ -225,7 +224,7 @@ class ClassReferenceLowering(val context: JsCommonBackendContext) : BodyLowering
             startOffset = UNDEFINED_OFFSET,
             endOffset = UNDEFINED_OFFSET,
             arrayElementType = context.reflectionSymbols.kTypeClass.defaultType,
-            arrayElements = typeParameter.superTypes.map { createKType(it, visitedTypeParams) }
+            arrayElements = typeParameter.superTypes.compactMap { createKType(it, visitedTypeParams) }
         )
 
         val variance = when (typeParameter.variance) {

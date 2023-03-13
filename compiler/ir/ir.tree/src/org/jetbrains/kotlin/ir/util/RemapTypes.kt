@@ -24,7 +24,7 @@ private class RemapTypesHelper(private val typeRemapper: TypeRemapper) : IrEleme
     }
 
     override fun visitClass(declaration: IrClass) {
-        declaration.superTypes = declaration.superTypes.map { typeRemapper.remapType(it) }
+        declaration.superTypes = declaration.superTypes.compactMap { typeRemapper.remapType(it) }
         super.visitClass(declaration)
     }
 
@@ -35,7 +35,7 @@ private class RemapTypesHelper(private val typeRemapper: TypeRemapper) : IrEleme
     }
 
     override fun visitTypeParameter(declaration: IrTypeParameter) {
-        declaration.superTypes = declaration.superTypes.map { typeRemapper.remapType(it) }
+        declaration.superTypes = declaration.superTypes.compactMap { typeRemapper.remapType(it) }
         super.visitTypeParameter(declaration)
     }
 

@@ -51,7 +51,7 @@ class CopyIrTreeWithSymbolsForFakeOverrides(
         override fun leaveScope() {}
 
         private fun remapTypeArguments(arguments: List<IrTypeArgument>) =
-            arguments.map { argument ->
+            arguments.compactMap { argument ->
                 (argument as? IrTypeProjection)?.let { makeTypeProjection(remapType(it.type), it.variance) }
                     ?: argument
             }
@@ -66,7 +66,7 @@ class CopyIrTreeWithSymbolsForFakeOverrides(
                     kotlinType = null
                     classifier = symbolRemapper.getReferencedClassifier(type.classifier)
                     arguments = remapTypeArguments(type.arguments)
-                    annotations = type.annotations.map { it.transform(copier, null) as IrConstructorCall }
+                    annotations = type.annotations.compactMap { it.transform(copier, null) as IrConstructorCall }
                 }
             }
         }

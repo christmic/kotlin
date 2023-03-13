@@ -112,7 +112,7 @@ class CacheUpdater(
             val nameToKotlinLibrary = libraries.associateBy { it.moduleName }
 
             libraries.associateWith {
-                it.manifestProperties.propertyList(KLIB_PROPERTY_DEPENDS, escapeInQuotes = true).map { depName ->
+                it.manifestProperties.propertyList(KLIB_PROPERTY_DEPENDS, escapeInQuotes = true).compactMap { depName ->
                     nameToKotlinLibrary[depName] ?: notFoundIcError("library $depName")
                 }
             }
@@ -747,7 +747,7 @@ fun rebuildCacheForDirtyFiles(
     }
 
     val libFile = KotlinLibraryFile(library)
-    val dirtySrcFiles = dirtyFiles?.map { KotlinSourceFile(it) } ?: KotlinLoadedLibraryHeader(library, internationService).sourceFileFingerprints.keys
+    val dirtySrcFiles = dirtyFiles?.compactMap { KotlinSourceFile(it) } ?: KotlinLoadedLibraryHeader(library, internationService).sourceFileFingerprints.keys
 
     val modifiedFiles = mapOf(libFile to dirtySrcFiles.associateWith { emptyMetadata })
 
@@ -773,7 +773,7 @@ fun rebuildCacheForDirtyFiles(
     loadedIr.loadUnboundSymbols()
     internationService.clear()
 
-    val fragments = compilerWithIC.compile(loadedIr.loadedFragments.values, dirtyIrFiles, mainArguments).map { it() }
+    val fragments = compilerWithIC.compile(loadedIr.loadedFragments.values, dirtyIrFiles, mainArguments).compactMap { it() }
 
     return currentIrModule to dirtyIrFiles.zip(fragments)
 }

@@ -125,7 +125,7 @@ private fun IrSimpleFunction.createSuspendFunctionStub(context: CommonBackendCon
                 it.owner.getOrCreateFunctionWithContinuationStub(context).symbol
             }
         }
-        function.valueParameters = valueParameters.map { it.copyTo(function) }
+        function.valueParameters = valueParameters.compactMap { it.copyTo(function) }
 
         val mapping = mutableMapOf<IrValueSymbol, IrValueSymbol>()
         valueParameters.forEach { mapping[it.symbol] = function.valueParameters[it.index].symbol }

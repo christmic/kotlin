@@ -333,7 +333,7 @@ class IrDescriptorBasedFunctionFactory(
             classifier =
                 symbolTable.referenceClassifier(kotlinType.constructor.declarationDescriptor ?: error("No classifier for type $kotlinType"))
             nullability = SimpleTypeNullability.fromHasQuestionMark(kotlinType.isMarkedNullable)
-            arguments = kotlinType.arguments.map {
+            arguments = kotlinType.arguments.compactMap {
                 if (it.isStarProjection) IrStarProjectionImpl
                 else makeTypeProjection(toIrType(it.type), it.projectionKind)
             }
@@ -367,11 +367,11 @@ class IrDescriptorBasedFunctionFactory(
             }
 
             newFunction.parent = this
-            newFunction.overriddenSymbols = descriptor.overriddenDescriptors.map { symbolTable.referenceSimpleFunction(it.original) }
+            newFunction.overriddenSymbols = descriptor.overriddenDescriptors.compactMap { symbolTable.referenceSimpleFunction(it.original) }
             newFunction.dispatchReceiverParameter = descriptor.dispatchReceiverParameter?.let { newFunction.createValueParameter(it) }
             newFunction.extensionReceiverParameter = descriptor.extensionReceiverParameter?.let { newFunction.createValueParameter(it) }
             newFunction.contextReceiverParametersCount = descriptor.contextReceiverParameters.size
-            newFunction.valueParameters = descriptor.valueParameters.map { newFunction.createValueParameter(it) }
+            newFunction.valueParameters = descriptor.valueParameters.compactMap { newFunction.createValueParameter(it) }
             newFunction.correspondingPropertySymbol = property
             newFunction.annotations = descriptor.annotations.mapNotNull(
                 typeTranslator.constantValueGenerator::generateAnnotationConstructorCall

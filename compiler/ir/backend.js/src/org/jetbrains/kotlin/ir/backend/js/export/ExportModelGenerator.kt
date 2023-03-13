@@ -84,7 +84,7 @@ class ExportModelGenerator(val context: JsIrBackendContext, val generateNamespac
                 ExportedFunction(
                     function.getExportedIdentifier(),
                     returnType = exportType(function.returnType),
-                    typeParameters = function.typeParameters.map(::exportTypeParameter),
+                    typeParameters = function.typeParameters.compactMap(::exportTypeParameter),
                     isMember = parent is IrClass,
                     isStatic = function.isStaticMethod,
                     isAbstract = parent is IrClass && !parent.isInterface && function.modality == Modality.ABSTRACT,
@@ -92,7 +92,7 @@ class ExportModelGenerator(val context: JsIrBackendContext, val generateNamespac
                     ir = function,
                     parameters = (listOfNotNull(function.extensionReceiverParameter) + function.valueParameters)
                         .filter { it.shouldBeExported() }
-                        .map { exportParameter(it) },
+                        .compactMap { exportParameter(it) },
                 )
             }
         }
@@ -102,7 +102,7 @@ class ExportModelGenerator(val context: JsIrBackendContext, val generateNamespac
         if (!constructor.isPrimary) return null
         val allValueParameters = listOfNotNull(constructor.extensionReceiverParameter) + constructor.valueParameters
         return ExportedConstructor(
-            parameters = allValueParameters.filterNot { it.isBoxParameter }.map { exportParameter(it) },
+            parameters = allValueParameters.filterNot { it.isBoxParameter }.compactMap { exportParameter(it) },
             visibility = constructor.visibility.toExportedVisibility()
         )
     }
@@ -219,7 +219,7 @@ class ExportModelGenerator(val context: JsIrBackendContext, val generateNamespac
     }
 
     private fun exportDeclarationImplicitly(klass: IrClass, superTypes: Iterable<IrType>): ExportedDeclaration {
-        val typeParameters = klass.typeParameters.map(::exportTypeParameter)
+        val typeParameters = klass.typeParameters.compactMap(::exportTypeParameter)
         val superInterfaces = superTypes
             .filter { (it.classifierOrFail.owner as? IrDeclaration)?.isExportedImplicitlyOrExplicitly(context) ?: false }
             .map { exportType(it) }
@@ -424,7 +424,7 @@ class ExportModelGenerator(val context: JsIrBackendContext, val generateNamespac
         members: List<ExportedDeclaration>,
         nestedClasses: List<ExportedClass>,
     ): ExportedDeclaration {
-        val typeParameters = klass.typeParameters.map(::exportTypeParameter)
+        val typeParameters = klass.typeParameters.compactMap(::exportTypeParameter)
 
         val superClasses = superTypes
             .filter { !it.classifierOrFail.isInterface && it.canBeUsedAsSuperTypeOfExportedClasses() }
@@ -594,7 +594,7 @@ class ExportModelGenerator(val context: JsIrBackendContext, val generateNamespac
             nonNullType.isArray() -> ExportedType.Array(exportTypeArgument(nonNullType.arguments[0]))
             nonNullType.isSuspendFunction() -> ExportedType.ErrorType("Suspend functions are not supported")
             nonNullType.isFunction() -> ExportedType.Function(
-                parameterTypes = nonNullType.arguments.dropLast(1).map { exportTypeArgument(it) },
+                parameterTypes = nonNullType.arguments.dropLast(1).compactMap { exportTypeArgument(it) },
                 returnType = exportTypeArgument(nonNullType.arguments.last())
             )
 
@@ -610,7 +610,7 @@ class ExportModelGenerator(val context: JsIrBackendContext, val generateNamespac
                 val exportedSupertype = runIf(shouldCalculateExportedSupertypeForImplicit && isImplicitlyExported) {
                     val transitiveExportedType = nonNullType.collectSuperTransitiveHierarchy()
                     if (transitiveExportedType.isEmpty()) return@runIf null
-                    transitiveExportedType.map(::exportType).reduce(ExportedType::IntersectionType)
+                    transitiveExportedType.compactMap(::exportType).reduce(ExportedType::IntersectionType)
                 } ?: ExportedType.Primitive.Any
 
                 when (klass.kind) {
@@ -625,7 +625,7 @@ class ExportModelGenerator(val context: JsIrBackendContext, val generateNamespac
                     ClassKind.ENUM_CLASS,
                     ClassKind.INTERFACE -> ExportedType.ClassType(
                         name,
-                        type.arguments.map { exportTypeArgument(it) },
+                        type.arguments.compactMap { exportTypeArgument(it) },
                         klass
                     )
                 }.withImplicitlyExported(isImplicitlyExported, exportedSupertype)
