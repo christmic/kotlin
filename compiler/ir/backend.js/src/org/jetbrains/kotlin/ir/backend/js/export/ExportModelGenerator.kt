@@ -34,7 +34,7 @@ class ExportModelGenerator(val context: JsIrBackendContext, val generateNamespac
 
     fun generateExport(file: IrPackageFragment): List<ExportedDeclaration> {
         val namespaceFqName = file.fqName
-        val exports = file.declarations.flatMap { declaration -> listOfNotNull(exportDeclaration(declaration)) }
+        val exports = file.declarations.compactFlatMap { declaration -> listOfNotNull(exportDeclaration(declaration)) }
         return when {
             exports.isEmpty() -> emptyList()
             !generateNamespacesForPackages || namespaceFqName.isRoot -> exports
@@ -46,7 +46,7 @@ class ExportModelGenerator(val context: JsIrBackendContext, val generateNamespac
         ExportedModule(
             context.configuration[CommonConfigurationKeys.MODULE_NAME]!!,
             moduleKind,
-            (context.externalPackageFragment.values + modules.flatMap { it.files }).flatMap {
+            (context.externalPackageFragment.values + modules.flatMap { it.files }).compactFlatMap {
                 generateExport(it)
             }
         )

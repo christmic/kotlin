@@ -34,13 +34,8 @@ inline fun <T, R> Collection<T>.mapIndexed(transform: (index: Int, T) -> R): Lis
     return mapIndexedTo(ArrayList<R>(size), transform)
 }
 
-inline fun <T, R> Collection<T>.flatMap(transform: (T) -> Iterable<R>): List<R> {
-    val result = flatMapTo(ArrayList<R>(), transform)
-    return when (result.size) {
-        0 -> emptyList()
-        1 -> SmartList(result.first())
-        else -> result
-    }
+inline fun <T, R> Collection<T>.compactFlatMap(transform: (T) -> Iterable<R>): List<R> {
+    return flatMapTo(ArrayList<R>(), transform).compact()
 }
 
 inline fun <T> Collection<T>.compactFilter(predicate: (T) -> Boolean): List<T> {

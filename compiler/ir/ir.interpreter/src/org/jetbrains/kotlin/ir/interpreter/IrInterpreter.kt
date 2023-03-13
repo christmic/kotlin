@@ -494,7 +494,7 @@ class IrInterpreter(internal val environment: IrInterpreterEnvironment, internal
 
         // TODO use wrap???
         val args = expression.elements.flatMap {
-            return@flatMap when (val result = callStack.popState()) {
+            when (val result = callStack.popState()) {
                 is Wrapper -> listOf(result.value)
                 is Primitive<*> -> when {
                     expression.varargElementType.isArray() || expression.varargElementType.isPrimitiveArray() -> listOf(result)
