@@ -120,7 +120,7 @@ class CacheUpdater(
 
         val mainModuleFriendLibraries = libraryDependencies.keys.let { libs ->
             val friendPaths = mainModuleFriends.mapTo(newHashSetWithExpectedSize(mainModuleFriends.size)) { File(it).canonicalPath }
-            libs.filter { it.libraryFile.canonicalPath in friendPaths }
+            libs.compactFilter { it.libraryFile.canonicalPath in friendPaths }
         }
 
         private val incrementalCaches = libraryDependencies.keys.associate { lib ->
@@ -757,7 +757,7 @@ fun rebuildCacheForDirtyFiles(
     val currentIrModule = loadedIr.loadedFragments[libFile] ?: notFoundIcError("loaded fragment", libFile)
     val dirtyIrFiles = dirtyFiles?.let {
         val files = it.toSet()
-        currentIrModule.files.filter { irFile -> irFile.fileEntry.name in files }
+        currentIrModule.files.compactFilter { irFile -> irFile.fileEntry.name in files }
     } ?: currentIrModule.files
 
     val compilerWithIC = JsIrCompilerWithIC(

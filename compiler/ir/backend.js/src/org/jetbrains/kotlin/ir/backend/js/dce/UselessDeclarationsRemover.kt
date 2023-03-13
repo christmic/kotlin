@@ -14,7 +14,6 @@ import org.jetbrains.kotlin.ir.backend.js.utils.*
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
-import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.ir.types.classOrNull
 import org.jetbrains.kotlin.ir.types.defaultType
 import org.jetbrains.kotlin.ir.types.isAny
@@ -52,7 +51,7 @@ class UselessDeclarationsRemover(
         // Otherwise `JsClassGenerator.generateAssociatedKeyProperties` will try to reference the object factory (which is removed).
         // That will result in an error from the Namer. It cannot generate a name for an absent declaration.
         if (removeUnusedAssociatedObjects && declaration.annotations.any { !it.shouldKeepAnnotation() }) {
-            declaration.annotations = declaration.annotations.filter { it.shouldKeepAnnotation() }
+            declaration.annotations = declaration.annotations.compactFilter { it.shouldKeepAnnotation() }
         }
 
         declaration.superTypes = declaration.superTypes

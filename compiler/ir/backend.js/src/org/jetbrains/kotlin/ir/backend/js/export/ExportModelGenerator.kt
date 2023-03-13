@@ -102,7 +102,7 @@ class ExportModelGenerator(val context: JsIrBackendContext, val generateNamespac
         if (!constructor.isPrimary) return null
         val allValueParameters = listOfNotNull(constructor.extensionReceiverParameter) + constructor.valueParameters
         return ExportedConstructor(
-            parameters = allValueParameters.compactFilterNot { it.isBoxParameter }.map { exportParameter(it) },
+            parameters = allValueParameters.filterNot { it.isBoxParameter }.map { exportParameter(it) },
             visibility = constructor.visibility.toExportedVisibility()
         )
     }
@@ -223,7 +223,7 @@ class ExportModelGenerator(val context: JsIrBackendContext, val generateNamespac
         val superInterfaces = superTypes
             .filter { (it.classifierOrFail.owner as? IrDeclaration)?.isExportedImplicitlyOrExplicitly(context) ?: false }
             .map { exportType(it) }
-            .filter { it !is ExportedType.ErrorType }
+            .compactFilter { it !is ExportedType.ErrorType }
 
         val name = klass.getExportedIdentifier()
         val (members, nestedClasses) = exportClassDeclarations(klass, superTypes)
@@ -429,12 +429,12 @@ class ExportModelGenerator(val context: JsIrBackendContext, val generateNamespac
         val superClasses = superTypes
             .filter { !it.classifierOrFail.isInterface && it.canBeUsedAsSuperTypeOfExportedClasses() }
             .map { exportType(it, false) }
-            .filter { it !is ExportedType.ErrorType }
+            .compactFilter { it !is ExportedType.ErrorType }
 
         val superInterfaces = superTypes
             .filter { it.shouldPresentInsideImplementsClause() }
             .map { exportType(it, false) }
-            .filter { it !is ExportedType.ErrorType }
+            .compactFilter { it !is ExportedType.ErrorType }
 
         val name = klass.getExportedIdentifier()
 

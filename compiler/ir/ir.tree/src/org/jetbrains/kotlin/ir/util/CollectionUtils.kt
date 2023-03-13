@@ -43,17 +43,12 @@ inline fun <T, R> Collection<T>.flatMap(transform: (T) -> Iterable<R>): List<R> 
     }
 }
 
-inline fun <T> Collection<T>.filter(predicate: (T) -> Boolean): List<T> {
-    val result = filterTo(ArrayList(), predicate)
-    return when (result.size) {
-        0 -> emptyList()
-        1 -> SmartList(result.first())
-        else -> result
-    }
+inline fun <T> Collection<T>.compactFilter(predicate: (T) -> Boolean): List<T> {
+    return filterTo(ArrayList(), predicate).compact()
 }
 
 inline fun <T> Collection<T>.compactFilterNot(predicate: (T) -> Boolean): List<T> {
-    return filterNotTo(ArrayList<T>(), predicate).compact()
+    return filterNotTo(ArrayList(), predicate).compact()
 }
 
 inline fun <reified T> Collection<*>.compactFilterIsInstance(): List<T> {

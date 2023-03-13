@@ -79,7 +79,7 @@ internal class ScriptGenerator(declarationGenerator: DeclarationGenerator) : Dec
             // TODO: implement implicit receiver parameters handling properly
             var parametersIndex = 0
 
-            irScript.earlierScripts = context.extensions.getPreviousScripts()?.filter {
+            irScript.earlierScripts = context.extensions.getPreviousScripts()?.compactFilter {
                 // TODO: probably unnecessary filtering
                 it.owner != irScript && it.descriptor !in importedScripts
             }

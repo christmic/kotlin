@@ -83,7 +83,7 @@ class JsIrLinker(
     val modules
         get() = deserializersForModules.values
             .map { it.moduleFragment }
-            .filter { it.descriptor !== currentModule }
+            .compactFilter { it.descriptor !== currentModule }
 
 
     fun moduleDeserializer(moduleDescriptor: ModuleDescriptor): IrModuleDeserializer {
