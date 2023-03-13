@@ -1173,7 +1173,7 @@ private fun makeKotlinType(
             classifier.toIrBasedDescriptorIfPossible().defaultType.makeNullableAsSpecified(hasQuestionMark)
         is IrClassSymbol -> {
             val classDescriptor = classifier.toIrBasedDescriptorIfPossible()
-            val kotlinTypeArguments = arguments.mapIndexed { index, it ->
+            val kotlinTypeArguments = arguments.compactMapIndexed { index, it ->
                 when (it) {
                     is IrTypeProjection -> TypeProjectionImpl(it.variance, it.type.toIrBasedKotlinType())
                     is IrStarProjection -> StarProjectionImpl(classDescriptor.typeConstructor.parameters[index])

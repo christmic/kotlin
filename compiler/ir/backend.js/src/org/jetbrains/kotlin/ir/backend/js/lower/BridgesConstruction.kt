@@ -8,7 +8,6 @@ package org.jetbrains.kotlin.ir.backend.js.lower
 import org.jetbrains.kotlin.backend.common.DeclarationTransformer
 import org.jetbrains.kotlin.backend.common.bridges.FunctionHandle
 import org.jetbrains.kotlin.backend.common.bridges.generateBridges
-import org.jetbrains.kotlin.backend.common.ir.*
 import org.jetbrains.kotlin.backend.common.lower.*
 import org.jetbrains.kotlin.descriptors.Modality
 import org.jetbrains.kotlin.ir.UNDEFINED_OFFSET
@@ -179,7 +178,7 @@ abstract class BridgesConstruction<T : JsCommonBackendContext>(val context: T) :
 
                 val toTake = valueParameters.size - if (call.isSuspend xor irFunction.isSuspend) 1 else 0
 
-                valueParameters.subList(0, toTake).mapIndexed { i, valueParameter ->
+                valueParameters.subList(0, toTake).forEachIndexed { i, valueParameter ->
                     call.putValueArgument(i, irCastIfNeeded(irGet(valueParameter), delegateTo.valueParameters[i].type))
                 }
 

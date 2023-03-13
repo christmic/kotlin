@@ -731,7 +731,7 @@ fun IrClass.addSimpleDelegatingConstructor(
         this.visibility = superConstructor.visibility
         this.isPrimary = isPrimary
     }.also { constructor ->
-        constructor.valueParameters = superConstructor.valueParameters.mapIndexed { index, parameter ->
+        constructor.valueParameters = superConstructor.valueParameters.compactMapIndexed { index, parameter ->
             parameter.copyTo(constructor, index = index)
         }
 
@@ -866,7 +866,7 @@ fun IrTypeParametersContainer.copyTypeParameters(
     val oldToNewParameterMap = parameterMap.orEmpty().toMutableMap()
     // Any type parameter can figure in a boundary type for any other parameter.
     // Therefore, we first copy the parameters themselves, then set up their supertypes.
-    val newTypeParameters = srcTypeParameters.mapIndexed { i, sourceParameter ->
+    val newTypeParameters = srcTypeParameters.compactMapIndexed { i, sourceParameter ->
         sourceParameter.copyToWithoutSuperTypes(this, index = i + shift, origin = origin ?: sourceParameter.origin).also {
             oldToNewParameterMap[sourceParameter] = it
         }

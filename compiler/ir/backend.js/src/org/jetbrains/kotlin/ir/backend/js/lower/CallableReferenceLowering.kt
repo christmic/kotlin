@@ -391,7 +391,7 @@ class CallableReferenceLowering(private val context: CommonBackendContext) : Bod
             val parameterTypes = (reference.type as IrSimpleType).arguments.map { (it as IrTypeProjection).type }
             val argumentTypes = parameterTypes.dropLast(1)
 
-            valueParameters = argumentTypes.mapIndexed { i, t ->
+            valueParameters = argumentTypes.compactMapIndexed { i, t ->
                 buildValueParameter(this) {
                     name = Name.identifier("p$i")
                     type = t

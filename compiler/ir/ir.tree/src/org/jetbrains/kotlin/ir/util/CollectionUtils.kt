@@ -28,7 +28,7 @@ inline fun <T, R : Any> Collection<T>.mapNotNull(transform: (T) -> R?): List<R> 
     return mapNotNullTo(ArrayList(size), transform)
 }
 
-inline fun <T, R> Collection<T>.mapIndexed(transform: (index: Int, T) -> R): List<R> {
+inline fun <T, R> Collection<T>.compactMapIndexed(transform: (index: Int, T) -> R): List<R> {
     if (isEmpty()) return emptyList()
     if (size == 1) return SmartList(transform(0, first()))
     return mapIndexedTo(ArrayList<R>(size), transform)

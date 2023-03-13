@@ -620,7 +620,7 @@ class InteropCallableReferenceLowering(val context: JsIrBackendContext) : BodyLo
 
         lambdaDeclaration.parent = parent
 
-        lambdaDeclaration.valueParameters = superInvokeFun.valueParameters.mapIndexed { id, vp ->
+        lambdaDeclaration.valueParameters = superInvokeFun.valueParameters.compactMapIndexed { id, vp ->
             val originalValueParameter = invokeFun.valueParameters[id]
             vp.copyTo(
                 irFunction = lambdaDeclaration,
