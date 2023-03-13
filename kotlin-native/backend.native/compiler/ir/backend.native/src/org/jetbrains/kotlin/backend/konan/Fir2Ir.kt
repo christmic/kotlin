@@ -19,6 +19,7 @@ import org.jetbrains.kotlin.config.languageVersionSettings
 import org.jetbrains.kotlin.descriptors.deserialization.PlatformDependentTypeTransformer
 import org.jetbrains.kotlin.descriptors.impl.ModuleDescriptorImpl
 import org.jetbrains.kotlin.descriptors.konan.isNativeStdlib
+import org.jetbrains.kotlin.fir.backend.Fir2IrConfiguration
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporterFactory
 import org.jetbrains.kotlin.fir.backend.*
 import org.jetbrains.kotlin.fir.descriptors.FirModuleDescriptor
@@ -70,8 +71,8 @@ internal fun PhaseContext.fir2Ir(
 
     val (irModuleFragment, components, pluginContext, irActualizationResult) = input.firResult.convertToIrAndActualize(
             fir2IrExtensions,
+            Fir2IrConfiguration(linkViaSignatures = false),
             IrGenerationExtension.getInstances(config.project),
-            linkViaSignatures = false,
             signatureComposerCreator = null,
             irMangler = KonanManglerIr,
             firManglerCreator = { FirNativeKotlinMangler() },
