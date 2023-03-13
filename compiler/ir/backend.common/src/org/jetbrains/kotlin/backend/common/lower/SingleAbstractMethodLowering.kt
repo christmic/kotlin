@@ -79,8 +79,7 @@ abstract class SingleAbstractMethodLowering(val context: CommonBackendContext) :
     override fun lower(irFile: IrFile) {
         cachedImplementations.clear()
         inlineCachedImplementations.clear()
-        enclosingContainer = irFile.declarations.filterIsInstance<IrClass>().find { it.isFileClass }
-            ?: irFile
+        enclosingContainer = irFile.declarations.findIsInstanceAnd<IrClass> { it.isFileClass } ?: irFile
         irFile.transformChildrenVoid()
 
         for (wrapper in cachedImplementations.values + inlineCachedImplementations.values) {

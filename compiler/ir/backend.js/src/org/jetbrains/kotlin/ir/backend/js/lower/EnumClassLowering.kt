@@ -12,14 +12,11 @@ import org.jetbrains.kotlin.backend.common.ir.isExpect
 import org.jetbrains.kotlin.backend.common.lower.createIrBuilder
 import org.jetbrains.kotlin.backend.common.lower.irBlockBody
 import org.jetbrains.kotlin.backend.common.lower.irIfThen
-import org.jetbrains.kotlin.backend.common.lower.parents
 import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.descriptors.DescriptorVisibilities.PRIVATE
 import org.jetbrains.kotlin.ir.UNDEFINED_OFFSET
 import org.jetbrains.kotlin.ir.backend.js.JsCommonBackendContext
-import org.jetbrains.kotlin.ir.backend.js.JsIrBackendContext
 import org.jetbrains.kotlin.ir.backend.js.JsLoweredDeclarationOrigin
-import org.jetbrains.kotlin.ir.backend.js.export.isExported
 import org.jetbrains.kotlin.ir.backend.js.ir.JsIrBuilder
 import org.jetbrains.kotlin.ir.backend.js.utils.isInstantiableEnum
 import org.jetbrains.kotlin.ir.backend.js.utils.parentEnumClassOrNull
@@ -334,7 +331,7 @@ class EnumEntryInstancesBodyLowering(val context: JsCommonBackendContext) : Body
             val entryClass = container.constructedClass
             val enum = entryClass.parentAsClass
             if (enum.isInstantiableEnum) {
-                val entry = enum.declarations.filterIsInstance<IrEnumEntry>().find { it.correspondingClass === entryClass }!!
+                val entry = enum.declarations.findIsInstanceAnd<IrEnumEntry> { it.correspondingClass === entryClass }!!
 
                 //In ES6 using `this` before superCall is unavailable, so
                 //need to find superCall and put `instance = this` after it
@@ -561,7 +558,7 @@ class EnumSyntheticFunctionsAndPropertiesLowering(
         }
     }
 
-    private fun IrBuilderWithScope.arrayOfEnumEntriesOf(enumClass: IrClass)  =
+    private fun IrBuilderWithScope.arrayOfEnumEntriesOf(enumClass: IrClass) =
         irVararg(enumClass.defaultType, enumClass.enumEntries.map { irCall(it.getInstanceFun!!) })
 }
 

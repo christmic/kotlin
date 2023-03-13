@@ -341,7 +341,7 @@ interface IrTypeSystemContext : TypeSystemContext, TypeSystemCommonSuperTypesCon
         isExtensionFunction: Boolean,
         attributes: List<AnnotationMarker>?
     ): SimpleTypeMarker {
-        val ourAnnotations = attributes?.filterIsInstance<IrConstructorCall>()
+        val ourAnnotations = attributes?.compactFilterIsInstance<IrConstructorCall>()
         require(ourAnnotations?.size == attributes?.size)
         return IrSimpleTypeImpl(
             constructor as IrClassifierSymbol,

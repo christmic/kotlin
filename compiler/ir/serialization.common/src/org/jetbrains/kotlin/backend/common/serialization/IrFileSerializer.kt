@@ -28,6 +28,7 @@ import org.jetbrains.kotlin.library.impl.IrMemoryDeclarationWriter
 import org.jetbrains.kotlin.library.impl.IrMemoryStringWriter
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.types.Variance
+import org.jetbrains.kotlin.util.collectionUtils.filterIsInstanceAnd
 import java.io.File
 import org.jetbrains.kotlin.backend.common.serialization.proto.AccessorIdSignature as ProtoAccessorIdSignature
 import org.jetbrains.kotlin.backend.common.serialization.proto.Actual as ProtoActual
@@ -1444,8 +1445,7 @@ open class IrFileSerializer(
 
         // Make sure that all top level properties are initialized on library's load.
         file.declarations
-            .filterIsInstance<IrProperty>()
-            .filter { it.backingField?.initializer != null && keepOrderOfProperties(it) }
+            .filterIsInstanceAnd<IrProperty> { it.backingField?.initializer != null && keepOrderOfProperties(it) }
             .forEach {
                 val fieldSymbol = it.backingField?.symbol ?: error("Not found ID ${it.render()}")
                 proto.addExplicitlyExportedToCompiler(serializeIrSymbol(fieldSymbol))

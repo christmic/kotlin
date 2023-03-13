@@ -17,6 +17,7 @@ import org.jetbrains.kotlin.resolve.OverridingUtil.OverrideCompatibilityInfo.*
 import org.jetbrains.kotlin.types.AbstractTypeChecker
 import org.jetbrains.kotlin.types.TypeCheckerState
 import org.jetbrains.kotlin.types.Variance
+import org.jetbrains.kotlin.util.collectionUtils.filterIsInstanceAnd
 
 abstract class FakeOverrideBuilderStrategy(
     private val friendModules: Map<String, Collection<String>>,
@@ -184,9 +185,8 @@ class IrOverridingUtil(
         val unoverriddenSuperMembers = clazz.superTypes.flatMap { superType ->
             val superClass = superType.getClass() ?: error("Unexpected super type: $superType")
             superClass.declarations
-                .filterIsInstance<IrOverridableMember>()
-                .filterNot {
-                    it in overriddenMembers || it.symbol in ignoredParentSymbols || it.isStaticMember || DescriptorVisibilities.isPrivate(it.visibility)
+                .filterIsInstanceAnd<IrOverridableMember> {
+                    it !in overriddenMembers && it.symbol !in ignoredParentSymbols && !it.isStaticMember && !DescriptorVisibilities.isPrivate(it.visibility)
                 }
                 .map { overriddenMember ->
                     val fakeOverride = fakeOverrideBuilder.fakeOverrideMember(superType, overriddenMember, clazz)

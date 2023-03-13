@@ -5,7 +5,6 @@
 
 package org.jetbrains.kotlin.ir.backend.js.lower.calls
 
-import org.jetbrains.kotlin.descriptors.InlineClassRepresentation
 import org.jetbrains.kotlin.ir.backend.js.JsIrBackendContext
 import org.jetbrains.kotlin.ir.backend.js.ir.JsIrBuilder
 import org.jetbrains.kotlin.ir.backend.js.utils.isEqualsInheritedFromAny
@@ -167,7 +166,7 @@ class EqualityAndComparisonCallsTransformer(context: JsIrBackendContext) : Calls
         return klass.declarations.asSequence()
             .filterIsInstance<IrSimpleFunction>()
             .filter { it.isEqualsInheritedFromAny() && !it.isFakeOverriddenFromAny() }
-            .singleOrNullStrict()
+            .atMostOne()
     }
 
     private fun IrFunction.isMethodOfPrimitiveJSType() =

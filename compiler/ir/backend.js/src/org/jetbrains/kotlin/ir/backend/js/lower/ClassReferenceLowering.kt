@@ -19,13 +19,11 @@ import org.jetbrains.kotlin.ir.symbols.IrClassifierSymbol
 import org.jetbrains.kotlin.ir.symbols.IrSimpleFunctionSymbol
 import org.jetbrains.kotlin.ir.symbols.IrTypeParameterSymbol
 import org.jetbrains.kotlin.ir.types.*
-import org.jetbrains.kotlin.ir.util.filterIsInstance
-import org.jetbrains.kotlin.ir.util.isFunction
-import org.jetbrains.kotlin.ir.util.isThrowable
-import org.jetbrains.kotlin.ir.util.map
+import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.ir.visitors.transformChildrenVoid
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.types.*
+import org.jetbrains.kotlin.util.collectionUtils.filterIsInstanceAnd
 
 class ClassReferenceLowering(val context: JsCommonBackendContext) : BodyLoweringPass {
 
@@ -37,14 +35,14 @@ class ClassReferenceLowering(val context: JsCommonBackendContext) : BodyLowering
 
     private val primitiveClassFunctionClass by lazy(LazyThreadSafetyMode.NONE) {
         reflectionSymbols.primitiveClassesObject.owner.declarations
-            .filterIsInstance<IrSimpleFunction>()
-            .find { it.name == Name.identifier("functionClass") }!!
+            .findIsInstanceAnd<IrSimpleFunction> { it.name == Name.identifier("functionClass") }!!
     }
 
     private fun primitiveClassProperty(name: String) =
         primitiveClassProperties.singleOrNull { it.name == Name.identifier(name) }?.getter
             ?: reflectionSymbols.primitiveClassesObject.owner.declarations
-                .filterIsInstance<IrSimpleFunction>().single { it.name == Name.special("<get-$name>") }
+                .filterIsInstance<IrSimpleFunction>()
+                .single { it.name == Name.special("<get-$name>") }
 
     private val finalPrimitiveClasses by lazy(LazyThreadSafetyMode.NONE) {
         mapOf(

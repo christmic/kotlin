@@ -105,7 +105,7 @@ inline fun <Scope, T : ClassifierDescriptor> getFirstClassifierDiscriminateHeade
     return result
 }
 
-inline fun <reified R> Iterable<*>.filterIsInstanceAnd(predicate: (R) -> Boolean): Collection<R> {
+inline fun <reified R> Iterable<*>.filterIsInstanceAnd(predicate: (R) -> Boolean): List<R> {
     if (isEmpty()) return emptyList()
     return filterIsInstanceAndTo(SmartList(), predicate)
 }

@@ -608,7 +608,7 @@ open class IrBasedClassDescriptor(owner: IrClass) : ClassDescriptor, IrBasedDecl
     override fun getModality() = owner.modality
 
     override fun getCompanionObjectDescriptor() =
-        owner.declarations.filterIsInstance<IrClass>().firstOrNull { it.isCompanion }?.toIrBasedDescriptor()
+        owner.declarations.findIsInstanceAnd<IrClass> { it.isCompanion }?.toIrBasedDescriptor()
 
     override fun getVisibility() = owner.visibility
 

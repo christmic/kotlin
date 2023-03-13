@@ -6,6 +6,7 @@
 package org.jetbrains.kotlin.ir.util
 
 import org.jetbrains.kotlin.utils.SmartList
+import org.jetbrains.kotlin.utils.compact
 import kotlin.math.min
 
 fun <T> listWithStrictCapacity(size: Int): MutableList<T> {
@@ -60,13 +61,8 @@ inline fun <T> Collection<T>.filterNot(predicate: (T) -> Boolean): List<T> {
     }
 }
 
-inline fun <reified T> Collection<*>.filterIsInstance(): List<T> {
-    val result = filterIsInstanceTo(ArrayList<T>())
-    return when (result.size) {
-        0 -> emptyList()
-        1 -> SmartList(result.first())
-        else -> result
-    }
+inline fun <reified T> Collection<*>.compactFilterIsInstance(): List<T> {
+    return filterIsInstanceTo(ArrayList<T>()).compact()
 }
 
 operator fun <T> List<T>.plus(elements: List<T>): List<T> {
@@ -95,7 +91,7 @@ infix fun <T, R> Collection<T>.compactZip(other: Collection<R>): List<Pair<T, R>
  * - there is a single element then the element will be returned
  * - there is more than one element then the error will be thrown
  */
-fun <T> Sequence<T>.singleOrNullStrict(): T? {
+fun <T> Sequence<T>.atMostOne(): T? {
     val iterator = iterator()
     if (!iterator.hasNext())
         return null
@@ -103,4 +99,9 @@ fun <T> Sequence<T>.singleOrNullStrict(): T? {
     if (iterator.hasNext())
         throw AssertionError("Assertion failed")
     return single
+}
+
+inline fun <reified T> Iterable<*>.findIsInstanceAnd(predicate: (T) -> Boolean): T? {
+    for (element in this) if (element is T && predicate(element)) return element
+    return null
 }

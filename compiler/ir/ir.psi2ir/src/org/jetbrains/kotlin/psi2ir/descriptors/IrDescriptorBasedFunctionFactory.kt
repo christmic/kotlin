@@ -29,6 +29,7 @@ import org.jetbrains.kotlin.resolve.descriptorUtil.isEffectivelyExternal
 import org.jetbrains.kotlin.resolve.scopes.DescriptorKindFilter
 import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.Variance
+import org.jetbrains.kotlin.util.collectionUtils.filterIsInstanceAnd
 
 @OptIn(ObsoleteDescriptorBasedAPI::class)
 abstract class IrAbstractDescriptorBasedFunctionFactory {
@@ -352,7 +353,7 @@ class IrDescriptorBasedFunctionFactory(
     private fun IrClass.addFakeOverrides() {
 
         val fakeOverrideDescriptors = descriptor.unsubstitutedMemberScope.getContributedDescriptors(DescriptorKindFilter.CALLABLES)
-            .filterIsInstance<CallableMemberDescriptor>().filter { it.kind === CallableMemberDescriptor.Kind.FAKE_OVERRIDE }
+            .filterIsInstanceAnd<CallableMemberDescriptor> { it.kind === CallableMemberDescriptor.Kind.FAKE_OVERRIDE }
 
         fun createFakeOverrideFunction(descriptor: FunctionDescriptor, property: IrPropertySymbol?): IrSimpleFunction {
             val returnType = descriptor.returnType?.let { toIrType(it) } ?: error("No return type for $descriptor")

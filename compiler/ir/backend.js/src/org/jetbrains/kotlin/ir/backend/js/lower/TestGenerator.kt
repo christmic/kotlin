@@ -27,6 +27,7 @@ import org.jetbrains.kotlin.ir.types.impl.IrSimpleTypeImpl
 import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
+import org.jetbrains.kotlin.util.collectionUtils.filterIsInstanceAnd
 
 fun generateJsTests(context: JsIrBackendContext, moduleFragment: IrModuleFragment) {
     val generator = TestGenerator(context, false)
@@ -89,8 +90,8 @@ class TestGenerator(val context: JsCommonBackendContext, val groupByPackage: Boo
             context.suiteFun!!.createInvocation(irClass.name.asString(), parentFunction(), irClass.isIgnored)
         }
 
-        val beforeFunctions = irClass.declarations.filterIsInstance<IrSimpleFunction>().filter { it.isBefore }
-        val afterFunctions = irClass.declarations.filterIsInstance<IrSimpleFunction>().filter { it.isAfter }
+        val beforeFunctions = irClass.declarations.filterIsInstanceAnd<IrSimpleFunction> { it.isBefore }
+        val afterFunctions = irClass.declarations.filterIsInstanceAnd<IrSimpleFunction> { it.isAfter }
 
         irClass.declarations.forEach {
             when {
@@ -175,10 +176,7 @@ class TestGenerator(val context: JsCommonBackendContext, val groupByPackage: Boo
 
         if (context is JsIrBackendContext && (testFun.returnType as? IrSimpleType)?.classifier == context.intrinsics.promiseClassSymbol) {
             val finally = context.intrinsics.promiseClassSymbol.owner.declarations
-                .filterIsInstance<IrSimpleFunction>()
-                .first {
-                    it.name.asString() == "finally"
-                }
+                .findIsInstanceAnd<IrSimpleFunction> { it.name.asString() == "finally" }!!
 
             val refType = IrSimpleTypeImpl(context.ir.symbols.functionN(0), false, emptyList(), emptyList())
 
