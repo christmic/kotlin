@@ -417,7 +417,7 @@ class IrDeclarationDeserializer(
     private fun deserializeMultiFieldValueClassRepresentation(proto: ProtoIrMultiFieldValueClassRepresentation): MultiFieldValueClassRepresentation<IrSimpleType> {
         val names = proto.underlyingPropertyNameList.map { deserializeName(it) }
         val types = proto.underlyingPropertyTypeList.map { deserializeIrType(it) as IrSimpleType }
-        return MultiFieldValueClassRepresentation(names zip types)
+        return MultiFieldValueClassRepresentation(names compactZip types)
     }
 
     private fun computeMissingInlineClassRepresentationForCompatibility(irClass: IrClass): InlineClassRepresentation<IrSimpleType> {

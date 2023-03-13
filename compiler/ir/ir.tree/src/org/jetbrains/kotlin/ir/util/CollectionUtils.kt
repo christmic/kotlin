@@ -81,7 +81,7 @@ operator fun <T> List<T>.plus(elements: List<T>): List<T> {
     }
 }
 
-infix fun <T, R> Collection<T>.zip(other: Collection<R>): List<Pair<T, R>> {
+infix fun <T, R> Collection<T>.compactZip(other: Collection<R>): List<Pair<T, R>> {
     if (isEmpty() || other.isEmpty()) return emptyList()
     if (min(size, other.size) == 1) return SmartList(first() to other.first())
     return zip(other) { t1, t2 -> t1 to t2 }
