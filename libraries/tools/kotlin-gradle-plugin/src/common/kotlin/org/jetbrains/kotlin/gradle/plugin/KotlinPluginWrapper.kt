@@ -97,10 +97,7 @@ abstract class DefaultKotlinBasePlugin : KotlinBasePlugin {
             kotlinGradleBuildServices.detectKotlinPluginLoadedInMultipleProjects(project, kotlinPluginVersion)
         }
 
-        BuildMetricsService.registerIfAbsent(project)?.also { buildMetricsService ->
-            val buildEventsListenerRegistryHolder = BuildEventsListenerRegistryHolder.getInstance(project)
-            buildEventsListenerRegistryHolder.listenerRegistry.onTaskCompletion(buildMetricsService)
-        }
+        BuildMetricsService.registerIfAbsent(project)
     }
 
     private fun addKotlinCompilerConfiguration(project: Project) {
