@@ -373,7 +373,7 @@ class JsClassGenerator(private val irClass: IrClass, val context: JsGenerationCo
         val listRef = irClass.superTypes
             .filter { it.classOrNull?.owner?.isExternal != true }
             .takeIf { it.size > 1 || it.singleOrNull() != baseClass }
-            ?.mapNotNull { it.asConstructorRef() }
+            ?.compactMapNotNull { it.asConstructorRef() }
             ?.takeIf { it.isNotEmpty() } ?: return null
         return JsArrayLiteral(listRef)
     }
@@ -393,7 +393,7 @@ class JsClassGenerator(private val irClass: IrClass, val context: JsGenerationCo
     }
 
     private fun generateAssociatedObjects(): JsObjectLiteral? {
-        val associatedObjects = irClass.annotations.mapNotNull { annotation ->
+        val associatedObjects = irClass.annotations.compactMapNotNull { annotation ->
             val annotationClass = annotation.symbol.owner.constructedClass
             context.getAssociatedObjectKey(annotationClass)?.let { key ->
                 annotation.associatedObject()?.let { obj ->

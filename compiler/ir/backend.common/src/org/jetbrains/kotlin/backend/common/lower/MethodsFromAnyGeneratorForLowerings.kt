@@ -43,7 +43,7 @@ class MethodsFromAnyGeneratorForLowerings(val context: BackendContext, val irCla
 
     companion object {
         fun IrClass.collectOverridenSymbols(predicate: (IrFunction) -> Boolean): List<IrSimpleFunctionSymbol> =
-            superTypes.mapNotNull { it.getClass()?.functions?.singleOrNull(predicate)?.symbol }
+            superTypes.compactMapNotNull { it.getClass()?.functions?.singleOrNull(predicate)?.symbol }
     }
 }
 

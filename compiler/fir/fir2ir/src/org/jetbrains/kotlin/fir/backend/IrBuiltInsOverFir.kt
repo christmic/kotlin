@@ -966,7 +966,7 @@ class IrBuiltInsOverFir(
                     this.isOperator = false
                 }.also { getter ->
                     getter.addDispatchReceiver { type = this@createProperty.defaultType }
-                    getter.overriddenSymbols = property.overriddenSymbols.mapNotNull { it.owner.getter?.symbol }
+                    getter.overriddenSymbols = property.overriddenSymbols.compactMapNotNull { it.owner.getter?.symbol }
                 }
             }
             if (withField || fieldInit != null) {

@@ -135,7 +135,7 @@ class IrOverridingUtil(
                     val getter = this.getter ?: error("Property has no getter: ${render()}")
                     getter.overriddenSymbols = overriddenProperties.map { it.owner.getter!!.symbol }
                     this.setter?.let { setter ->
-                        setter.overriddenSymbols = overriddenProperties.mapNotNull { it.owner.setter?.symbol }
+                        setter.overriddenSymbols = overriddenProperties.compactMapNotNull { it.owner.setter?.symbol }
                     }
                     this.overriddenSymbols = overriddenProperties
                 }

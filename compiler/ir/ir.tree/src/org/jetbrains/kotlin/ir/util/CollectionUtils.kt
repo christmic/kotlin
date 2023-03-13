@@ -22,7 +22,7 @@ inline fun <T, R> Collection<T>.map(transform: (T) -> R): List<R> {
     return mapTo(ArrayList(size), transform)
 }
 
-inline fun <T, R : Any> Collection<T>.mapNotNull(transform: (T) -> R?): List<R> {
+inline fun <T, R : Any> Collection<T>.compactMapNotNull(transform: (T) -> R?): List<R> {
     if (isEmpty()) return emptyList()
     if (size == 1) return transform(first())?.let { SmartList(it) } ?: emptyList()
     return mapNotNullTo(ArrayList(size), transform)
