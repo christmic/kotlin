@@ -15,9 +15,7 @@ inline fun <T, R> Collection<T>.compactMap(transform: (T) -> R): List<R> {
 }
 
 inline fun <T, R : Any> Collection<T>.compactMapNotNull(transform: (T) -> R?): List<R> {
-    if (isEmpty()) return emptyList()
-    if (size == 1) return transform(first())?.let { SmartList(it) } ?: emptyList()
-    return mapNotNullTo(ArrayList(size), transform)
+    return mapNotNullTo(ArrayList(), transform).smartCompact()
 }
 
 inline fun <T, R> Collection<T>.compactMapIndexed(transform: (index: Int, T) -> R): List<R> {
