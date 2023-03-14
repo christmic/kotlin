@@ -35,7 +35,9 @@ abstract class BasicIrModuleDeserializer(
 
     private val moduleDeserializationState = ModuleDeserializationState()
 
-    protected lateinit var fileDeserializationStates: List<FileDeserializationState>
+    protected var fileDeserializationStates: List<FileDeserializationState> = emptyList()
+        get() = if (!shouldSaveDeserializationState) error("File deserialization state are not cached inside the instance because `shouldSaveDeserializationState` was set as `false`") else field
+
     protected val moduleReversedFileIndex = hashMapOf<IdSignature, FileDeserializationState>()
 
     override val moduleDependencies by lazy {
