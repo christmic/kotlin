@@ -81,7 +81,7 @@ fun <T> Sequence<T>.atMostOne(): T? {
         return null
     val single = iterator.next()
     if (iterator.hasNext())
-        throw AssertionError("Assertion failed")
+        throw IllegalArgumentException("Collection has more than one element.")
     return single
 }
 
