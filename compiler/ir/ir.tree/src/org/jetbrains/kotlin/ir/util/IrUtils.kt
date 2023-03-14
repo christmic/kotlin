@@ -935,7 +935,7 @@ fun IrFunction.copyValueParametersToStatic(
             target.classIfConstructor
         )
 
-        target.valueParameters += originalDispatchReceiver.copyTo(
+        target.valueParameters = target.valueParameters compactPlus originalDispatchReceiver.copyTo(
             target,
             origin = originalDispatchReceiver.origin,
             index = shift++,
@@ -944,7 +944,7 @@ fun IrFunction.copyValueParametersToStatic(
         )
     }
     source.extensionReceiverParameter?.let { originalExtensionReceiver ->
-        target.valueParameters += originalExtensionReceiver.copyTo(
+        target.valueParameters = target.valueParameters compactPlus originalExtensionReceiver.copyTo(
             target,
             origin = originalExtensionReceiver.origin,
             index = shift++,
@@ -954,7 +954,7 @@ fun IrFunction.copyValueParametersToStatic(
 
     for (oldValueParameter in source.valueParameters) {
         if (oldValueParameter.index >= numValueParametersToCopy) break
-        target.valueParameters += oldValueParameter.copyTo(
+        target.valueParameters = target.valueParameters compactPlus oldValueParameter.copyTo(
             target,
             origin = origin,
             index = oldValueParameter.index + shift

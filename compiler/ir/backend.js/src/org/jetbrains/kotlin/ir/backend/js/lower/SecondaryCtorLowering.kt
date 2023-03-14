@@ -194,7 +194,7 @@ private fun JsIrBackendContext.buildInitDeclaration(constructor: IrConstructor, 
         it.copyTypeParametersFrom(constructor.parentAsClass)
 
         it.valueParameters = constructor.valueParameters.compactMap { p -> p.copyTo(it) }
-        it.valueParameters += JsIrBuilder.buildValueParameter(it, "\$this", constructor.valueParameters.size, type)
+        it.valueParameters = it.valueParameters compactPlus JsIrBuilder.buildValueParameter(it, "\$this", constructor.valueParameters.size, type)
     }
 }
 

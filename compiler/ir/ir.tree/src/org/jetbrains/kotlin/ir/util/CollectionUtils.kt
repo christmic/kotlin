@@ -52,6 +52,15 @@ infix fun <T> List<T>.compactPlus(elements: List<T>): List<T> =
         }
     }
 
+infix fun <T> List<T>.compactPlus(element: T): List<T> =
+    when (size) {
+        0 -> SmartList(element)
+        else -> ArrayList<T>(size + 1).also {
+            it.addAll(this)
+            it.add(element)
+        }
+    }
+
 infix fun <T, R> Collection<T>.compactZip(other: Collection<R>): List<Pair<T, R>> {
     if (isEmpty() || other.isEmpty()) return emptyList()
     if (min(size, other.size) == 1) return SmartList(first() to other.first())

@@ -434,7 +434,7 @@ class CallableReferenceLowering(private val context: CommonBackendContext) : Bod
             val getter = nameProperty.addGetter() {
                 returnType = stringType
             }
-            getter.overriddenSymbols += supperGetter.symbol
+            getter.overriddenSymbols = getter.overriddenSymbols compactPlus supperGetter.symbol
             getter.dispatchReceiverParameter = buildValueParameter(getter) {
                 name = SpecialNames.THIS
                 type = clazz.defaultType

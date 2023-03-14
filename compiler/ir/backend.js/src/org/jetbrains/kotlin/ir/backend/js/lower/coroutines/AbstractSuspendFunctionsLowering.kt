@@ -259,7 +259,7 @@ abstract class AbstractSuspendFunctionsLowering<C : CommonBackendContext>(val co
                     parameter.copyTo(this, DECLARATION_ORIGIN_COROUTINE_IMPL, index, defaultValue = null)
                 }
                 val continuationParameter = coroutineBaseClassConstructor.valueParameters[0]
-                valueParameters += continuationParameter.copyTo(
+                valueParameters = valueParameters compactPlus continuationParameter.copyTo(
                     this, DECLARATION_ORIGIN_COROUTINE_IMPL,
                     index = valueParameters.size,
                     startOffset = function.startOffset,
@@ -309,7 +309,7 @@ abstract class AbstractSuspendFunctionsLowering<C : CommonBackendContext>(val co
 
                 typeParameters = stateMachineFunction.typeParameters.compactMap { parameter ->
                     parameter.copyToWithoutSuperTypes(this, origin = DECLARATION_ORIGIN_COROUTINE_IMPL)
-                        .apply { superTypes = superTypes compactPlus parameter.superTypes  }
+                        .apply { superTypes = superTypes compactPlus parameter.superTypes }
                 }
 
                 valueParameters = stateMachineFunction.valueParameters.compactMapIndexed { index, parameter ->
@@ -344,7 +344,7 @@ abstract class AbstractSuspendFunctionsLowering<C : CommonBackendContext>(val co
 
                 typeParameters = function.typeParameters.compactMap { parameter ->
                     parameter.copyToWithoutSuperTypes(this, origin = DECLARATION_ORIGIN_COROUTINE_IMPL)
-                        .apply { superTypes = superTypes compactPlus parameter.superTypes  }
+                        .apply { superTypes = superTypes compactPlus parameter.superTypes }
                 }
 
                 val unboundArgs = function.valueParameters
@@ -445,7 +445,7 @@ abstract class AbstractSuspendFunctionsLowering<C : CommonBackendContext>(val co
 
                 transformInvokeMethod(createMethod, invokeSuspendMethod)
             } else {
-                coroutineClass.superTypes += coroutineBaseClass.defaultType
+                coroutineClass.superTypes = coroutineClass.superTypes compactPlus coroutineBaseClass.defaultType
             }
 
             coroutineClass.addFakeOverrides(context.typeSystem, implementedMembers)

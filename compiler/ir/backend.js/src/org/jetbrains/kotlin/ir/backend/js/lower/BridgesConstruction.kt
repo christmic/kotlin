@@ -147,8 +147,7 @@ abstract class BridgesConstruction<T : JsCommonBackendContext>(val context: T) :
             annotations = annotations compactPlus bridge.annotations
             // the js function signature building process (jsFunctionSignature()) uses dfs throught overriddenSymbols for getting js name,
             // therefore it is very important to put bridge symbol at the beginning, it allows to get correct js function name
-            overriddenSymbols += bridge.symbol
-            overriddenSymbols = overriddenSymbols compactPlus delegateTo.overriddenSymbols
+            overriddenSymbols = overriddenSymbols compactPlus bridge.symbol compactPlus delegateTo.overriddenSymbols
         }
 
         irFunction.body = context.irFactory.createBlockBody(UNDEFINED_OFFSET, UNDEFINED_OFFSET) {

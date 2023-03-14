@@ -190,7 +190,7 @@ abstract class AbstractSuspendFunctionsLowering<C : CommonBackendContext>(val co
                     parameter.copyTo(this, DECLARATION_ORIGIN_COROUTINE_IMPL, index)
                 }
                 val continuationParameter = coroutineBaseClassConstructor.valueParameters[0]
-                valueParameters += continuationParameter.copyTo(
+                valueParameters = valueParameters compactPlus continuationParameter.copyTo(
                     this, DECLARATION_ORIGIN_COROUTINE_IMPL,
                     index = valueParameters.size, type = continuationType
                 )
@@ -246,7 +246,7 @@ abstract class AbstractSuspendFunctionsLowering<C : CommonBackendContext>(val co
 
                 this.createDispatchReceiverParameter()
 
-                overriddenSymbols += stateMachineFunction.symbol
+                overriddenSymbols = overriddenSymbols compactPlus stateMachineFunction.symbol
             }
 
             buildStateMachine(function, irFunction, argumentToPropertiesMap)

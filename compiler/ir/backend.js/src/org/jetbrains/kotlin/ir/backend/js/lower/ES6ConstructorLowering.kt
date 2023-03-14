@@ -253,6 +253,6 @@ class ES6ConstructorLowering(val context: JsIrBackendContext) : DeclarationTrans
     private fun IrDeclaration.excludeFromExport() {
         val jsExportIgnoreClass = context.intrinsics.jsExportIgnoreAnnotationSymbol.owner
         val jsExportIgnoreCtor = jsExportIgnoreClass.primaryConstructor ?: return
-        annotations += JsIrBuilder.buildConstructorCall(jsExportIgnoreCtor.symbol)
+        annotations = annotations compactPlus JsIrBuilder.buildConstructorCall(jsExportIgnoreCtor.symbol)
     }
 }

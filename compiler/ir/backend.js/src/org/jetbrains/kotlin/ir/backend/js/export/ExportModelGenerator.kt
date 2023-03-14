@@ -288,7 +288,7 @@ class ExportModelGenerator(val context: JsIrBackendContext, val generateNamespac
         return exportClass(
             klass,
             superTypes,
-            listOf(privateConstructor) + members,
+            listOf(privateConstructor) compactPlus members,
             nestedClasses
         )
     }

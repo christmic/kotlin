@@ -96,7 +96,7 @@ class EnumClassConstructorLowering(val context: JsCommonBackendContext) : Declar
         }.apply {
             parent = enumClass
             additionalParameters.forEachIndexed { index, (name, type) ->
-                valueParameters += JsIrBuilder.buildValueParameter(this, name, index, type)
+                valueParameters = valueParameters compactPlus JsIrBuilder.buildValueParameter(this, name, index, type)
             }
             copyParameterDeclarationsFrom(enumConstructor)
 
@@ -543,7 +543,7 @@ class EnumSyntheticFunctionsAndPropertiesLowering(
                         irBranch(
                             irEquals(irGet(nameParameter), irString(it.name.identifier)), irReturn(irCall(it.getInstanceFun!!))
                         )
-                    } + irElseBranch(irBlock {
+                    } compactPlus irElseBranch(irBlock {
                         +irCall(irClass.initEntryInstancesFun!!)
                         +irCall(throwISESymbol)
                     })

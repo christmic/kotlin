@@ -112,7 +112,7 @@ class JsDefaultArgumentStubGenerator(override val context: JsIrBackendContext) :
                     context.additionalExportedDeclarations.add(defaultFunStub)
 
                     if (!originalFun.hasAnnotation(JsAnnotations.jsNameFqn)) {
-                        annotations += originalFun.generateJsNameAnnotationCall()
+                        annotations = annotations compactPlus originalFun.generateJsNameAnnotationCall()
                     }
                 }
             }
