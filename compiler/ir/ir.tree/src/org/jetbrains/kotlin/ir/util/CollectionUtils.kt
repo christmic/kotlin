@@ -90,3 +90,19 @@ inline fun <reified T> Iterable<*>.findIsInstanceAnd(predicate: (T) -> Boolean):
     for (element in this) if (element is T && predicate(element)) return element
     return null
 }
+
+/**
+ * The same as `ArrayList::compact` extension function, but it could be used with the
+ * immutable list type (without `trimToSize` for the collections with more than 1 element)
+ */
+fun <T> List<T>.compact(): List<T> =
+    if (this is ArrayList<T>) {
+        compact()
+    } else {
+        when (size) {
+            0 -> emptyList()
+            1 -> listOf(first())
+            else -> this
+        }
+    }
+

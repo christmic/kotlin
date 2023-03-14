@@ -9,14 +9,16 @@ import org.jetbrains.kotlin.ir.types.IrSimpleType
 import org.jetbrains.kotlin.ir.types.SimpleTypeNullability
 import org.jetbrains.kotlin.ir.util.IdSignature
 import org.jetbrains.kotlin.name.Name
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 
 interface IrInternationService {
     fun string(string: String): String {
         return string
     }
 
-    fun name(string: String): Name {
-        return Name.guessByFirstCharacter(string)
+    fun name(name: Name): Name {
+        return name
     }
 
     fun simpleType(type: IrSimpleType): IrSimpleType {
@@ -27,16 +29,16 @@ interface IrInternationService {
 }
 
 class DefaultIrInternationService : IrInternationService {
-    private val strings by lazy { hashMapOf<String, String>() }
-    private val names by lazy { hashMapOf<String, Name>() }
-    private val simpleTypes by lazy { hashMapOf<Pair<IdSignature, SimpleTypeNullability>, IrSimpleType>() }
+    private val strings by lazy { ObjectOpenHashSet<String>() }
+    private val names by lazy { ObjectOpenHashSet<Name>() }
+    private val simpleTypes by lazy { Object2ObjectOpenHashMap<Pair<IdSignature, SimpleTypeNullability>, IrSimpleType>() }
 
     override fun string(string: String): String {
-        return strings.getOrPut(string) { string }
+        return strings.addOrGet(string)
     }
 
-    override fun name(string: String): Name {
-        return names.getOrPut(string) { super.name(string) }
+    override fun name(name: Name): Name {
+        return names.addOrGet(name)
     }
 
     override fun simpleType(type: IrSimpleType): IrSimpleType {
@@ -46,7 +48,7 @@ class DefaultIrInternationService : IrInternationService {
             type.arguments.isEmpty() &&
             type.annotations.isEmpty() && type.abbreviation == null
         ) {
-            return simpleTypes.getOrPut(signature to type.nullability) { type }
+            return simpleTypes.computeIfAbsent(signature to type.nullability) { type }
         }
         return super.simpleType(type)
     }

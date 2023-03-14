@@ -83,11 +83,11 @@ class IrDeclarationDeserializer(
     private val bodyDeserializer = IrBodyDeserializer(builtIns, allowErrorNodes, irFactory, libraryFile, this)
 
     private fun deserializeString(index: Int): String {
-        return internationService.string(libraryFile.string(index))
+        return libraryFile.string(index)
     }
 
     private fun deserializeName(index: Int): Name {
-        return internationService.name(deserializeString(index))
+        return internationService.name(Name.guessByFirstCharacter(deserializeString(index)))
     }
 
     private val irTypeCache = hashMapOf<Int, IrType>()
