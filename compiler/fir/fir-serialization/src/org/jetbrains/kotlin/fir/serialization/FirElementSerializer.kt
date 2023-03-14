@@ -28,6 +28,7 @@ import org.jetbrains.kotlin.fir.extensions.typeAttributeExtensions
 import org.jetbrains.kotlin.fir.resolve.*
 import org.jetbrains.kotlin.fir.resolve.providers.symbolProvider
 import org.jetbrains.kotlin.fir.scopes.*
+import org.jetbrains.kotlin.fir.scopes.impl.nestedClassifierScope
 import org.jetbrains.kotlin.fir.serialization.constant.EnumValue
 import org.jetbrains.kotlin.fir.serialization.constant.IntValue
 import org.jetbrains.kotlin.fir.serialization.constant.StringValue
@@ -194,10 +195,11 @@ class FirElementSerializer private constructor(
         }
 
         fun FirClass.nestedClassifiers(): List<FirClassifierSymbol<*>> {
-            val scope =
-                defaultType().scope(session, scopeSession, FakeOverrideTypeCalculator.DoNothing, requiredPhase = null) ?: return emptyList()
+            val scope = session.nestedClassifierScope(this)
             return buildList {
-                scope.getClassifierNames().mapNotNullTo(this) { scope.getSingleClassifier(it) }
+                if (scope != null) {
+                    scope.getClassifierNames().mapNotNullTo(this) { scope.getSingleClassifier(it) }
+                }
                 addAll(providedNestedClassifiers)
             }
         }
