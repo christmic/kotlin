@@ -721,7 +721,7 @@ class LocalDeclarationsLowering(
             }
             newDeclaration.copyAttributes(oldDeclaration)
 
-            newDeclaration.valueParameters += createTransformedValueParameters(
+            newDeclaration.valueParameters = newDeclaration.valueParameters compactPlus createTransformedValueParameters(
                 capturedValues, localFunctionContext, oldDeclaration, newDeclaration,
                 isExplicitLocalFunction = oldDeclaration.origin == IrDeclarationOrigin.LOCAL_FUNCTION
             )
@@ -831,7 +831,7 @@ class LocalDeclarationsLowering(
                 throw AssertionError("Local class constructor can't have extension receiver: ${ir2string(oldDeclaration)}")
             }
 
-            newDeclaration.valueParameters += createTransformedValueParameters(
+            newDeclaration.valueParameters = newDeclaration.valueParameters compactPlus createTransformedValueParameters(
                 capturedValues, localClassContext, oldDeclaration, newDeclaration
             )
             newDeclaration.recordTransformedValueParameters(constructorContext)

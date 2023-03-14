@@ -473,7 +473,7 @@ class EnumSyntheticFunctionsAndPropertiesLowering(
                     declaration.body = context.irFactory.createBlockBody(UNDEFINED_OFFSET, UNDEFINED_OFFSET) {
                         statements += context.createIrBuilder(declaration.symbol).irBlockBody {
                             +irCall(enumClass.initEntryInstancesFun!!.symbol)
-                        }.statements + originalBody.statements
+                        }.statements compactPlus originalBody.statements
                     }
                 }
             }

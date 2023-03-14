@@ -491,7 +491,7 @@ class DefaultParameterPatchOverridenSymbolsLowering(
     override fun transformFlat(declaration: IrDeclaration): List<IrDeclaration>? {
         if (declaration is IrSimpleFunction) {
             (context.mapping.defaultArgumentsOriginalFunction[declaration] as? IrSimpleFunction)?.run {
-                declaration.overriddenSymbols += overriddenSymbols.mapNotNull {
+                declaration.overriddenSymbols = declaration.overriddenSymbols compactPlus overriddenSymbols.compactMapNotNull {
                     (context.mapping.defaultArgumentsDispatchFunction[it.owner] as? IrSimpleFunction)?.symbol
                 }
             }

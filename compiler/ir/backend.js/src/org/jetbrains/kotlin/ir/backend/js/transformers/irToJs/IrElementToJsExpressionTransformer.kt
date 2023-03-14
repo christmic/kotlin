@@ -168,7 +168,7 @@ class IrElementToJsExpressionTransformer : BaseIrElementToJsNodeTransformer<JsEx
         return if (context.staticContext.backendContext.es6mode) {
             JsInvocation(JsSuperRef(), arguments)
         } else {
-            JsInvocation(callFuncRef, listOf(thisRef) + arguments)
+            JsInvocation(callFuncRef, listOf(thisRef) compactPlus arguments)
         }.withSource(expression, context)
     }
 

@@ -231,7 +231,7 @@ abstract class AbstractSuspendFunctionsLowering<C : CommonBackendContext>(val co
                 createParameterDeclarations()
                 typeParameters = function.typeParameters.compactMap { typeParam ->
                     // TODO: remap types
-                    typeParam.copyToWithoutSuperTypes(this).apply { superTypes += typeParam.superTypes }
+                    typeParam.copyToWithoutSuperTypes(this).apply { superTypes = superTypes compactPlus typeParam.superTypes }
                 }
             }
 
@@ -309,7 +309,7 @@ abstract class AbstractSuspendFunctionsLowering<C : CommonBackendContext>(val co
 
                 typeParameters = stateMachineFunction.typeParameters.compactMap { parameter ->
                     parameter.copyToWithoutSuperTypes(this, origin = DECLARATION_ORIGIN_COROUTINE_IMPL)
-                        .apply { superTypes += parameter.superTypes }
+                        .apply { superTypes = superTypes compactPlus parameter.superTypes  }
                 }
 
                 valueParameters = stateMachineFunction.valueParameters.compactMapIndexed { index, parameter ->
@@ -344,7 +344,7 @@ abstract class AbstractSuspendFunctionsLowering<C : CommonBackendContext>(val co
 
                 typeParameters = function.typeParameters.compactMap { parameter ->
                     parameter.copyToWithoutSuperTypes(this, origin = DECLARATION_ORIGIN_COROUTINE_IMPL)
-                        .apply { superTypes += parameter.superTypes }
+                        .apply { superTypes = superTypes compactPlus parameter.superTypes  }
                 }
 
                 val unboundArgs = function.valueParameters

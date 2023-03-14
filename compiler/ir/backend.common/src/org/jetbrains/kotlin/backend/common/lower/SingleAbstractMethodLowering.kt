@@ -176,7 +176,7 @@ abstract class SingleAbstractMethodLowering(val context: CommonBackendContext) :
             setSourceRange(createFor)
         }.apply {
             createImplicitParameterDeclarationWithWrappedDescriptor()
-            superTypes = listOf(superType) + getAdditionalSupertypes(superType)
+            superTypes = listOf(superType) compactPlus getAdditionalSupertypes(superType)
             parent = enclosingContainer!!
         }
 

@@ -73,7 +73,7 @@ class MoveBodilessDeclarationsToSeparatePlaceLowering(private val context: JsIrB
         val externalPackageFragment by lazy(LazyThreadSafetyMode.NONE) {
             context.externalPackageFragment.getOrPut(irFile.symbol) {
                 IrFileImpl(fileEntry = irFile.fileEntry, fqName = irFile.fqName, symbol = IrFileSymbolImpl(), module = irFile.module).also {
-                    it.annotations += irFile.annotations
+                    it.annotations = it.annotations compactPlus irFile.annotations
                 }
             }
         }

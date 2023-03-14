@@ -6,7 +6,6 @@
 package org.jetbrains.kotlin.ir.util
 
 import org.jetbrains.kotlin.utils.SmartList
-import org.jetbrains.kotlin.utils.compact
 import kotlin.math.min
 
 inline fun <T, R> Collection<T>.compactMap(transform: (T) -> R): List<R> {
@@ -43,7 +42,7 @@ inline fun <reified T> Collection<*>.compactFilterIsInstance(): List<T> {
     return filterIsInstanceTo(ArrayList<T>()).smartCompact()
 }
 
-operator fun <T> List<T>.plus(elements: List<T>): List<T> =
+infix fun <T> List<T>.compactPlus(elements: List<T>): List<T> =
     when (val resultSize = size + elements.size) {
         0 -> emptyList()
         1 -> ifEmpty { elements }

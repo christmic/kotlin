@@ -863,10 +863,10 @@ class IrBuiltInsOverFir(
             superType.ensureLazyContentsCreated()
         }
         if (!defaultAny || superTypes.contains(any) || this.superTypes.contains(anyType)) {
-            this.superTypes += superTypes.map { it.type }
+            this.superTypes = this.superTypes compactPlus superTypes.compactMap { it.type }
         } else {
             any.ensureLazyContentsCreated()
-            this.superTypes += superTypes.map { it.type } + anyType
+            this.superTypes = this.superTypes compactPlus (superTypes.map { it.type } + anyType)
         }
     }
 

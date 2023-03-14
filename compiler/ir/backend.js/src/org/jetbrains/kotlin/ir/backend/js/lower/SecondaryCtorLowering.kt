@@ -215,7 +215,7 @@ private fun JsIrBackendContext.buildFactoryDeclaration(constructor: IrConstructo
     }.also { factory ->
         factory.parent = constructor.parent
         factory.copyTypeParametersFrom(constructor.parentAsClass)
-        factory.valueParameters += constructor.valueParameters.compactMap { p -> p.copyTo(factory) }
+        factory.valueParameters = factory.valueParameters compactPlus constructor.valueParameters.compactMap { p -> p.copyTo(factory) }
         factory.annotations = constructor.annotations
     }
 }

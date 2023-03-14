@@ -239,7 +239,7 @@ internal class AdapterGenerator(
                             IrDeclarationOrigin.ADAPTER_PARAMETER_FOR_CALLABLE_REFERENCE
                         )
             }
-            irAdapterFunction.valueParameters += parameterTypes.mapIndexed { index, parameterType ->
+            irAdapterFunction.valueParameters = irAdapterFunction.valueParameters compactPlus parameterTypes.compactMapIndexed { index, parameterType ->
                 createAdapterParameter(
                     irAdapterFunction,
                     Name.identifier("p$index"),
@@ -677,7 +677,7 @@ internal class AdapterGenerator(
                 argumentType,
                 IrDeclarationOrigin.ADAPTER_PARAMETER_FOR_SUSPEND_CONVERSION
             )
-            irAdapterFunction.valueParameters += parameterTypes.mapIndexed { index, parameterType ->
+            irAdapterFunction.valueParameters = irAdapterFunction.valueParameters compactPlus parameterTypes.compactMapIndexed { index, parameterType ->
                 createAdapterParameter(
                     irAdapterFunction,
                     Name.identifier("p$index"),

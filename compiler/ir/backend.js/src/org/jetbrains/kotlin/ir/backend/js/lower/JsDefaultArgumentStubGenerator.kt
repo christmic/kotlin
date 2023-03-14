@@ -125,7 +125,7 @@ class JsDefaultArgumentStubGenerator(override val context: JsIrBackendContext) :
             }
 
         originalFun.annotations = irrelevantAnnotations
-        defaultFunStub.annotations += exportAnnotations
+        defaultFunStub.annotations = defaultFunStub.annotations compactPlus exportAnnotations
         originalFun.origin = JsLoweredDeclarationOrigin.JS_SHADOWED_EXPORT
 
         return listOf(originalFun, defaultFunStub)

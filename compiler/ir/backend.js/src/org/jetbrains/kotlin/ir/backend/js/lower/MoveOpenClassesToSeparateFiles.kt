@@ -16,12 +16,11 @@ import org.jetbrains.kotlin.ir.declarations.impl.IrFileImpl
 import org.jetbrains.kotlin.ir.symbols.impl.IrFileSymbolImpl
 import org.jetbrains.kotlin.ir.util.transformDeclarationsFlat
 import org.jetbrains.kotlin.ir.util.transformFlat
-import org.jetbrains.kotlin.ir.util.plus
 
 fun moveOpenClassesToSeparateFiles(moduleFragment: IrModuleFragment) {
     fun createFile(file: IrFile, klass: IrClass): IrFile =
         IrFileImpl(fileEntry = file.fileEntry, fqName = file.fqName, symbol = IrFileSymbolImpl(), module = file.module).also {
-            it.annotations += file.annotations
+            it.annotations = it.annotations compactPlus file.annotations
             it.declarations += klass
             klass.parent = it
         }

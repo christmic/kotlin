@@ -50,10 +50,10 @@ fun IrType.addAnnotations(newAnnotations: List<IrConstructorCall>): IrType =
     else when (this) {
         is IrSimpleType ->
             toBuilder().apply {
-                annotations = annotations + newAnnotations
+                annotations = annotations compactPlus newAnnotations
             }.buildSimpleType()
         is IrDynamicType ->
-            IrDynamicTypeImpl(null, annotations + newAnnotations, Variance.INVARIANT)
+            IrDynamicTypeImpl(null, annotations compactPlus newAnnotations, Variance.INVARIANT)
         else ->
             this
     }

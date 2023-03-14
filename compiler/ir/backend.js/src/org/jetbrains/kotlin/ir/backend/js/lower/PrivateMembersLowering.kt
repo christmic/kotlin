@@ -59,7 +59,7 @@ class PrivateMembersLowering(val context: JsIrBackendContext) : DeclarationTrans
             it.parent = function.parent
         }
 
-        staticFunction.typeParameters += function.typeParameters.map { it.deepCopyWithSymbols(staticFunction) }
+        staticFunction.typeParameters = staticFunction.typeParameters compactPlus function.typeParameters.map { it.deepCopyWithSymbols(staticFunction) }
 
         staticFunction.extensionReceiverParameter = function.extensionReceiverParameter?.copyTo(staticFunction)
         staticFunction.valueParameters += buildValueParameter(staticFunction) {
@@ -71,7 +71,7 @@ class PrivateMembersLowering(val context: JsIrBackendContext) : DeclarationTrans
 
         function.correspondingStatic = staticFunction
 
-        staticFunction.valueParameters += function.valueParameters.map {
+        staticFunction.valueParameters = staticFunction.valueParameters compactPlus function.valueParameters.map {
             // TODO better way to avoid copying default value
             it.copyTo(staticFunction, index = it.index + 1, defaultValue = null)
         }

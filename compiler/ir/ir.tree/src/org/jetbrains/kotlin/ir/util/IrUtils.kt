@@ -842,7 +842,7 @@ fun IrFunction.copyReceiverParametersFrom(from: IrFunction, substitutionMap: Map
 fun IrFunction.copyValueParametersFrom(from: IrFunction, substitutionMap: Map<IrTypeParameterSymbol, IrType>) {
     copyReceiverParametersFrom(from, substitutionMap)
     val shift = valueParameters.size
-    valueParameters += from.valueParameters.map {
+    valueParameters = valueParameters compactPlus from.valueParameters.compactMap {
         it.copyTo(this, index = it.index + shift, type = it.type.substitute(substitutionMap))
     }
 }
@@ -871,7 +871,7 @@ fun IrTypeParametersContainer.copyTypeParameters(
             oldToNewParameterMap[sourceParameter] = it
         }
     }
-    typeParameters += newTypeParameters
+    typeParameters = typeParameters compactPlus newTypeParameters
     srcTypeParameters.zip(newTypeParameters).forEach { (srcParameter, dstParameter) ->
         dstParameter.copySuperTypesFrom(srcParameter, oldToNewParameterMap)
     }
@@ -902,7 +902,7 @@ fun IrAnnotationContainer.copyAnnotationsWhen(filter: IrConstructorCall.() -> Bo
 }
 
 fun IrMutableAnnotationContainer.copyAnnotationsFrom(source: IrAnnotationContainer) {
-    annotations += source.copyAnnotations()
+    annotations = annotations compactPlus source.copyAnnotations()
 }
 
 fun makeTypeParameterSubstitutionMap(
@@ -1321,7 +1321,7 @@ private fun IrSimpleFunction.copyAndRenameConflictingTypeParametersFrom(
         newParameter.copySuperTypesFrom(oldParameter, parameterMap)
     }
 
-    typeParameters = typeParameters + newParameters
+    typeParameters = typeParameters compactPlus newParameters
 
     return newParameters
 }
