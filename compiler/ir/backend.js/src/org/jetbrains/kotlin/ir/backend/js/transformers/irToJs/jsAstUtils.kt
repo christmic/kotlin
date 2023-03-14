@@ -386,7 +386,7 @@ fun translateCallArguments(
     val jsUndefined by lazy(LazyThreadSafetyMode.NONE) { jsUndefined(context, context.staticContext.backendContext) }
 
     val arguments = (0 until size)
-        .mapIndexedTo(listWithStrictCapacity(size)) { i, _ ->
+        .mapIndexedTo(ArrayList(size)) { i, _ ->
             expression.getValueArgument(i).checkOnNullability(validWithNullArgs || function.valueParameters[i].isBoxParameter)
         }
         .mapIndexed { i, it ->

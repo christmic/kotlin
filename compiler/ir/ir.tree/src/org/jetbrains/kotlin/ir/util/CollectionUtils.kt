@@ -9,13 +9,6 @@ import org.jetbrains.kotlin.utils.SmartList
 import org.jetbrains.kotlin.utils.compact
 import kotlin.math.min
 
-fun <T> listWithStrictCapacity(size: Int): MutableList<T> {
-    return when (size) {
-        0, 1 -> SmartList()
-        else -> ArrayList(size)
-    }
-}
-
 inline fun <T, R> Collection<T>.compactMap(transform: (T) -> R): List<R> {
     if (isEmpty()) return emptyList()
     if (size == 1) return SmartList(transform(first()))
@@ -35,32 +28,30 @@ inline fun <T, R> Collection<T>.compactMapIndexed(transform: (index: Int, T) -> 
 }
 
 inline fun <T, R> Collection<T>.compactFlatMap(transform: (T) -> Iterable<R>): List<R> {
-    return flatMapTo(ArrayList<R>(), transform).compact()
+    return flatMapTo(ArrayList<R>(), transform).smartCompact()
 }
 
 inline fun <T> Collection<T>.compactFilter(predicate: (T) -> Boolean): List<T> {
-    return filterTo(ArrayList(), predicate).compact()
+    return filterTo(ArrayList(), predicate).smartCompact()
 }
 
 inline fun <T> Collection<T>.compactFilterNot(predicate: (T) -> Boolean): List<T> {
-    return filterNotTo(ArrayList(), predicate).compact()
+    return filterNotTo(ArrayList(), predicate).smartCompact()
 }
 
 inline fun <reified T> Collection<*>.compactFilterIsInstance(): List<T> {
-    return filterIsInstanceTo(ArrayList<T>()).compact()
+    return filterIsInstanceTo(ArrayList<T>()).smartCompact()
 }
 
-operator fun <T> List<T>.plus(elements: List<T>): List<T> {
-    if (isEmpty() && elements.isEmpty()) return emptyList()
-    val result = ArrayList<T>(this.size + elements.size)
-    result.addAll(this)
-    result.addAll(elements)
-    return when (result.size) {
+operator fun <T> List<T>.plus(elements: List<T>): List<T> =
+    when (val resultSize = size + elements.size) {
         0 -> emptyList()
-        1 -> SmartList(result.first())
-        else -> result
+        1 -> ifEmpty { elements }
+        else -> ArrayList<T>(resultSize).also {
+            it.addAll(this)
+            it.addAll(elements)
+        }
     }
-}
 
 infix fun <T, R> Collection<T>.compactZip(other: Collection<R>): List<Pair<T, R>> {
     if (isEmpty() || other.isEmpty()) return emptyList()
@@ -94,15 +85,14 @@ inline fun <reified T> Iterable<*>.findIsInstanceAnd(predicate: (T) -> Boolean):
 /**
  * The same as `ArrayList::compact` extension function, but it could be used with the
  * immutable list type (without `trimToSize` for the collections with more than 1 element)
+ * and return mutable `SmartList` for single element instead of `java.collections.SingletonList` for single element container
  */
-fun <T> List<T>.compact(): List<T> =
-    if (this is ArrayList<T>) {
-        compact()
-    } else {
-        when (size) {
-            0 -> emptyList()
-            1 -> listOf(first())
-            else -> this
+fun <T> List<T>.smartCompact(): List<T> =
+    when (size) {
+        0 -> emptyList()
+        1 -> SmartList(first())
+        else -> apply {
+            if (this is ArrayList<*>) trimToSize()
         }
     }
 
