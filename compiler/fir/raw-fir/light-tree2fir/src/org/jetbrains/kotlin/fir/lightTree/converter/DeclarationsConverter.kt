@@ -674,7 +674,7 @@ class DeclarationsConverter(
                     source = objectDeclaration.toFirSourceElement()
                     origin = FirDeclarationOrigin.Source
                     moduleData = baseModuleData
-                    classKind = ClassKind.OBJECT
+                    classKind = ClassKind.CLASS
                     scopeProvider = baseScopeProvider
                     symbol = FirAnonymousObjectSymbol()
                     status = FirDeclarationStatusImpl(Visibilities.Local, Modality.FINAL)
@@ -717,7 +717,7 @@ class DeclarationsConverter(
                     this.superTypeRefs += superTypeRefs
 
                     val classWrapper = ClassWrapper(
-                        SpecialNames.NO_NAME_PROVIDED, modifiers, ClassKind.OBJECT, this,
+                        SpecialNames.NO_NAME_PROVIDED, modifiers, ClassKind.CLASS, this,
                         hasPrimaryConstructor = false,
                         hasSecondaryConstructor = classBody.getChildNodesByType(SECONDARY_CONSTRUCTOR).isNotEmpty(),
                         hasDefaultConstructor = false,
