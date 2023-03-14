@@ -29,6 +29,7 @@ import org.jetbrains.kotlin.fir.resolve.*
 import org.jetbrains.kotlin.fir.resolve.providers.symbolProvider
 import org.jetbrains.kotlin.fir.scopes.*
 import org.jetbrains.kotlin.fir.scopes.impl.nestedClassifierScope
+import org.jetbrains.kotlin.fir.serialization.constant.*
 import org.jetbrains.kotlin.fir.serialization.constant.EnumValue
 import org.jetbrains.kotlin.fir.serialization.constant.IntValue
 import org.jetbrains.kotlin.fir.serialization.constant.StringValue
@@ -328,6 +329,10 @@ class FirElementSerializer private constructor(
         var hasGetter = false
         var hasSetter = false
 
+        // TODO: It is unclear whether this has the same behavior as the corresponding K1 code. It is likely
+        // that K1 and K2 have different constant folding behavior. We should add more tests and revisit this.
+        val hasConstant = property.isConst || (property.isVal && (property.initializer as? FirConstExpression<*>)?.value != null)
+
         val hasAnnotations = property.nonSourceAnnotations(session).isNotEmpty()
         // TODO: hasAnnotations(descriptor) || hasAnnotations(descriptor.backingField) || hasAnnotations(descriptor.delegateField)
 
@@ -371,7 +376,7 @@ class FirElementSerializer private constructor(
             ProtoEnumFlags.visibility(normalizeVisibility(property)),
             ProtoEnumFlags.modality(modality),
             ProtoBuf.MemberKind.DECLARATION,
-            property.isVar, hasGetter, hasSetter, property.isConst, property.isConst, property.isLateInit,
+            property.isVar, hasGetter, hasSetter, hasConstant, property.isConst, property.isLateInit,
             property.isExternal, property.delegateFieldSymbol != null, property.isExpect
         )
         if (flags != builder.flags) {
@@ -875,7 +880,7 @@ class FirElementSerializer private constructor(
             )
         }
     }
-
+    
     private fun fillFromPossiblyInnerType(builder: ProtoBuf.Type.Builder, type: ConeClassLikeType) {
         val classifierSymbol = type.lookupTag.toSymbol(session)
         if (classifierSymbol != null) {
