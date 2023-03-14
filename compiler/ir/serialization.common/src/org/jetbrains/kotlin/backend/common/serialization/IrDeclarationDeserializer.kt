@@ -110,9 +110,7 @@ class IrDeclarationDeserializer(
     }
 
     internal fun deserializeAnnotations(annotations: List<ProtoConstructorCall>): List<IrConstructorCall> {
-        return annotations.compactMap {
-            bodyDeserializer.deserializeAnnotation(it)
-        }
+        return annotations.compactMap { bodyDeserializer.deserializeAnnotation(it) }
     }
 
     private fun deserializeSimpleTypeNullability(proto: ProtoSimpleTypeNullablity) = when (proto) {
@@ -129,15 +127,13 @@ class IrDeclarationDeserializer(
         val annotations = deserializeAnnotations(proto.annotationList)
         val abbreviation = if (proto.hasAbbreviation()) deserializeTypeAbbreviation(proto.abbreviation) else null
 
-        return internationService.simpleType(
-            IrSimpleTypeImpl(
-                null,
-                symbol,
-                deserializeSimpleTypeNullability(proto.nullability),
-                arguments,
-                annotations,
-                abbreviation
-            )
+        return IrSimpleTypeImpl(
+            null,
+            symbol,
+            deserializeSimpleTypeNullability(proto.nullability),
+            arguments,
+            annotations,
+            abbreviation
         )
     }
 
@@ -149,15 +145,13 @@ class IrDeclarationDeserializer(
         val annotations = deserializeAnnotations(proto.annotationList)
         val abbreviation = if (proto.hasAbbreviation()) deserializeTypeAbbreviation(proto.abbreviation) else null
 
-        return internationService.simpleType(
-            IrSimpleTypeImpl(
-                null,
-                symbol,
-                SimpleTypeNullability.fromHasQuestionMark(proto.hasQuestionMark),
-                arguments,
-                annotations,
-                abbreviation
-            )
+        return IrSimpleTypeImpl(
+            null,
+            symbol,
+            SimpleTypeNullability.fromHasQuestionMark(proto.hasQuestionMark),
+            arguments,
+            annotations,
+            abbreviation
         )
     }
 
@@ -458,33 +452,17 @@ class IrDeclarationDeserializer(
     }
 
     private fun deserializeTypeParameters(protos: List<ProtoTypeParameter>, isGlobal: Boolean): List<IrTypeParameter> {
-        if (protos.isEmpty()) return emptyList()
         // NOTE: fun <C : MutableCollection<in T>, T : Any> Array<out T?>.filterNotNullTo(destination: C): C
-        val result = ArrayList<IrTypeParameter>(protos.size)
-        for (index in protos.indices) {
-            val proto = protos[index]
-            result.add(deserializeIrTypeParameter(proto, index, isGlobal))
+        return protos.compactMapIndexed { index, proto ->
+            deserializeIrTypeParameter(proto, index, isGlobal).apply {
+                superTypes = proto.superTypeList.compactMap { deserializeIrType(it) }
+            }
         }
-
-        for (i in protos.indices) {
-            result[i].superTypes = protos[i].superTypeList.compactMap { deserializeIrType(it) }
-        }
-
-        return result
     }
 
     private fun deserializeValueParameters(protos: List<ProtoValueParameter>): List<IrValueParameter> {
-        if (protos.isEmpty()) return emptyList()
-
-        val result = ArrayList<IrValueParameter>(protos.size)
-
-        for (i in protos.indices) {
-            result.add(deserializeIrValueParameter(protos[i], i))
-        }
-
-        return result
+        return protos.compactMapIndexed { index, proto -> deserializeIrValueParameter(proto, index) }
     }
-
 
     /**
      * In `declarations-only` mode in case of private property/function with inferred anonymous private type like this

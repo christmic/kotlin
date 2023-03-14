@@ -21,10 +21,6 @@ interface IrInternationService {
         return name
     }
 
-    fun simpleType(type: IrSimpleType): IrSimpleType {
-        return type
-    }
-
     fun clear() {}
 }
 
@@ -39,18 +35,6 @@ class DefaultIrInternationService : IrInternationService {
 
     override fun name(name: Name): Name {
         return names.addOrGet(name)
-    }
-
-    override fun simpleType(type: IrSimpleType): IrSimpleType {
-        val signature = type.classifier.signature
-        if (
-            signature != null &&
-            type.arguments.isEmpty() &&
-            type.annotations.isEmpty() && type.abbreviation == null
-        ) {
-            return simpleTypes.computeIfAbsent(signature to type.nullability) { type }
-        }
-        return super.simpleType(type)
     }
 
     override fun clear() {
