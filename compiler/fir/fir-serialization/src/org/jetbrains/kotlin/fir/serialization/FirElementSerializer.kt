@@ -71,6 +71,8 @@ class FirElementSerializer private constructor(
     private val contractSerializer = FirContractSerializer()
     private val extensionDeclarationProviders = session.extensionService.declarationForMetadataProviders
 
+    private var metDefinitelyNotNullType: Boolean = false
+
     fun packagePartProto(
         packageFqName: FqName,
         files: List<FirFile>,
@@ -273,6 +275,12 @@ class FirElementSerializer private constructor(
 
         writeVersionRequirementForInlineClasses(klass, builder, versionRequirementTable)
 
+        if (metDefinitelyNotNullType) {
+            builder.addVersionRequirement(
+                writeLanguageVersionRequirement(LanguageFeature.DefinitelyNonNullableTypes, versionRequirementTable)
+            )
+        }
+
         typeTable.serialize()?.let { builder.typeTable = it }
         versionRequirementTable.serialize()?.let { builder.versionRequirementTable = it }
 
@@ -424,6 +432,10 @@ class FirElementSerializer private constructor(
             if (property.hasInlineClassTypesInSignature()) {
                 builder.addVersionRequirement(writeVersionRequirement(LanguageFeature.InlineClasses))
             }
+
+            if (local.metDefinitelyNotNullType) {
+                builder.addVersionRequirement(writeVersionRequirement(LanguageFeature.DefinitelyNonNullableTypes))
+            }
         }
 
         extension.serializeProperty(property, builder, versionRequirementTable, local)
@@ -519,6 +531,10 @@ class FirElementSerializer private constructor(
             if (function.hasInlineClassTypesInSignature()) {
                 builder.addVersionRequirement(writeVersionRequirement(LanguageFeature.InlineClasses))
             }
+
+            if (local.metDefinitelyNotNullType) {
+                builder.addVersionRequirement(writeVersionRequirement(LanguageFeature.DefinitelyNonNullableTypes))
+            }
         }
 
         return builder
@@ -533,7 +549,7 @@ class FirElementSerializer private constructor(
         }
     }
 
-    private fun typeAliasProto(typeAlias: FirTypeAlias): ProtoBuf.TypeAlias.Builder? = whileAnalysing(session, typeAlias) {
+    private fun typeAliasProto(typeAlias: FirTypeAlias): ProtoBuf.TypeAlias.Builder? = whileAnalysing<ProtoBuf.TypeAlias.Builder?>(session, typeAlias) {
         val builder = ProtoBuf.TypeAlias.newBuilder()
         val local = createChildSerializer(typeAlias)
 
@@ -567,6 +583,11 @@ class FirElementSerializer private constructor(
 
         versionRequirementTable?.run {
             builder.addAllVersionRequirement(serializeVersionRequirements(typeAlias))
+            if (local.metDefinitelyNotNullType) {
+                builder.addVersionRequirement(
+                    writeLanguageVersionRequirement(LanguageFeature.DefinitelyNonNullableTypes, versionRequirementTable)
+                )
+            }
         }
 
         for (annotation in typeAlias.nonSourceAnnotations(session)) {
@@ -613,6 +634,10 @@ class FirElementSerializer private constructor(
 
             if (constructor.hasInlineClassTypesInSignature()) {
                 builder.addVersionRequirement(writeVersionRequirement(LanguageFeature.InlineClasses))
+            }
+
+            if (local.metDefinitelyNotNullType) {
+                builder.addVersionRequirement(writeVersionRequirement(LanguageFeature.DefinitelyNonNullableTypes))
             }
         }
 
@@ -782,6 +807,7 @@ class FirElementSerializer private constructor(
                 }
 
                 if (isDefinitelyNotNullType) {
+                    metDefinitelyNotNullType = true
                     builder.flags = Flags.getTypeFlags(false, isDefinitelyNotNullType)
                 }
             }
