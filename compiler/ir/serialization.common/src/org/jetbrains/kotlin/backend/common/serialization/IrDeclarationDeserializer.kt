@@ -77,7 +77,7 @@ class IrDeclarationDeserializer(
     private val fakeOverrideBuilder: FakeOverrideBuilder,
     private val compatibilityMode: CompatibilityMode,
     private val partialLinkageEnabled: Boolean,
-    private val internationService: IrInternationService,
+    private val internationService: IrInterningService,
 ) {
 
     private val bodyDeserializer = IrBodyDeserializer(builtIns, allowErrorNodes, irFactory, libraryFile, this)

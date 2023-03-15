@@ -9,7 +9,7 @@ import org.jetbrains.kotlin.backend.common.compilationException
 import org.jetbrains.kotlin.backend.common.ir.Ir
 import org.jetbrains.kotlin.backend.common.ir.Symbols
 import org.jetbrains.kotlin.backend.common.linkage.partial.createPartialLinkageSupportForLowerings
-import org.jetbrains.kotlin.backend.common.serialization.DefaultIrInternationService
+import org.jetbrains.kotlin.backend.common.serialization.DefaultIrInterningService
 import org.jetbrains.kotlin.builtins.PrimitiveType
 import org.jetbrains.kotlin.builtins.isFunctionType
 import org.jetbrains.kotlin.config.CompilerConfiguration
@@ -74,7 +74,7 @@ class JsIrBackendContext(
 
     val polyfills = JsPolyfills()
     val fieldToInitializer = WeakHashMap<IrField, IrExpression>()
-    val globalInternationService = DefaultIrInternationService()
+    val globalInternationService = DefaultIrInterningService()
 
     val localClassNames = WeakHashMap<IrClass, String>()
 

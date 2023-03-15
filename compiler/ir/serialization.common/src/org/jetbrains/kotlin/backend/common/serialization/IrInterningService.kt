@@ -5,14 +5,14 @@
 
 package org.jetbrains.kotlin.backend.common.serialization
 
-import org.jetbrains.kotlin.ir.types.IrSimpleType
-import org.jetbrains.kotlin.ir.types.SimpleTypeNullability
-import org.jetbrains.kotlin.ir.util.IdSignature
 import org.jetbrains.kotlin.name.Name
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 
-interface IrInternationService {
+/**
+ * The interface provide an API for interning [String] and [Name] values
+ * to save memory by eliminating duplicates of instances of those classes
+ */
+interface IrInterningService {
     fun string(string: String): String {
         return string
     }
@@ -24,10 +24,14 @@ interface IrInternationService {
     fun clear() {}
 }
 
-class DefaultIrInternationService : IrInternationService {
+/**
+ * The default implementation of [IrInterningService] which used [ObjectOpenHashSet]
+ * to cache [String] and [Name] values. It helps to eliminate saving a lot of the same strings (mostly [org.jetbrains.kotlin.ir.util.IdSignature.CommonSignature.packageFqName] and [org.jetbrains.kotlin.ir.util.IdSignature.CommonSignature.declarationFqName])
+ * and names in IR nodes
+ */
+class DefaultIrInterningService : IrInterningService {
     private val strings by lazy { ObjectOpenHashSet<String>() }
     private val names by lazy { ObjectOpenHashSet<Name>() }
-    private val simpleTypes by lazy { Object2ObjectOpenHashMap<Pair<IdSignature, SimpleTypeNullability>, IrSimpleType>() }
 
     override fun string(string: String): String {
         return strings.addOrGet(string)
@@ -40,6 +44,5 @@ class DefaultIrInternationService : IrInternationService {
     override fun clear() {
         strings.clear()
         names.clear()
-        simpleTypes.clear()
     }
 }

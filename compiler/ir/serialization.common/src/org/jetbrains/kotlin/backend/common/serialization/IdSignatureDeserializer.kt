@@ -18,7 +18,7 @@ import org.jetbrains.kotlin.backend.common.serialization.proto.LocalSignature as
 class IdSignatureDeserializer(
     private val libraryFile: IrLibraryFile,
     private val fileSignature: FileSignature?,
-    private val internationService: IrInternationService
+    private val internationService: IrInterningService
 ) {
 
     private fun loadSignatureProto(index: Int): ProtoIdSignature {

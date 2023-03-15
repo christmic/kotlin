@@ -44,7 +44,7 @@ fun deserializeFromByteArray(
     toplevelParent: IrClass,
     typeSystemContext: IrTypeSystemContext,
 ) {
-    val internationService = DefaultIrInternationService()
+    val internationService = DefaultIrInterningService()
     val irProto = JvmIr.ClassOrFile.parseFrom(byteArray.codedInputStream)
     val irLibraryFile = IrLibraryFileFromAnnotation(
         irProto.typeList,

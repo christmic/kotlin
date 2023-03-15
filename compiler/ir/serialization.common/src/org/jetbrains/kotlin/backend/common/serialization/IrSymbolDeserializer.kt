@@ -25,7 +25,7 @@ class IrSymbolDeserializer(
     val actuals: List<Actual>,
     val enqueueLocalTopLevelDeclaration: (IdSignature) -> Unit,
     val handleExpectActualMapping: (IdSignature, IrSymbol) -> IrSymbol,
-    internationService: IrInternationService,
+    internationService: IrInterningService,
     val symbolProcessor: IrSymbolDeserializer.(IrSymbol, IdSignature) -> IrSymbol = { s, _ -> s },
     fileSignature: IdSignature.FileSignature = IdSignature.FileSignature(fileSymbol),
     val deserializePublicSymbol: (IdSignature, BinarySymbolData.SymbolKind) -> IrSymbol

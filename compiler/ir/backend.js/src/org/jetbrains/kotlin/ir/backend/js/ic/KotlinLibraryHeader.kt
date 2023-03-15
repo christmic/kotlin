@@ -25,7 +25,7 @@ internal interface KotlinLibraryHeader {
 
 internal class KotlinLoadedLibraryHeader(
     private val library: KotlinLibrary,
-    private val internationService: IrInternationService
+    private val internationService: IrInterningService
 ) : KotlinLibraryHeader {
     private fun parseFingerprintsFromManifest(): Map<KotlinSourceFile, FingerprintHash>? {
         val manifestFingerprints = library.serializedIrFileFingerprints?.takeIf { it.size == sourceFiles.size } ?: return null

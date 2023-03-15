@@ -6,7 +6,7 @@ package org.jetbrains.kotlin.ir.backend.js.ic
 
 import org.jetbrains.kotlin.backend.common.CommonJsKLibResolver
 import org.jetbrains.kotlin.backend.common.phaser.PhaseConfig
-import org.jetbrains.kotlin.backend.common.serialization.DefaultIrInternationService
+import org.jetbrains.kotlin.backend.common.serialization.DefaultIrInterningService
 import org.jetbrains.kotlin.backend.common.serialization.cityHash64
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.ir.backend.js.*
@@ -70,7 +70,7 @@ class CacheUpdater(
 
     private val icHasher = ICHasher()
 
-    private val internationService = DefaultIrInternationService()
+    private val internationService = DefaultIrInterningService()
 
     private val cacheRootDir = run {
         val configHash = icHasher.calculateConfigHash(compilerConfiguration)
@@ -741,7 +741,7 @@ fun rebuildCacheForDirtyFiles(
     mainArguments: List<String>?,
     es6mode: Boolean
 ): Pair<IrModuleFragment, List<Pair<IrFile, JsIrProgramFragment>>> {
-    val internationService = DefaultIrInternationService()
+    val internationService = DefaultIrInterningService()
     val emptyMetadata = object : KotlinSourceFileExports() {
         override val inverseDependencies = KotlinSourceFileMap<Set<IdSignature>>(emptyMap())
     }
