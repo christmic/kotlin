@@ -31894,9 +31894,27 @@ public class BlackBoxCodegenTestGenerated extends AbstractBlackBoxCodegenTest {
                 }
 
                 @Test
+                @TestMetadata("expectActualCallableReference.kt")
+                public void testExpectActualCallableReference() throws Exception {
+                    runTest("compiler/testData/codegen/box/multiplatform/k2/basic/expectActualCallableReference.kt");
+                }
+
+                @Test
                 @TestMetadata("expectActualDifferentExtensionReceiversOnOverloads.kt")
                 public void testExpectActualDifferentExtensionReceiversOnOverloads() throws Exception {
                     runTest("compiler/testData/codegen/box/multiplatform/k2/basic/expectActualDifferentExtensionReceiversOnOverloads.kt");
+                }
+
+                @Test
+                @TestMetadata("expectActualDifferentPackages.kt")
+                public void testExpectActualDifferentPackages() throws Exception {
+                    runTest("compiler/testData/codegen/box/multiplatform/k2/basic/expectActualDifferentPackages.kt");
+                }
+
+                @Test
+                @TestMetadata("expectActualFakeOverrides.kt")
+                public void testExpectActualFakeOverrides() throws Exception {
+                    runTest("compiler/testData/codegen/box/multiplatform/k2/basic/expectActualFakeOverrides.kt");
                 }
 
                 @Test
@@ -31906,9 +31924,21 @@ public class BlackBoxCodegenTestGenerated extends AbstractBlackBoxCodegenTest {
                 }
 
                 @Test
+                @TestMetadata("expectActualOverloads.kt")
+                public void testExpectActualOverloads() throws Exception {
+                    runTest("compiler/testData/codegen/box/multiplatform/k2/basic/expectActualOverloads.kt");
+                }
+
+                @Test
                 @TestMetadata("expectActualSimple.kt")
                 public void testExpectActualSimple() throws Exception {
                     runTest("compiler/testData/codegen/box/multiplatform/k2/basic/expectActualSimple.kt");
+                }
+
+                @Test
+                @TestMetadata("expectActualTypealias.kt")
+                public void testExpectActualTypealias() throws Exception {
+                    runTest("compiler/testData/codegen/box/multiplatform/k2/basic/expectActualTypealias.kt");
                 }
 
                 @Test
@@ -31933,6 +31963,12 @@ public class BlackBoxCodegenTestGenerated extends AbstractBlackBoxCodegenTest {
                 @TestMetadata("getRidOfDoubleBindingInFir2IrLazyProperty.kt")
                 public void testGetRidOfDoubleBindingInFir2IrLazyProperty() throws Exception {
                     runTest("compiler/testData/codegen/box/multiplatform/k2/basic/getRidOfDoubleBindingInFir2IrLazyProperty.kt");
+                }
+
+                @Test
+                @TestMetadata("independentCommonSourceModules.kt")
+                public void testIndependentCommonSourceModules() throws Exception {
+                    runTest("compiler/testData/codegen/box/multiplatform/k2/basic/independentCommonSourceModules.kt");
                 }
 
                 @Test

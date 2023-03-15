@@ -1,7 +1,7 @@
+// IGNORE_BACKEND_K1: JVM, JVM_IR, JS, JS_IR, JS_IR_ES6
 // ISSUE: KT-57250
 // WITH_STDLIB
 // !OPT_IN: kotlin.ExperimentalMultiplatform
-// IGNORE_BACKEND_K1: JVM, JVM_IR, JS, JS_IR, JS_IR_ES6
 // !LANGUAGE: +MultiPlatformProjects
 
 // MODULE: common
