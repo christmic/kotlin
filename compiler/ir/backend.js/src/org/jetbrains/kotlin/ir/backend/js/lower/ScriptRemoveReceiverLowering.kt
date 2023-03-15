@@ -16,7 +16,7 @@ import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
 import org.jetbrains.kotlin.ir.symbols.IrScriptSymbol
 import org.jetbrains.kotlin.ir.types.*
 import org.jetbrains.kotlin.ir.types.impl.IrSimpleTypeImpl
-import org.jetbrains.kotlin.ir.util.compactFilterNot
+import org.jetbrains.kotlin.ir.util.memoryOptimizedFilterNot
 import org.jetbrains.kotlin.ir.util.transformFlat
 import org.jetbrains.kotlin.ir.visitors.IrElementTransformerVoid
 import org.jetbrains.kotlin.ir.visitors.transformChildrenVoid
@@ -66,7 +66,7 @@ class ScriptRemoveReceiverLowering(val context: CommonBackendContext) : FileLowe
 
                     val result = with(super.visitFunctionReference(expression) as IrFunctionReference) {
                         // TODO do we really need to fix type or removing dispatchReceiver is enough?
-                        val arguments = (type as IrSimpleType).arguments.compactFilterNot(::isScript)
+                        val arguments = (type as IrSimpleType).arguments.memoryOptimizedFilterNot(::isScript)
                         val newN = arguments.size - 1
 
                         IrFunctionReferenceImpl(
@@ -103,7 +103,7 @@ class ScriptRemoveReceiverLowering(val context: CommonBackendContext) : FileLowe
 
                     val result = with(super.visitPropertyReference(expression) as IrPropertyReference) {
                         // TODO do we really need to fix type or removing dispatchReceiver is enough?
-                        val arguments = (type as IrSimpleType).arguments.compactFilterNot(::isScript)
+                        val arguments = (type as IrSimpleType).arguments.memoryOptimizedFilterNot(::isScript)
                         val newN = arguments.size - 1
 
                         IrPropertyReferenceImpl(

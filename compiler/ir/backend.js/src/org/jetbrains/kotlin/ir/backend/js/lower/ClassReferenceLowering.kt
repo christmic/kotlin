@@ -178,7 +178,7 @@ class ClassReferenceLowering(val context: JsCommonBackendContext) : BodyLowering
             startOffset = UNDEFINED_OFFSET,
             endOffset = UNDEFINED_OFFSET,
             arrayElementType = context.reflectionSymbols.kTypeClass.defaultType,
-            arrayElements = type.arguments.compactMap { createKTypeProjection(it, visitedTypeParams) }
+            arrayElements = type.arguments.memoryOptimizedMap { createKTypeProjection(it, visitedTypeParams) }
         )
 
         val isMarkedNullable = JsIrBuilder.buildBoolean(context.irBuiltIns.booleanType, type.isMarkedNullable())
@@ -224,7 +224,7 @@ class ClassReferenceLowering(val context: JsCommonBackendContext) : BodyLowering
             startOffset = UNDEFINED_OFFSET,
             endOffset = UNDEFINED_OFFSET,
             arrayElementType = context.reflectionSymbols.kTypeClass.defaultType,
-            arrayElements = typeParameter.superTypes.compactMap { createKType(it, visitedTypeParams) }
+            arrayElements = typeParameter.superTypes.memoryOptimizedMap { createKType(it, visitedTypeParams) }
         )
 
         val variance = when (typeParameter.variance) {

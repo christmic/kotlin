@@ -836,7 +836,7 @@ class IrBuiltInsOverFir(
                         it.valueParameters.count() == fn.valueParameters.count() &&
                         it.valueParameters.zip(fn.valueParameters).all { (l, r) -> l.type == r.type }
             }?.let {
-                fn.overriddenSymbols = fn.overriddenSymbols compactPlus it.symbol
+                fn.overriddenSymbols = fn.overriddenSymbols memoryOptimizedPlus it.symbol
             }
         }
 
@@ -863,10 +863,10 @@ class IrBuiltInsOverFir(
             superType.ensureLazyContentsCreated()
         }
         if (!defaultAny || superTypes.contains(any) || this.superTypes.contains(anyType)) {
-            this.superTypes = this.superTypes compactPlus superTypes.map { it.type }
+            this.superTypes = this.superTypes memoryOptimizedPlus superTypes.map { it.type }
         } else {
             any.ensureLazyContentsCreated()
-            this.superTypes = this.superTypes compactPlus (superTypes.map { it.type } compactPlus anyType)
+            this.superTypes = this.superTypes memoryOptimizedPlus (superTypes.map { it.type } memoryOptimizedPlus anyType)
         }
     }
 
@@ -910,7 +910,7 @@ class IrBuiltInsOverFir(
             fn.typeParameters = typeParameters
             typeParameters.forEach { it.parent = fn }
             if (isIntrinsicConst) {
-                fn.annotations = fn.annotations compactPlus intrinsicConstAnnotation
+                fn.annotations = fn.annotations memoryOptimizedPlus intrinsicConstAnnotation
             }
             fn.parent = this@createFunction
             fn.postBuild()
@@ -951,12 +951,12 @@ class IrBuiltInsOverFir(
             // TODO: replace with correct logic or explicit specification if cases become more complex
             forEachSuperClass {
                 properties.find { it.name == property.name }?.let {
-                    property.overriddenSymbols = property.overriddenSymbols compactPlus it.symbol
+                    property.overriddenSymbols = property.overriddenSymbols memoryOptimizedPlus it.symbol
                 }
             }
 
             if (isIntrinsicConst) {
-                property.annotations = property.annotations compactPlus intrinsicConstAnnotation
+                property.annotations = property.annotations memoryOptimizedPlus intrinsicConstAnnotation
             }
 
             if (withGetter) {
@@ -966,7 +966,7 @@ class IrBuiltInsOverFir(
                     this.isOperator = false
                 }.also { getter ->
                     getter.addDispatchReceiver { type = this@createProperty.defaultType }
-                    getter.overriddenSymbols = property.overriddenSymbols.compactMapNotNull { it.owner.getter?.symbol }
+                    getter.overriddenSymbols = property.overriddenSymbols.memoryOptimizedMapNotNull { it.owner.getter?.symbol }
                 }
             }
             if (withField || fieldInit != null) {

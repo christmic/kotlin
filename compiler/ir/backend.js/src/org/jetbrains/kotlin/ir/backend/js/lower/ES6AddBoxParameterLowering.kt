@@ -52,7 +52,7 @@ class ES6AddBoxParameterToConstructorsLowering(val context: JsIrBackendContext) 
 
     private fun IrConstructor.addBoxParameter() {
         val irClass = parentAsClass
-        val boxParameter = generateBoxParameter(irClass).also { valueParameters = valueParameters compactPlus it }
+        val boxParameter = generateBoxParameter(irClass).also { valueParameters = valueParameters memoryOptimizedPlus it }
 
         val body = body as? IrBlockBody ?: return
         val isBoxUsed = body.replaceThisWithBoxBeforeSuperCall(irClass, boxParameter.symbol)

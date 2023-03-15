@@ -50,10 +50,10 @@ fun IrType.addAnnotations(newAnnotations: List<IrConstructorCall>): IrType =
     else when (this) {
         is IrSimpleType ->
             toBuilder().apply {
-                annotations = annotations compactPlus newAnnotations
+                annotations = annotations memoryOptimizedPlus newAnnotations
             }.buildSimpleType()
         is IrDynamicType ->
-            IrDynamicTypeImpl(null, annotations compactPlus newAnnotations, Variance.INVARIANT)
+            IrDynamicTypeImpl(null, annotations memoryOptimizedPlus newAnnotations, Variance.INVARIANT)
         else ->
             this
     }
@@ -62,10 +62,10 @@ fun IrType.removeAnnotations(predicate: (IrConstructorCall) -> Boolean): IrType 
     when (this) {
         is IrSimpleType ->
             toBuilder().apply {
-                annotations = annotations.compactFilterNot(predicate)
+                annotations = annotations.memoryOptimizedFilterNot(predicate)
             }.buildSimpleType()
         is IrDynamicType ->
-            IrDynamicTypeImpl(null, annotations.compactFilterNot(predicate), Variance.INVARIANT)
+            IrDynamicTypeImpl(null, annotations.memoryOptimizedFilterNot(predicate), Variance.INVARIANT)
         else ->
             this
     }
@@ -146,7 +146,7 @@ private fun makeKotlinType(
     arguments: List<IrTypeArgument>,
     hasQuestionMark: Boolean
 ): SimpleType {
-    val kotlinTypeArguments = arguments.compactMapIndexed { index, it ->
+    val kotlinTypeArguments = arguments.memoryOptimizedMapIndexed { index, it ->
         when (it) {
             is IrTypeProjection -> TypeProjectionImpl(it.variance, it.type.toKotlinType())
             is IrStarProjection -> StarProjectionImpl((classifier.descriptor as ClassDescriptor).typeConstructor.parameters[index])
@@ -219,7 +219,7 @@ fun IrClassifierSymbol.typeWith(arguments: List<IrType>): IrSimpleType =
     IrSimpleTypeImpl(
         this,
         SimpleTypeNullability.NOT_SPECIFIED,
-        arguments.compactMap { makeTypeProjection(it, Variance.INVARIANT) },
+        arguments.memoryOptimizedMap { makeTypeProjection(it, Variance.INVARIANT) },
         emptyList()
     )
 

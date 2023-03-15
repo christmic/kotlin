@@ -63,7 +63,7 @@ class ES6ConstructorLowering(val context: JsIrBackendContext) : DeclarationTrans
     private fun IrConstructor.generateExportedConstructorIfNeed(factoryFunction: IrSimpleFunction): IrConstructor? {
         return runIf(isExported(context) && isPrimary) {
             apply {
-                valueParameters = valueParameters.compactFilterNot { it.isBoxParameter }
+                valueParameters = valueParameters.memoryOptimizedFilterNot { it.isBoxParameter }
                 (body as? IrBlockBody)?.let {
                     val selfReplacedConstructorCall = JsIrBuilder.buildCall(factoryFunction.symbol).apply {
                         valueParameters.forEachIndexed { i, it -> putValueArgument(i, JsIrBuilder.buildGetValue(it.symbol)) }
@@ -209,7 +209,7 @@ class ES6ConstructorLowering(val context: JsIrBackendContext) : DeclarationTrans
                             .apply {
                                 putValueArgument(0, irClass.getCurrentConstructorReference(constructorReplacement))
                                 putValueArgument(1, expression.symbol.owner.parentAsClass.jsConstructorReference(context))
-                                putValueArgument(2, irAnyArray(expression.valueArguments.compactMap { it ?: context.getVoid() }))
+                                putValueArgument(2, irAnyArray(expression.valueArguments.memoryOptimizedMap { it ?: context.getVoid() }))
                                 putValueArgument(3, boxParameterGetter)
                             }
                     constructor.parentAsClass.symbol == context.irBuiltIns.anyClass ->
@@ -253,6 +253,6 @@ class ES6ConstructorLowering(val context: JsIrBackendContext) : DeclarationTrans
     private fun IrDeclaration.excludeFromExport() {
         val jsExportIgnoreClass = context.intrinsics.jsExportIgnoreAnnotationSymbol.owner
         val jsExportIgnoreCtor = jsExportIgnoreClass.primaryConstructor ?: return
-        annotations = annotations compactPlus JsIrBuilder.buildConstructorCall(jsExportIgnoreCtor.symbol)
+        annotations = annotations memoryOptimizedPlus JsIrBuilder.buildConstructorCall(jsExportIgnoreCtor.symbol)
     }
 }

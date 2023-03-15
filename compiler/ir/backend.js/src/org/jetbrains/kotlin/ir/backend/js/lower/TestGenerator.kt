@@ -189,7 +189,7 @@ class TestGenerator(val context: JsCommonBackendContext, val groupByPackage: Boo
                 this.body = context.irFactory.createBlockBody(
                     UNDEFINED_OFFSET,
                     UNDEFINED_OFFSET,
-                    afterFuns.compactMap {
+                    afterFuns.memoryOptimizedMap {
                         JsIrBuilder.buildCall(it.symbol).apply {
                             dispatchReceiver = JsIrBuilder.buildGetValue(classVal.symbol)
                         }

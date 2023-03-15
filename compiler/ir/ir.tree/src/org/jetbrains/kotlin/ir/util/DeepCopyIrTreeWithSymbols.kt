@@ -74,7 +74,7 @@ open class DeepCopyIrTreeWithSymbols(
         transform(this@DeepCopyIrTreeWithSymbols, null) as T
 
     protected inline fun <reified T : IrElement> List<T>.transform() =
-        compactMap { it.transform() }
+        memoryOptimizedMap { it.transform() }
 
     protected inline fun <reified T : IrElement> List<T>.transformTo(destination: MutableList<T>) =
         mapTo(destination) { it.transform() }
@@ -132,9 +132,9 @@ open class DeepCopyIrTreeWithSymbols(
             declaration.statements.mapTo(scriptCopy.statements) { it.transform() }
             scriptCopy.earlierScripts = declaration.earlierScripts
             scriptCopy.earlierScriptsParameter = declaration.earlierScriptsParameter
-            scriptCopy.explicitCallParameters = declaration.explicitCallParameters.compactMap { it.transform() }
-            scriptCopy.implicitReceiversParameters = declaration.implicitReceiversParameters.compactMap { it.transform() }
-            scriptCopy.providedPropertiesParameters = declaration.providedPropertiesParameters.compactMap { it.transform() }
+            scriptCopy.explicitCallParameters = declaration.explicitCallParameters.memoryOptimizedMap { it.transform() }
+            scriptCopy.implicitReceiversParameters = declaration.implicitReceiversParameters.memoryOptimizedMap { it.transform() }
+            scriptCopy.providedPropertiesParameters = declaration.providedPropertiesParameters.memoryOptimizedMap { it.transform() }
         }
     }
 
@@ -157,10 +157,10 @@ open class DeepCopyIrTreeWithSymbols(
         ).apply {
             transformAnnotations(declaration)
             copyTypeParametersFrom(declaration)
-            superTypes = declaration.superTypes.compactMap {
+            superTypes = declaration.superTypes.memoryOptimizedMap {
                 it.remapType()
             }
-            sealedSubclasses = declaration.sealedSubclasses.compactMap {
+            sealedSubclasses = declaration.sealedSubclasses.memoryOptimizedMap {
                 symbolRemapper.getReferencedClass(it)
             }
             thisReceiver = declaration.thisReceiver?.transform()
@@ -187,7 +187,7 @@ open class DeepCopyIrTreeWithSymbols(
             isFakeOverride = declaration.isFakeOverride,
             containerSource = declaration.containerSource,
         ).apply {
-            overriddenSymbols = declaration.overriddenSymbols.compactMap {
+            overriddenSymbols = declaration.overriddenSymbols.memoryOptimizedMap {
                 symbolRemapper.getReferencedFunction(it) as IrSimpleFunctionSymbol
             }
             contextReceiverParametersCount = declaration.contextReceiverParametersCount
@@ -256,7 +256,7 @@ open class DeepCopyIrTreeWithSymbols(
             this.setter = declaration.setter?.transform()?.also {
                 it.correspondingPropertySymbol = symbol
             }
-            this.overriddenSymbols = declaration.overriddenSymbols.compactMap {
+            this.overriddenSymbols = declaration.overriddenSymbols.memoryOptimizedMap {
                 symbolRemapper.getReferencedProperty(it)
             }
         }
@@ -332,7 +332,7 @@ open class DeepCopyIrTreeWithSymbols(
     override fun visitTypeParameter(declaration: IrTypeParameter): IrTypeParameter =
         copyTypeParameter(declaration).apply {
             // TODO type parameter scopes?
-            superTypes = declaration.superTypes.compactMap { it.remapType() }
+            superTypes = declaration.superTypes.memoryOptimizedMap { it.remapType() }
         }
 
     private fun copyTypeParameter(declaration: IrTypeParameter): IrTypeParameter =
@@ -349,13 +349,13 @@ open class DeepCopyIrTreeWithSymbols(
         }
 
     protected fun IrTypeParametersContainer.copyTypeParametersFrom(other: IrTypeParametersContainer) {
-        this.typeParameters = other.typeParameters.compactMap {
+        this.typeParameters = other.typeParameters.memoryOptimizedMap {
             copyTypeParameter(it)
         }
 
         typeRemapper.withinScope(this) {
             for ((thisTypeParameter, otherTypeParameter) in this.typeParameters.zip(other.typeParameters)) {
-                thisTypeParameter.superTypes = otherTypeParameter.superTypes.compactMap {
+                thisTypeParameter.superTypes = otherTypeParameter.superTypes.memoryOptimizedMap {
                     typeRemapper.remapType(it)
                 }
             }
@@ -403,7 +403,7 @@ open class DeepCopyIrTreeWithSymbols(
     override fun visitBlockBody(body: IrBlockBody): IrBlockBody =
         body.factory.createBlockBody(
             body.startOffset, body.endOffset,
-            body.statements.compactMap { it.transform() }
+            body.statements.memoryOptimizedMap { it.transform() }
         )
 
     override fun visitSyntheticBody(body: IrSyntheticBody): IrSyntheticBody =
@@ -420,7 +420,7 @@ open class DeepCopyIrTreeWithSymbols(
             expression.startOffset, expression.endOffset,
             symbolRemapper.getReferencedConstructor(expression.constructor),
             expression.valueArguments.transform(),
-            expression.typeArguments.compactMap { it.remapType() },
+            expression.typeArguments.memoryOptimizedMap { it.remapType() },
             expression.type.remapType()
         ).copyAttributes(expression)
 
@@ -457,7 +457,7 @@ open class DeepCopyIrTreeWithSymbols(
                 expression.type.remapType(),
                 symbolRemapper.getReferencedReturnableBlock(expression.symbol),
                 mapStatementOrigin(expression.origin),
-                expression.statements.compactMap { it.transform() }
+                expression.statements.memoryOptimizedMap { it.transform() }
             ).copyAttributes(expression)
         else if (expression is IrInlinedFunctionBlock)
             IrInlinedFunctionBlockImpl(
@@ -465,14 +465,14 @@ open class DeepCopyIrTreeWithSymbols(
                 expression.type.remapType(),
                 expression.inlineCall, expression.inlinedElement,
                 mapStatementOrigin(expression.origin),
-                statements = expression.statements.compactMap { it.transform() },
+                statements = expression.statements.memoryOptimizedMap { it.transform() },
             ).copyAttributes(expression)
         else
             IrBlockImpl(
                 expression.startOffset, expression.endOffset,
                 expression.type.remapType(),
                 mapStatementOrigin(expression.origin),
-                expression.statements.compactMap { it.transform() }
+                expression.statements.memoryOptimizedMap { it.transform() }
             ).copyAttributes(expression)
 
     override fun visitComposite(expression: IrComposite): IrComposite =
@@ -480,14 +480,14 @@ open class DeepCopyIrTreeWithSymbols(
             expression.startOffset, expression.endOffset,
             expression.type.remapType(),
             mapStatementOrigin(expression.origin),
-            expression.statements.compactMap { it.transform() }
+            expression.statements.memoryOptimizedMap { it.transform() }
         ).copyAttributes(expression)
 
     override fun visitStringConcatenation(expression: IrStringConcatenation): IrStringConcatenation =
         IrStringConcatenationImpl(
             expression.startOffset, expression.endOffset,
             expression.type.remapType(),
-            expression.arguments.compactMap { it.transform() }
+            expression.arguments.memoryOptimizedMap { it.transform() }
         ).copyAttributes(expression)
 
     override fun visitGetObjectValue(expression: IrGetObjectValue): IrGetObjectValue =
@@ -725,7 +725,7 @@ open class DeepCopyIrTreeWithSymbols(
             expression.startOffset, expression.endOffset,
             expression.type.remapType(),
             mapStatementOrigin(expression.origin),
-            expression.branches.compactMap { it.transform() }
+            expression.branches.memoryOptimizedMap { it.transform() }
         ).copyAttributes(expression)
 
     override fun visitBranch(branch: IrBranch): IrBranch =
@@ -782,7 +782,7 @@ open class DeepCopyIrTreeWithSymbols(
             aTry.startOffset, aTry.endOffset,
             aTry.type.remapType(),
             aTry.tryResult.transform(),
-            aTry.catches.compactMap { it.transform() },
+            aTry.catches.memoryOptimizedMap { it.transform() },
             aTry.finallyExpression?.transform()
         ).copyAttributes(aTry)
 

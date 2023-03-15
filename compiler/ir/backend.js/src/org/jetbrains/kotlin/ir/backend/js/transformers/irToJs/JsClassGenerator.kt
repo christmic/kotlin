@@ -337,7 +337,7 @@ class JsClassGenerator(private val irClass: IrClass, val context: JsGenerationCo
             JsNameRef(context.getNameForStaticFunction(setMetadataFor)),
             listOf(ctor, name, metadataConstructor, parent, interfaces, associatedObjectKey, associatedObjects, suspendArity)
                 .dropLastWhile { it == null }
-                .compactMap { it ?: undefined }
+                .memoryOptimizedMap { it ?: undefined }
         ).makeStmt()
 
     }
@@ -373,7 +373,7 @@ class JsClassGenerator(private val irClass: IrClass, val context: JsGenerationCo
         val listRef = irClass.superTypes
             .filter { it.classOrNull?.owner?.isExternal != true }
             .takeIf { it.size > 1 || it.singleOrNull() != baseClass }
-            ?.compactMapNotNull { it.asConstructorRef() }
+            ?.memoryOptimizedMapNotNull { it.asConstructorRef() }
             ?.takeIf { it.isNotEmpty() } ?: return null
         return JsArrayLiteral(listRef)
     }
@@ -383,7 +383,7 @@ class JsClassGenerator(private val irClass: IrClass, val context: JsGenerationCo
         val arity = invokeFunctions
             .map { it.valueParameters.size }
             .distinct()
-            .compactMap { JsIntLiteral(it) }
+            .memoryOptimizedMap { JsIntLiteral(it) }
 
         return JsArrayLiteral(arity).takeIf { arity.isNotEmpty() }
     }
@@ -393,7 +393,7 @@ class JsClassGenerator(private val irClass: IrClass, val context: JsGenerationCo
     }
 
     private fun generateAssociatedObjects(): JsObjectLiteral? {
-        val associatedObjects = irClass.annotations.compactMapNotNull { annotation ->
+        val associatedObjects = irClass.annotations.memoryOptimizedMapNotNull { annotation ->
             val annotationClass = annotation.symbol.owner.constructedClass
             context.getAssociatedObjectKey(annotationClass)?.let { key ->
                 annotation.associatedObject()?.let { obj ->
@@ -466,7 +466,7 @@ private fun IrOverridableDeclaration<*>.overridesExternal(): Boolean {
 private val IrClassifierSymbol.isInterface get() = (owner as? IrClass)?.isInterface == true
 
 class JsIrClassModel(val klass: IrClass) {
-    val superClasses = klass.superTypes.compactMap { it.classifierOrNull as IrClassSymbol }
+    val superClasses = klass.superTypes.memoryOptimizedMap { it.classifierOrNull as IrClassSymbol }
 
     val preDeclarationBlock = JsCompositeBlock()
     val postDeclarationBlock = JsCompositeBlock()

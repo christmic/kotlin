@@ -153,7 +153,7 @@ abstract class AbstractSuspendFunctionsLowering<C : CommonBackendContext>(val co
 
     private fun IrBlockBodyBuilder.createCoroutineInstance(function: IrSimpleFunction, parameters: Collection<IrValueParameter>, coroutine: BuiltCoroutine): IrExpression {
         val constructor = coroutine.coroutineConstructor
-        val coroutineTypeArgs = function.typeParameters.compactMap {
+        val coroutineTypeArgs = function.typeParameters.memoryOptimizedMap {
             IrSimpleTypeImpl(it.symbol, true, emptyList(), emptyList())
         }
 
@@ -229,9 +229,9 @@ abstract class AbstractSuspendFunctionsLowering<C : CommonBackendContext>(val co
             }.apply {
                 parent = function.parent
                 createParameterDeclarations()
-                typeParameters = function.typeParameters.compactMap { typeParam ->
+                typeParameters = function.typeParameters.memoryOptimizedMap { typeParam ->
                     // TODO: remap types
-                    typeParam.copyToWithoutSuperTypes(this).apply { superTypes = superTypes compactPlus typeParam.superTypes }
+                    typeParam.copyToWithoutSuperTypes(this).apply { superTypes = superTypes memoryOptimizedPlus typeParam.superTypes }
                 }
             }
 
@@ -255,11 +255,11 @@ abstract class AbstractSuspendFunctionsLowering<C : CommonBackendContext>(val co
                 parent = coroutineClass
                 coroutineClass.addChild(this)
 
-                valueParameters = functionParameters.compactMapIndexed { index, parameter ->
+                valueParameters = functionParameters.memoryOptimizedMapIndexed { index, parameter ->
                     parameter.copyTo(this, DECLARATION_ORIGIN_COROUTINE_IMPL, index, defaultValue = null)
                 }
                 val continuationParameter = coroutineBaseClassConstructor.valueParameters[0]
-                valueParameters = valueParameters compactPlus continuationParameter.copyTo(
+                valueParameters = valueParameters memoryOptimizedPlus continuationParameter.copyTo(
                     this, DECLARATION_ORIGIN_COROUTINE_IMPL,
                     index = valueParameters.size,
                     startOffset = function.startOffset,
@@ -307,12 +307,12 @@ abstract class AbstractSuspendFunctionsLowering<C : CommonBackendContext>(val co
                 parent = coroutineClass
                 coroutineClass.addChild(this)
 
-                typeParameters = stateMachineFunction.typeParameters.compactMap { parameter ->
+                typeParameters = stateMachineFunction.typeParameters.memoryOptimizedMap { parameter ->
                     parameter.copyToWithoutSuperTypes(this, origin = DECLARATION_ORIGIN_COROUTINE_IMPL)
-                        .apply { superTypes = superTypes compactPlus parameter.superTypes }
+                        .apply { superTypes = superTypes memoryOptimizedPlus parameter.superTypes }
                 }
 
-                valueParameters = stateMachineFunction.valueParameters.compactMapIndexed { index, parameter ->
+                valueParameters = stateMachineFunction.valueParameters.memoryOptimizedMapIndexed { index, parameter ->
                     parameter.copyTo(this, DECLARATION_ORIGIN_COROUTINE_IMPL, index)
                 }
 
@@ -342,14 +342,14 @@ abstract class AbstractSuspendFunctionsLowering<C : CommonBackendContext>(val co
                 parent = coroutineClass
                 coroutineClass.addChild(this)
 
-                typeParameters = function.typeParameters.compactMap { parameter ->
+                typeParameters = function.typeParameters.memoryOptimizedMap { parameter ->
                     parameter.copyToWithoutSuperTypes(this, origin = DECLARATION_ORIGIN_COROUTINE_IMPL)
-                        .apply { superTypes = superTypes compactPlus parameter.superTypes }
+                        .apply { superTypes = superTypes memoryOptimizedPlus parameter.superTypes }
                 }
 
                 val unboundArgs = function.valueParameters
 
-                val createValueParameters = (unboundArgs + create1CompletionParameter).compactMapIndexed { index, parameter ->
+                val createValueParameters = (unboundArgs + create1CompletionParameter).memoryOptimizedMapIndexed { index, parameter ->
                     parameter.copyTo(this, DECLARATION_ORIGIN_COROUTINE_IMPL, index)
                 }
 
@@ -445,7 +445,7 @@ abstract class AbstractSuspendFunctionsLowering<C : CommonBackendContext>(val co
 
                 transformInvokeMethod(createMethod, invokeSuspendMethod)
             } else {
-                coroutineClass.superTypes = coroutineClass.superTypes compactPlus coroutineBaseClass.defaultType
+                coroutineClass.superTypes = coroutineClass.superTypes memoryOptimizedPlus coroutineBaseClass.defaultType
             }
 
             coroutineClass.addFakeOverrides(context.typeSystem, implementedMembers)

@@ -305,7 +305,7 @@ abstract class TypeTranslator(
     }
 
     private fun translateTypeArguments(arguments: List<TypeProjection>) =
-        arguments.compactMap {
+        arguments.memoryOptimizedMap {
             if (it.isStarProjection)
                 IrStarProjectionImpl
             else

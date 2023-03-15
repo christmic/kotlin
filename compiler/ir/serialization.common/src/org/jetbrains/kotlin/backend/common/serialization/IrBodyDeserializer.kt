@@ -23,7 +23,7 @@ import org.jetbrains.kotlin.ir.expressions.impl.*
 import org.jetbrains.kotlin.ir.symbols.*
 import org.jetbrains.kotlin.ir.types.*
 import org.jetbrains.kotlin.ir.types.impl.*
-import org.jetbrains.kotlin.ir.util.compactMap
+import org.jetbrains.kotlin.ir.util.memoryOptimizedMap
 import org.jetbrains.kotlin.ir.util.parentAsClass
 import org.jetbrains.kotlin.backend.common.serialization.proto.IrBlock as ProtoBlock
 import org.jetbrains.kotlin.backend.common.serialization.proto.IrBlockBody as ProtoBlockBody
@@ -91,7 +91,7 @@ class IrBodyDeserializer(
         proto: ProtoBlockBody,
         start: Int, end: Int
     ): IrBlockBody {
-        val statements = proto.statementList.compactMap { deserializeStatement(it) as IrStatement }
+        val statements = proto.statementList.memoryOptimizedMap { deserializeStatement(it) as IrStatement }
         return irFactory.createBlockBody(start, end, statements)
     }
 
@@ -212,7 +212,7 @@ class IrBodyDeserializer(
             val typeArguments = ArrayList<IrTypeArgument>(typeParameters.size)
             val typeParameterSymbols = ArrayList<IrTypeParameterSymbol>(typeParameters.size)
             val rawType = with(IrSimpleTypeBuilder()) {
-                arguments = typeParameters.compactMap {
+                arguments = typeParameters.memoryOptimizedMap {
                     classifier = it.symbol
                     buildTypeProjection()
                 }

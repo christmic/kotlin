@@ -16,7 +16,7 @@ import org.jetbrains.kotlin.ir.backend.js.lower.isBuiltInClass
 import org.jetbrains.kotlin.ir.backend.js.utils.*
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.util.IdSignature
-import org.jetbrains.kotlin.ir.util.compactMap
+import org.jetbrains.kotlin.ir.util.memoryOptimizedMap
 import org.jetbrains.kotlin.ir.util.isInterface
 import org.jetbrains.kotlin.ir.util.render
 import org.jetbrains.kotlin.js.backend.JsToStringGenerationVisitor
@@ -286,7 +286,7 @@ class IrModuleToJsTransformer(
 
         staticContext.classModels.entries.forEach { (symbol, model) ->
             result.classes[nameGenerator.getNameForClass(symbol.owner)] =
-                JsIrIcClassModel(model.superClasses.compactMap { staticContext.getNameForClass(it.owner) }).also {
+                JsIrIcClassModel(model.superClasses.memoryOptimizedMap { staticContext.getNameForClass(it.owner) }).also {
                     it.preDeclarationBlock.statements += model.preDeclarationBlock.statements
                     it.postDeclarationBlock.statements += model.postDeclarationBlock.statements
                 }

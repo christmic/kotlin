@@ -144,10 +144,10 @@ abstract class BridgesConstruction<T : JsCommonBackendContext>(val context: T) :
             val substitutionMap = makeTypeParameterSubstitutionMap(bridge, this)
             copyReceiverParametersFrom(bridge, substitutionMap)
             copyValueParametersFrom(bridge, substitutionMap)
-            annotations = annotations compactPlus bridge.annotations
+            annotations = annotations memoryOptimizedPlus bridge.annotations
             // the js function signature building process (jsFunctionSignature()) uses dfs throught overriddenSymbols for getting js name,
             // therefore it is very important to put bridge symbol at the beginning, it allows to get correct js function name
-            overriddenSymbols = overriddenSymbols compactPlus bridge.symbol compactPlus delegateTo.overriddenSymbols
+            overriddenSymbols = overriddenSymbols memoryOptimizedPlus bridge.symbol memoryOptimizedPlus delegateTo.overriddenSymbols
         }
 
         irFunction.body = context.irFactory.createBlockBody(UNDEFINED_OFFSET, UNDEFINED_OFFSET) {
@@ -201,7 +201,7 @@ abstract class BridgesConstruction<T : JsCommonBackendContext>(val context: T) :
                 valueParametersToCopy = bridge.valueParameters.take(varargIndex)
             }
         }
-        valueParameters = valueParameters compactPlus valueParametersToCopy.map { p -> p.copyTo(this, type = p.type.substitute(substitutionMap)) }
+        valueParameters = valueParameters memoryOptimizedPlus valueParametersToCopy.map { p -> p.copyTo(this, type = p.type.substitute(substitutionMap)) }
     }
 
     abstract fun getBridgeOrigin(bridge: IrSimpleFunction): IrDeclarationOrigin

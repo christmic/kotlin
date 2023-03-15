@@ -85,7 +85,7 @@ class ImplicitlyExportedDeclarationsMarkingLowering(private val context: JsIrBac
 
     private fun IrDeclaration.markWithJsImplicitExport() {
         val jsImplicitExportCtor = context.intrinsics.jsImplicitExportAnnotationSymbol.constructors.single()
-        annotations = annotations compactPlus JsIrBuilder.buildConstructorCall(jsImplicitExportCtor)
+        annotations = annotations memoryOptimizedPlus JsIrBuilder.buildConstructorCall(jsImplicitExportCtor)
 
         parentClassOrNull?.takeIf { it.shouldBeMarkedWithImplicitExport() }?.markWithJsImplicitExport()
     }

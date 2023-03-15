@@ -177,7 +177,7 @@ class JsInteropFunctionsLowering(val context: WasmBackendContext) : DeclarationT
         newFun.annotations += builder.irCallConstructor(context.wasmSymbols.jsNameConstructor, typeArguments = emptyList()).also {
             it.putValueArgument(0, builder.irString(function.getJsNameOrKotlinName().identifier))
         }
-        function.annotations = function.annotations.compactFilter { it.symbol != context.wasmSymbols.jsExportConstructor }
+        function.annotations = function.annotations.memoryOptimizedFilter { it.symbol != context.wasmSymbols.jsExportConstructor }
 
         return listOf(function, newFun)
     }

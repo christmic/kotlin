@@ -51,13 +51,13 @@ class UselessDeclarationsRemover(
         // Otherwise `JsClassGenerator.generateAssociatedKeyProperties` will try to reference the object factory (which is removed).
         // That will result in an error from the Namer. It cannot generate a name for an absent declaration.
         if (removeUnusedAssociatedObjects && declaration.annotations.any { !it.shouldKeepAnnotation() }) {
-            declaration.annotations = declaration.annotations.compactFilter { it.shouldKeepAnnotation() }
+            declaration.annotations = declaration.annotations.memoryOptimizedFilter { it.shouldKeepAnnotation() }
         }
 
         declaration.superTypes = declaration.superTypes
             .flatMap { it.classOrNull?.collectUsedSuperTypes() ?: emptyList() }
             .distinct()
-            .compactMap { it.defaultType }
+            .memoryOptimizedMap { it.defaultType }
     }
 
     private fun IrClassSymbol.collectUsedSuperTypes(): Set<IrClassSymbol> {

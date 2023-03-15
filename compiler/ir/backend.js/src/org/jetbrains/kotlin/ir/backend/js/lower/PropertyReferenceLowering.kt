@@ -21,7 +21,7 @@ import org.jetbrains.kotlin.ir.types.IrSimpleType
 import org.jetbrains.kotlin.ir.types.classOrNull
 import org.jetbrains.kotlin.ir.util.copyTo
 import org.jetbrains.kotlin.ir.util.file
-import org.jetbrains.kotlin.ir.util.compactMap
+import org.jetbrains.kotlin.ir.util.memoryOptimizedMap
 import org.jetbrains.kotlin.ir.visitors.IrElementTransformerVoid
 import org.jetbrains.kotlin.ir.visitors.transformChildrenVoid
 import org.jetbrains.kotlin.name.Name
@@ -145,7 +145,7 @@ class PropertyReferenceLowering(private val context: JsIrBackendContext) : BodyL
 
             function.parent = factory
 
-            val unboundValueParameters = supperAccessor.valueParameters.compactMap { it.copyTo(function) }
+            val unboundValueParameters = supperAccessor.valueParameters.memoryOptimizedMap { it.copyTo(function) }
             function.valueParameters = unboundValueParameters
             val arity = unboundValueParameters.size
             val total = arity + boundValueParameters.size

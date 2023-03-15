@@ -620,7 +620,7 @@ class InteropCallableReferenceLowering(val context: JsIrBackendContext) : BodyLo
 
         lambdaDeclaration.parent = parent
 
-        lambdaDeclaration.valueParameters = superInvokeFun.valueParameters.compactMapIndexed { id, vp ->
+        lambdaDeclaration.valueParameters = superInvokeFun.valueParameters.memoryOptimizedMapIndexed { id, vp ->
             val originalValueParameter = invokeFun.valueParameters[id]
             vp.copyTo(
                 irFunction = lambdaDeclaration,
@@ -652,11 +652,11 @@ class InteropCallableReferenceLowering(val context: JsIrBackendContext) : BodyLo
             }
         }
 
-        factoryDeclaration.valueParameters = constructor.valueParameters.compactMap { it.copyTo(factoryDeclaration) }
-        factoryDeclaration.typeParameters = constructor.typeParameters.compactMap {
+        factoryDeclaration.valueParameters = constructor.valueParameters.memoryOptimizedMap { it.copyTo(factoryDeclaration) }
+        factoryDeclaration.typeParameters = constructor.typeParameters.memoryOptimizedMap {
             it.copyToWithoutSuperTypes(factoryDeclaration).also { tp ->
                 // TODO: make sure it is done well
-                tp.superTypes = tp.superTypes compactPlus it.superTypes
+                tp.superTypes = tp.superTypes memoryOptimizedPlus it.superTypes
             }
         }
 

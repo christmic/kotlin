@@ -112,7 +112,7 @@ class CacheUpdater(
             val nameToKotlinLibrary = libraries.associateBy { it.moduleName }
 
             libraries.associateWith {
-                it.manifestProperties.propertyList(KLIB_PROPERTY_DEPENDS, escapeInQuotes = true).compactMap { depName ->
+                it.manifestProperties.propertyList(KLIB_PROPERTY_DEPENDS, escapeInQuotes = true).memoryOptimizedMap { depName ->
                     nameToKotlinLibrary[depName] ?: notFoundIcError("library $depName")
                 }
             }
@@ -120,7 +120,7 @@ class CacheUpdater(
 
         val mainModuleFriendLibraries = libraryDependencies.keys.let { libs ->
             val friendPaths = mainModuleFriends.mapTo(newHashSetWithExpectedSize(mainModuleFriends.size)) { File(it).canonicalPath }
-            libs.compactFilter { it.libraryFile.canonicalPath in friendPaths }
+            libs.memoryOptimizedFilter { it.libraryFile.canonicalPath in friendPaths }
         }
 
         private val incrementalCaches = libraryDependencies.keys.associate { lib ->
@@ -747,7 +747,7 @@ fun rebuildCacheForDirtyFiles(
     }
 
     val libFile = KotlinLibraryFile(library)
-    val dirtySrcFiles = dirtyFiles?.compactMap { KotlinSourceFile(it) } ?: KotlinLoadedLibraryHeader(library, internationService).sourceFileFingerprints.keys
+    val dirtySrcFiles = dirtyFiles?.memoryOptimizedMap { KotlinSourceFile(it) } ?: KotlinLoadedLibraryHeader(library, internationService).sourceFileFingerprints.keys
 
     val modifiedFiles = mapOf(libFile to dirtySrcFiles.associateWith { emptyMetadata })
 
@@ -757,7 +757,7 @@ fun rebuildCacheForDirtyFiles(
     val currentIrModule = loadedIr.loadedFragments[libFile] ?: notFoundIcError("loaded fragment", libFile)
     val dirtyIrFiles = dirtyFiles?.let {
         val files = it.toSet()
-        currentIrModule.files.compactFilter { irFile -> irFile.fileEntry.name in files }
+        currentIrModule.files.memoryOptimizedFilter { irFile -> irFile.fileEntry.name in files }
     } ?: currentIrModule.files
 
     val compilerWithIC = JsIrCompilerWithIC(
@@ -773,7 +773,7 @@ fun rebuildCacheForDirtyFiles(
     loadedIr.loadUnboundSymbols()
     internationService.clear()
 
-    val fragments = compilerWithIC.compile(loadedIr.loadedFragments.values, dirtyIrFiles, mainArguments).compactMap { it() }
+    val fragments = compilerWithIC.compile(loadedIr.loadedFragments.values, dirtyIrFiles, mainArguments).memoryOptimizedMap { it() }
 
     return currentIrModule to dirtyIrFiles.zip(fragments)
 }

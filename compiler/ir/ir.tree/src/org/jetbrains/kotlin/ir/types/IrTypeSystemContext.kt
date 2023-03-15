@@ -268,7 +268,7 @@ interface IrTypeSystemContext : TypeSystemContext, TypeSystemCommonSuperTypesCon
 
         val newArguments = ArrayList<IrTypeArgument>(typeArguments.size)
 
-        val typeSubstitutor = IrCapturedTypeSubstitutor(typeParameters.compactMap { it.symbol }, typeArguments, capturedTypes, irBuiltIns)
+        val typeSubstitutor = IrCapturedTypeSubstitutor(typeParameters.memoryOptimizedMap { it.symbol }, typeArguments, capturedTypes, irBuiltIns)
 
         for (index in typeArguments.indices) {
             val oldArgument = typeArguments[index]
@@ -341,12 +341,12 @@ interface IrTypeSystemContext : TypeSystemContext, TypeSystemCommonSuperTypesCon
         isExtensionFunction: Boolean,
         attributes: List<AnnotationMarker>?
     ): SimpleTypeMarker {
-        val ourAnnotations = attributes?.compactFilterIsInstance<IrConstructorCall>()
+        val ourAnnotations = attributes?.memoryOptimizedFilterIsInstance<IrConstructorCall>()
         require(ourAnnotations?.size == attributes?.size)
         return IrSimpleTypeImpl(
             constructor as IrClassifierSymbol,
             if (nullable) SimpleTypeNullability.MARKED_NULLABLE else SimpleTypeNullability.DEFINITELY_NOT_NULL,
-            arguments.compactMap { it as IrTypeArgument },
+            arguments.memoryOptimizedMap { it as IrTypeArgument },
             ourAnnotations ?: emptyList()
         )
     }
@@ -410,7 +410,7 @@ interface IrTypeSystemContext : TypeSystemContext, TypeSystemCommonSuperTypesCon
 
     override fun KotlinTypeMarker.getAttributes(): List<AnnotationMarker> {
         require(this is IrType)
-        return this.annotations.compactMap { object : AnnotationMarker, IrElement by it {} }
+        return this.annotations.memoryOptimizedMap { object : AnnotationMarker, IrElement by it {} }
     }
 
     override fun KotlinTypeMarker.hasCustomAttributes(): Boolean {
@@ -488,7 +488,7 @@ interface IrTypeSystemContext : TypeSystemContext, TypeSystemCommonSuperTypesCon
         getUnsubstitutedUnderlyingType()?.let { type ->
             // Taking only the type parameters of the class (and not its outer classes) is OK since inner classes are always top level
             IrTypeSubstitutor(
-                (this as IrType).getClass()!!.typeParameters.compactMap { it.symbol },
+                (this as IrType).getClass()!!.typeParameters.memoryOptimizedMap { it.symbol },
                 (this as? IrSimpleType)?.arguments.orEmpty(),
                 irBuiltIns
             ).substitute(type as IrType)
@@ -572,7 +572,7 @@ interface IrTypeSystemContext : TypeSystemContext, TypeSystemCommonSuperTypesCon
 
     override fun substitutionSupertypePolicy(type: SimpleTypeMarker): TypeCheckerState.SupertypesPolicy {
         require(type is IrSimpleType)
-        val parameters = extractTypeParameters((type.classifier as IrClassSymbol).owner).compactMap { it.symbol }
+        val parameters = extractTypeParameters((type.classifier as IrClassSymbol).owner).memoryOptimizedMap { it.symbol }
         val typeSubstitutor = IrTypeSubstitutor(parameters, type.arguments, irBuiltIns)
 
         return object : TypeCheckerState.SupertypesPolicy.DoCustomTransform() {

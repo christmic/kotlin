@@ -120,12 +120,12 @@ private fun IrSimpleFunction.createSuspendFunctionStub(context: CommonBackendCon
         val substitutionMap = makeTypeParameterSubstitutionMap(this, function)
         function.copyReceiverParametersFrom(this, substitutionMap)
 
-        function.overriddenSymbols = function.overriddenSymbols compactPlus overriddenSymbols.compactMap {
+        function.overriddenSymbols = function.overriddenSymbols memoryOptimizedPlus overriddenSymbols.memoryOptimizedMap {
             factory.stageController.restrictTo(it.owner) {
                 it.owner.getOrCreateFunctionWithContinuationStub(context).symbol
             }
         }
-        function.valueParameters = valueParameters.compactMap { it.copyTo(function) }
+        function.valueParameters = valueParameters.memoryOptimizedMap { it.copyTo(function) }
 
         val mapping = mutableMapOf<IrValueSymbol, IrValueSymbol>()
         valueParameters.forEach { mapping[it.symbol] = function.valueParameters[it.index].symbol }

@@ -40,7 +40,7 @@ abstract class DefaultArgumentFunctionFactory(open val context: CommonBackendCon
     }
 
     protected fun IrFunction.copyValueParametersFrom(original: IrFunction, wrapWithNullable: Boolean = true) {
-        valueParameters = original.valueParameters.compactMap {
+        valueParameters = original.valueParameters.memoryOptimizedMap {
             val newType = it.type.remapTypeParameters(original.classIfConstructor, classIfConstructor)
             val makeNullable = wrapWithNullable && it.defaultValue != null &&
                     (context.ir.unfoldInlineClassType(it.type) ?: it.type) !in context.irBuiltIns.primitiveIrTypes
@@ -122,7 +122,7 @@ abstract class DefaultArgumentFunctionFactory(open val context: CommonBackendCon
 
                     if (forceSetOverrideSymbols) {
                         (defaultsFunction as IrSimpleFunction).overriddenSymbols =
-                            defaultsFunction.overriddenSymbols compactPlus declaration.overriddenSymbols.compactMapNotNull {
+                            defaultsFunction.overriddenSymbols memoryOptimizedPlus declaration.overriddenSymbols.memoryOptimizedMapNotNull {
                                 generateDefaultsFunction(
                                     it.owner,
                                     skipInlineMethods,
@@ -201,7 +201,7 @@ abstract class DefaultArgumentFunctionFactory(open val context: CommonBackendCon
             parent = declaration.parent
             generateDefaultArgumentStubFrom(declaration, useConstructorMarker)
             // TODO some annotations are needed (e.g. @JvmStatic), others need different values (e.g. @JvmName), the rest are redundant.
-            annotations = annotations compactPlus copiedAnnotations
+            annotations = annotations memoryOptimizedPlus copiedAnnotations
         }
     }
 }

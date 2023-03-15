@@ -49,7 +49,7 @@ fun generateOverriddenFunctionSymbols(
     declaration: IrSimpleFunction,
     symbolTable: ReferenceSymbolTable
 ) {
-    declaration.overriddenSymbols = declaration.descriptor.overriddenDescriptors.compactMap {
+    declaration.overriddenSymbols = declaration.descriptor.overriddenDescriptors.memoryOptimizedMap {
         symbolTable.referenceSimpleFunction(it.original)
     }
 }

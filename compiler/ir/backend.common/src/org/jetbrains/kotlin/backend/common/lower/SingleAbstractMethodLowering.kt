@@ -176,7 +176,7 @@ abstract class SingleAbstractMethodLowering(val context: CommonBackendContext) :
             setSourceRange(createFor)
         }.apply {
             createImplicitParameterDeclarationWithWrappedDescriptor()
-            superTypes = listOf(superType) compactPlus getAdditionalSupertypes(superType)
+            superTypes = listOf(superType) memoryOptimizedPlus getAdditionalSupertypes(superType)
             parent = enclosingContainer!!
         }
 
@@ -220,7 +220,7 @@ abstract class SingleAbstractMethodLowering(val context: CommonBackendContext) :
             overriddenSymbols = listOf(originalSuperMethod.symbol)
             dispatchReceiverParameter = subclass.thisReceiver!!.copyTo(this)
             extensionReceiverParameter = originalSuperMethod.extensionReceiverParameter?.copyTo(this)
-            valueParameters = originalSuperMethod.valueParameters.compactMap { it.copyTo(this) }
+            valueParameters = originalSuperMethod.valueParameters.memoryOptimizedMap { it.copyTo(this) }
             body = context.createIrBuilder(symbol).irBlockBody {
                 +irReturn(
                     irCall(

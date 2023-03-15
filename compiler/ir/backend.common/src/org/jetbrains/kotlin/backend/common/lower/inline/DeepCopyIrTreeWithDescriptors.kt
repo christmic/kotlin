@@ -53,7 +53,7 @@ internal class DeepCopyIrTreeWithSymbolsForInliner(
             arguments: List<IrTypeArgument>,
             erasedParameters: MutableSet<IrTypeParameterSymbol>?
         ) =
-            arguments.compactMap { argument ->
+            arguments.memoryOptimizedMap { argument ->
                 (argument as? IrTypeProjection)?.let { proj ->
                     remapTypeAndOptionallyErase(proj.type, erasedParameters)?.let { newType ->
                         makeTypeProjection(newType, proj.variance)
@@ -111,7 +111,7 @@ internal class DeepCopyIrTreeWithSymbolsForInliner(
                 kotlinType = null
                 this.classifier = symbolRemapper.getReferencedClassifier(classifier)
                 arguments = remapTypeArguments(type.arguments, erasedParameters)
-                annotations = type.annotations.compactMap { it.transform(copier, null) as IrConstructorCall }
+                annotations = type.annotations.memoryOptimizedMap { it.transform(copier, null) as IrConstructorCall }
             }
         }
     }

@@ -60,10 +60,10 @@ class PrivateMembersLowering(val context: JsIrBackendContext) : DeclarationTrans
         }
 
         staticFunction.typeParameters =
-            staticFunction.typeParameters compactPlus function.typeParameters.compactMap { it.deepCopyWithSymbols(staticFunction) }
+            staticFunction.typeParameters memoryOptimizedPlus function.typeParameters.memoryOptimizedMap { it.deepCopyWithSymbols(staticFunction) }
 
         staticFunction.extensionReceiverParameter = function.extensionReceiverParameter?.copyTo(staticFunction)
-        staticFunction.valueParameters = staticFunction.valueParameters compactPlus buildValueParameter(staticFunction) {
+        staticFunction.valueParameters = staticFunction.valueParameters memoryOptimizedPlus buildValueParameter(staticFunction) {
             origin = STATIC_THIS_PARAMETER
             name = Name.identifier("\$this")
             index = 0
@@ -72,7 +72,7 @@ class PrivateMembersLowering(val context: JsIrBackendContext) : DeclarationTrans
 
         function.correspondingStatic = staticFunction
 
-        staticFunction.valueParameters = staticFunction.valueParameters compactPlus function.valueParameters.compactMap {
+        staticFunction.valueParameters = staticFunction.valueParameters memoryOptimizedPlus function.valueParameters.memoryOptimizedMap {
             // TODO better way to avoid copying default value
             it.copyTo(staticFunction, index = it.index + 1, defaultValue = null)
         }

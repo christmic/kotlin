@@ -64,7 +64,7 @@ class JsDefaultArgumentStubGenerator(override val context: JsIrBackendContext) :
 
         val variables = hashMapOf<IrValueParameter, IrValueParameter>()
 
-        valueParameters = valueParameters.compactMap { param ->
+        valueParameters = valueParameters.memoryOptimizedMap { param ->
             param.takeIf { it.defaultValue != null }
                 ?.copyTo(this, isAssignable = true, origin = JsLoweredDeclarationOrigin.JS_SHADOWED_DEFAULT_PARAMETER)
                 ?.also { new -> variables[param] = new } ?: param
@@ -112,7 +112,7 @@ class JsDefaultArgumentStubGenerator(override val context: JsIrBackendContext) :
                     context.additionalExportedDeclarations.add(defaultFunStub)
 
                     if (!originalFun.hasAnnotation(JsAnnotations.jsNameFqn)) {
-                        annotations = annotations compactPlus originalFun.generateJsNameAnnotationCall()
+                        annotations = annotations memoryOptimizedPlus originalFun.generateJsNameAnnotationCall()
                     }
                 }
             }
@@ -125,7 +125,7 @@ class JsDefaultArgumentStubGenerator(override val context: JsIrBackendContext) :
             }
 
         originalFun.annotations = irrelevantAnnotations
-        defaultFunStub.annotations = defaultFunStub.annotations compactPlus exportAnnotations
+        defaultFunStub.annotations = defaultFunStub.annotations memoryOptimizedPlus exportAnnotations
         originalFun.origin = JsLoweredDeclarationOrigin.JS_SHADOWED_EXPORT
 
         return listOf(originalFun, defaultFunStub)

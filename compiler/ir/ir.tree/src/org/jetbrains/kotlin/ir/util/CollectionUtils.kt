@@ -5,42 +5,75 @@
 
 package org.jetbrains.kotlin.ir.util
 
+import org.jetbrains.kotlin.util.collectionUtils.filterIsInstanceAnd
 import org.jetbrains.kotlin.utils.SmartList
 import kotlin.math.min
 
-inline fun <T, R> Collection<T>.compactMap(transform: (T) -> R): List<R> {
+/**
+ * A memory-optimized version of [Iterable.map].
+ * @see Iterable.map
+ */
+inline fun <T, R> Collection<T>.memoryOptimizedMap(transform: (T) -> R): List<R> {
     if (isEmpty()) return emptyList()
     if (size == 1) return SmartList(transform(first()))
     return mapTo(ArrayList(size), transform)
 }
 
-inline fun <T, R : Any> Collection<T>.compactMapNotNull(transform: (T) -> R?): List<R> {
+/**
+ * A memory-optimized version of [Iterable.mapNotNull].
+ * @see Iterable.mapNotNull
+ */
+inline fun <T, R : Any> Collection<T>.memoryOptimizedMapNotNull(transform: (T) -> R?): List<R> {
     return mapNotNullTo(ArrayList(), transform).smartCompact()
 }
 
-inline fun <T, R> Collection<T>.compactMapIndexed(transform: (index: Int, T) -> R): List<R> {
+/**
+ * A memory-optimized version of [Iterable.mapIndexed].
+ * @see Iterable.mapIndexed
+ */
+inline fun <T, R> Collection<T>.memoryOptimizedMapIndexed(transform: (index: Int, T) -> R): List<R> {
     if (isEmpty()) return emptyList()
     if (size == 1) return SmartList(transform(0, first()))
     return mapIndexedTo(ArrayList<R>(size), transform)
 }
 
-inline fun <T, R> Collection<T>.compactFlatMap(transform: (T) -> Iterable<R>): List<R> {
+/**
+ * A memory-optimized version of [Iterable.flatMap].
+ * @see Iterable.flatMap
+ */
+inline fun <T, R> Collection<T>.memoryOptimizedFlatMap(transform: (T) -> Iterable<R>): List<R> {
     return flatMapTo(ArrayList<R>(), transform).smartCompact()
 }
 
-inline fun <T> Collection<T>.compactFilter(predicate: (T) -> Boolean): List<T> {
+/**
+ * A memory-optimized version of [Iterable.filter].
+ * @see Iterable.filter
+ */
+inline fun <T> Collection<T>.memoryOptimizedFilter(predicate: (T) -> Boolean): List<T> {
     return filterTo(ArrayList(), predicate).smartCompact()
 }
 
-inline fun <T> Collection<T>.compactFilterNot(predicate: (T) -> Boolean): List<T> {
+/**
+ * A memory-optimized version of [Iterable.filterNot].
+ * @see Iterable.filterNot
+ */
+inline fun <T> Collection<T>.memoryOptimizedFilterNot(predicate: (T) -> Boolean): List<T> {
     return filterNotTo(ArrayList(), predicate).smartCompact()
 }
 
-inline fun <reified T> Collection<*>.compactFilterIsInstance(): List<T> {
+/**
+ * A memory-optimized version of [Iterable.filterIsInstance].
+ * @see Iterable.filterIsInstance
+ */
+inline fun <reified T> Collection<*>.memoryOptimizedFilterIsInstance(): List<T> {
     return filterIsInstanceTo(ArrayList<T>()).smartCompact()
 }
 
-infix fun <T> List<T>.compactPlus(elements: List<T>): List<T> =
+/**
+ * A memory-optimized version of [Iterable.plus].
+ * @see Iterable.plus
+ */
+infix fun <T> List<T>.memoryOptimizedPlus(elements: List<T>): List<T> =
     when (val resultSize = size + elements.size) {
         0 -> emptyList()
         1 -> ifEmpty { elements }
@@ -50,7 +83,11 @@ infix fun <T> List<T>.compactPlus(elements: List<T>): List<T> =
         }
     }
 
-infix fun <T> List<T>.compactPlus(element: T): List<T> =
+/**
+ * A memory-optimized version of [Iterable.plus].
+ * @see Iterable.plus
+ */
+infix fun <T> List<T>.memoryOptimizedPlus(element: T): List<T> =
     when (size) {
         0 -> SmartList(element)
         else -> ArrayList<T>(size + 1).also {
@@ -59,19 +96,23 @@ infix fun <T> List<T>.compactPlus(element: T): List<T> =
         }
     }
 
-infix fun <T, R> Collection<T>.compactZip(other: Collection<R>): List<Pair<T, R>> {
+/**
+ * A memory-optimized version of [Iterable.zip].
+ * @see Iterable.zip
+ */
+infix fun <T, R> Collection<T>.memoryOptimizedZip(other: Collection<R>): List<Pair<T, R>> {
     if (isEmpty() || other.isEmpty()) return emptyList()
     if (min(size, other.size) == 1) return SmartList(first() to other.first())
     return zip(other) { t1, t2 -> t1 to t2 }
 }
 
 /**
- * It's a stricter variant of the `singleOrNull` method.
- * The only difference is when there is more than 1 element in the `Sequence`, then it will throw an error
+ * [Sequence] variant of [org.jetbrains.kotlin.backend.common.atMostOne]
  * So, when:
  * - there is no element then `null` will be returned
  * - there is a single element then the element will be returned
  * - there is more than one element then the error will be thrown
+ * @see org.jetbrains.kotlin.backend.common.atMostOne
  */
 fun <T> Sequence<T>.atMostOne(): T? {
     val iterator = iterator()
@@ -83,15 +124,21 @@ fun <T> Sequence<T>.atMostOne(): T? {
     return single
 }
 
+/**
+ * The variant of [Iterable.filterIsInstanceAnd] extension function but to find the first element
+ * which is an instance of type [T] and satisfies [predicate] condition
+ * @see Iterable.filterIsInstanceAnd
+ */
 inline fun <reified T> Iterable<*>.findIsInstanceAnd(predicate: (T) -> Boolean): T? {
     for (element in this) if (element is T && predicate(element)) return element
     return null
 }
 
 /**
- * The same as `ArrayList::compact` extension function, but it could be used with the
- * immutable list type (without `trimToSize` for the collections with more than 1 element)
- * and return mutable `SmartList` for single element instead of `java.collections.SingletonList` for single element container
+ * The same as [org.jetbrains.kotlin.utils.compact] extension function, but it could be used with the
+ * immutable list type (without [java.util.ArrayList.trimToSize] for the collections with more than 1 element)
+ * and return mutable [SmartList] for single element instead of [java.util.Collections.SingletonList] for single element container
+ * @see org.jetbrains.kotlin.utils.compact
  */
 fun <T> List<T>.smartCompact(): List<T> =
     when (size) {

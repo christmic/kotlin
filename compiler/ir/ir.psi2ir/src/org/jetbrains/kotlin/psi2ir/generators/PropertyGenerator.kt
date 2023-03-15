@@ -28,7 +28,7 @@ import org.jetbrains.kotlin.ir.expressions.IrExpressionBody
 import org.jetbrains.kotlin.ir.expressions.IrStatementOrigin
 import org.jetbrains.kotlin.ir.expressions.impl.IrGetValueImpl
 import org.jetbrains.kotlin.psi.*
-import org.jetbrains.kotlin.ir.util.compactMap
+import org.jetbrains.kotlin.ir.util.memoryOptimizedMap
 import org.jetbrains.kotlin.psi.psiUtil.endOffset
 import org.jetbrains.kotlin.psi.psiUtil.startOffsetSkippingComments
 import org.jetbrains.kotlin.psi2ir.pureEndOffsetOrUndefined
@@ -243,7 +243,7 @@ internal class PropertyGenerator(declarationGenerator: DeclarationGenerator) : D
 
     private fun IrProperty.generateOverrides(propertyDescriptor: PropertyDescriptor) {
         overriddenSymbols =
-            propertyDescriptor.overriddenDescriptors.compactMap { overriddenPropertyDescriptor ->
+            propertyDescriptor.overriddenDescriptors.memoryOptimizedMap { overriddenPropertyDescriptor ->
                 context.symbolTable.referenceProperty(overriddenPropertyDescriptor.original)
             }
     }

@@ -79,7 +79,7 @@ internal class ScriptGenerator(declarationGenerator: DeclarationGenerator) : Dec
             // TODO: implement implicit receiver parameters handling properly
             var parametersIndex = 0
 
-            irScript.earlierScripts = context.extensions.getPreviousScripts()?.compactFilter {
+            irScript.earlierScripts = context.extensions.getPreviousScripts()?.memoryOptimizedFilter {
                 // TODO: probably unnecessary filtering
                 it.owner != irScript && it.descriptor !in importedScripts
             }
@@ -104,7 +104,7 @@ internal class ScriptGenerator(declarationGenerator: DeclarationGenerator) : Dec
 
             val explicitCallParams = descriptor.explicitConstructorParameters.map(::createValueParameter)
 
-            irScript.explicitCallParameters = descriptor.explicitConstructorParameters.compactMap {
+            irScript.explicitCallParameters = descriptor.explicitConstructorParameters.memoryOptimizedMap {
                 IrVariableImpl(
                     UNDEFINED_OFFSET, UNDEFINED_OFFSET,
                     IrDeclarationOrigin.SCRIPT_CALL_PARAMETER, IrVariableSymbolImpl(),
@@ -114,7 +114,7 @@ internal class ScriptGenerator(declarationGenerator: DeclarationGenerator) : Dec
                 ).also { it.parent = irScript }
             }
 
-            irScript.implicitReceiversParameters = descriptor.implicitReceivers.compactMap {
+            irScript.implicitReceiversParameters = descriptor.implicitReceivers.memoryOptimizedMap {
                 makeParameter(it.thisAsReceiverParameter, IrDeclarationOrigin.SCRIPT_IMPLICIT_RECEIVER, parametersIndex++)
             }
 

@@ -210,7 +210,7 @@ fun translateCall(
             JsNameRef(Namer.CALL_FUNCTION, qPrototype)
         }
 
-        return JsInvocation(callRef, jsDispatchReceiver?.let { receiver -> listOf(receiver) compactPlus arguments } ?: arguments)
+        return JsInvocation(callRef, jsDispatchReceiver?.let { receiver -> listOf(receiver) memoryOptimizedPlus arguments } ?: arguments)
     }
 
     val varargParameterIndex = function.varargParameterIndex()
@@ -289,7 +289,7 @@ fun translateCall(
             }
         }
     } else {
-        JsInvocation(ref, listOfNotNull(jsExtensionReceiver) compactPlus arguments)
+        JsInvocation(ref, listOfNotNull(jsExtensionReceiver) memoryOptimizedPlus arguments)
     }
 }
 
@@ -403,7 +403,7 @@ fun translateCallArguments(
             jsArgument.takeIf { !isEmptyExternalVararg || i != size - 1 }
         }
         .dropLastWhile { it == null }
-        .compactMap { it ?: jsUndefined }
+        .memoryOptimizedMap { it ?: jsUndefined }
 
     check(!expression.symbol.isSuspend) { "Suspend functions should be lowered" }
     return arguments

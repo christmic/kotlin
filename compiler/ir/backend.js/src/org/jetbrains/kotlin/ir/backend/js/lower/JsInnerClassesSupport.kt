@@ -16,7 +16,7 @@ import org.jetbrains.kotlin.ir.builders.declarations.buildConstructor
 import org.jetbrains.kotlin.ir.builders.declarations.buildField
 import org.jetbrains.kotlin.ir.builders.declarations.buildValueParameter
 import org.jetbrains.kotlin.ir.declarations.*
-import org.jetbrains.kotlin.ir.util.compactPlus
+import org.jetbrains.kotlin.ir.util.memoryOptimizedPlus
 import org.jetbrains.kotlin.ir.util.copyTo
 import org.jetbrains.kotlin.ir.util.copyTypeParametersFrom
 import org.jetbrains.kotlin.ir.util.defaultType
@@ -98,7 +98,7 @@ class JsInnerClassesSupport(mapping: JsMapping, private val irFactory: IrFactory
             newValueParameters += p.copyTo(newConstructor, index = p.index + 1)
         }
 
-        newConstructor.valueParameters = newConstructor.valueParameters compactPlus newValueParameters
+        newConstructor.valueParameters = newConstructor.valueParameters memoryOptimizedPlus newValueParameters
 
         return newConstructor
     }

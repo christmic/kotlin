@@ -34,7 +34,7 @@ class ES6ConstructorBoxParameterOptimizationLowering(private val context: JsIrBa
             containerFunction?.isEs6ConstructorReplacement == true && !containerFunction.parentAsClass.requiredToHaveBoxParameter()
 
         if (containerFunction != null && shouldRemoveBoxRelatedDeclarationsAndStatements && irBody is IrBlockBody) {
-            containerFunction.valueParameters = containerFunction.valueParameters.compactFilterNot { it.isBoxParameter }
+            containerFunction.valueParameters = containerFunction.valueParameters.memoryOptimizedFilterNot { it.isBoxParameter }
         }
 
         irBody.transformChildrenVoid(object : IrElementTransformerVoid() {

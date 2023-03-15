@@ -32,8 +32,8 @@ class DeepCopyTypeRemapper(
                 null,
                 symbolRemapper.getReferencedClassifier(type.classifier),
                 type.nullability,
-                type.arguments.compactMap { remapTypeArgument(it) },
-                type.annotations.compactMap { it.transform(deepCopy, null) as IrConstructorCall },
+                type.arguments.memoryOptimizedMap { remapTypeArgument(it) },
+                type.annotations.memoryOptimizedMap { it.transform(deepCopy, null) as IrConstructorCall },
                 type.abbreviation?.remapTypeAbbreviation()
             )
             else -> type
@@ -50,7 +50,7 @@ class DeepCopyTypeRemapper(
         IrTypeAbbreviationImpl(
             symbolRemapper.getReferencedTypeAlias(typeAlias),
             hasQuestionMark,
-            arguments.compactMap { remapTypeArgument(it) },
+            arguments.memoryOptimizedMap { remapTypeArgument(it) },
             annotations
         )
 }

@@ -141,8 +141,8 @@ abstract class AbstractSuspendFunctionsLowering<C : CommonBackendContext>(val co
             }.apply {
                 parent = irFunction.parent
                 createParameterDeclarations()
-                typeParameters = irFunction.typeParameters.compactMap { typeParam ->
-                    typeParam.copyToWithoutSuperTypes(this).apply { superTypes = superTypes compactPlus typeParam.superTypes }
+                typeParameters = irFunction.typeParameters.memoryOptimizedMap { typeParam ->
+                    typeParam.copyToWithoutSuperTypes(this).apply { superTypes = superTypes memoryOptimizedPlus typeParam.superTypes }
                 }
             }
 
@@ -186,11 +186,11 @@ abstract class AbstractSuspendFunctionsLowering<C : CommonBackendContext>(val co
                 coroutineClass.declarations += this
                 coroutineConstructors += this
 
-                valueParameters = functionParameters.compactMapIndexed { index, parameter ->
+                valueParameters = functionParameters.memoryOptimizedMapIndexed { index, parameter ->
                     parameter.copyTo(this, DECLARATION_ORIGIN_COROUTINE_IMPL, index)
                 }
                 val continuationParameter = coroutineBaseClassConstructor.valueParameters[0]
-                valueParameters = valueParameters compactPlus continuationParameter.copyTo(
+                valueParameters = valueParameters memoryOptimizedPlus continuationParameter.copyTo(
                     this, DECLARATION_ORIGIN_COROUTINE_IMPL,
                     index = valueParameters.size, type = continuationType
                 )
@@ -235,18 +235,18 @@ abstract class AbstractSuspendFunctionsLowering<C : CommonBackendContext>(val co
                 parent = coroutineClass
                 coroutineClass.declarations += this
 
-                typeParameters = stateMachineFunction.typeParameters.compactMap { parameter ->
+                typeParameters = stateMachineFunction.typeParameters.memoryOptimizedMap { parameter ->
                     parameter.copyToWithoutSuperTypes(this, origin = DECLARATION_ORIGIN_COROUTINE_IMPL)
-                        .apply { superTypes = superTypes compactPlus parameter.superTypes }
+                        .apply { superTypes = superTypes memoryOptimizedPlus parameter.superTypes }
                 }
 
-                valueParameters = stateMachineFunction.valueParameters.compactMapIndexed { index, parameter ->
+                valueParameters = stateMachineFunction.valueParameters.memoryOptimizedMapIndexed { index, parameter ->
                     parameter.copyTo(this, DECLARATION_ORIGIN_COROUTINE_IMPL, index)
                 }
 
                 this.createDispatchReceiverParameter()
 
-                overriddenSymbols = overriddenSymbols compactPlus stateMachineFunction.symbol
+                overriddenSymbols = overriddenSymbols memoryOptimizedPlus stateMachineFunction.symbol
             }
 
             buildStateMachine(function, irFunction, argumentToPropertiesMap)

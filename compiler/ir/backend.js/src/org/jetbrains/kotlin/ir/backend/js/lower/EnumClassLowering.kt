@@ -96,7 +96,7 @@ class EnumClassConstructorLowering(val context: JsCommonBackendContext) : Declar
         }.apply {
             parent = enumClass
             additionalParameters.forEachIndexed { index, (name, type) ->
-                valueParameters = valueParameters compactPlus JsIrBuilder.buildValueParameter(this, name, index, type)
+                valueParameters = valueParameters memoryOptimizedPlus JsIrBuilder.buildValueParameter(this, name, index, type)
             }
             copyParameterDeclarationsFrom(enumConstructor)
 
@@ -473,7 +473,7 @@ class EnumSyntheticFunctionsAndPropertiesLowering(
                     declaration.body = context.irFactory.createBlockBody(UNDEFINED_OFFSET, UNDEFINED_OFFSET) {
                         statements += context.createIrBuilder(declaration.symbol).irBlockBody {
                             +irCall(enumClass.initEntryInstancesFun!!.symbol)
-                        }.statements compactPlus originalBody.statements
+                        }.statements memoryOptimizedPlus originalBody.statements
                     }
                 }
             }
@@ -543,7 +543,7 @@ class EnumSyntheticFunctionsAndPropertiesLowering(
                         irBranch(
                             irEquals(irGet(nameParameter), irString(it.name.identifier)), irReturn(irCall(it.getInstanceFun!!))
                         )
-                    } compactPlus irElseBranch(irBlock {
+                    } memoryOptimizedPlus irElseBranch(irBlock {
                         +irCall(irClass.initEntryInstancesFun!!)
                         +irCall(throwISESymbol)
                     })
@@ -559,7 +559,7 @@ class EnumSyntheticFunctionsAndPropertiesLowering(
     }
 
     private fun IrBuilderWithScope.arrayOfEnumEntriesOf(enumClass: IrClass) =
-        irVararg(enumClass.defaultType, enumClass.enumEntries.compactMap { irCall(it.getInstanceFun!!) })
+        irVararg(enumClass.defaultType, enumClass.enumEntries.memoryOptimizedMap { irCall(it.getInstanceFun!!) })
 }
 
 private val IrClass.enumEntries: List<IrEnumEntry>

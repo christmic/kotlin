@@ -708,7 +708,7 @@ class LocalDeclarationsLowering(
             )
             // Type parameters of oldDeclaration may depend on captured type parameters, so deal with that after copying.
             newDeclaration.typeParameters.drop(newTypeParameters.size).forEach { tp ->
-                tp.superTypes = tp.superTypes.compactMap { localFunctionContext.remapType(it) }
+                tp.superTypes = tp.superTypes.memoryOptimizedMap { localFunctionContext.remapType(it) }
             }
 
             newDeclaration.parent = ownerParent
@@ -721,7 +721,7 @@ class LocalDeclarationsLowering(
             }
             newDeclaration.copyAttributes(oldDeclaration)
 
-            newDeclaration.valueParameters = newDeclaration.valueParameters compactPlus createTransformedValueParameters(
+            newDeclaration.valueParameters = newDeclaration.valueParameters memoryOptimizedPlus createTransformedValueParameters(
                 capturedValues, localFunctionContext, oldDeclaration, newDeclaration,
                 isExplicitLocalFunction = oldDeclaration.origin == IrDeclarationOrigin.LOCAL_FUNCTION
             )
@@ -831,7 +831,7 @@ class LocalDeclarationsLowering(
                 throw AssertionError("Local class constructor can't have extension receiver: ${ir2string(oldDeclaration)}")
             }
 
-            newDeclaration.valueParameters = newDeclaration.valueParameters compactPlus createTransformedValueParameters(
+            newDeclaration.valueParameters = newDeclaration.valueParameters memoryOptimizedPlus createTransformedValueParameters(
                 capturedValues, localClassContext, oldDeclaration, newDeclaration
             )
             newDeclaration.recordTransformedValueParameters(constructorContext)
