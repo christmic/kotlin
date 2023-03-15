@@ -11,21 +11,33 @@ import org.jetbrains.kotlin.ir.symbols.IrSymbol
 import org.jetbrains.kotlin.name.FqName
 
 object IrActualizer {
-    fun actualize(mainFragment: IrModuleFragment, dependentFragments: List<IrModuleFragment>) {
+    fun actualize(mainFragment: IrModuleFragment, dependentFragments: List<IrModuleFragment>): List<MetadataSource> {
         val (expectActualMap, typeAliasMap) = ExpectActualCollector(mainFragment, dependentFragments).collect()
         FunctionDefaultParametersActualizer(expectActualMap).actualize()
-        removeExpectDeclarations(dependentFragments, expectActualMap)
+        val removedExpectDeclarationMetadata = removeExpectDeclarations(dependentFragments, expectActualMap)
         addMissingFakeOverrides(expectActualMap, dependentFragments, typeAliasMap)
         linkExpectToActual(expectActualMap, dependentFragments)
         mergeIrFragments(mainFragment, dependentFragments)
+        return removedExpectDeclarationMetadata
     }
 
-    private fun removeExpectDeclarations(dependentFragments: List<IrModuleFragment>, expectActualMap: Map<IrSymbol, IrSymbol>) {
+    private fun removeExpectDeclarations(dependentFragments: List<IrModuleFragment>, expectActualMap: Map<IrSymbol, IrSymbol>): List<MetadataSource> {
+        val removingDeclarationMetadata = mutableListOf<MetadataSource>()
         for (fragment in dependentFragments) {
             for (file in fragment.files) {
-                file.declarations.removeIf { shouldRemoveExpectDeclaration(it, expectActualMap) }
+                file.declarations.removeIf {
+                    if (shouldRemoveExpectDeclaration(it, expectActualMap)) {
+                        if (it is IrMetadataSourceOwner) {
+                            it.metadata?.let { metadata -> removingDeclarationMetadata.add(metadata) }
+                        }
+                        true
+                    } else {
+                        false
+                    }
+                }
             }
         }
+        return removingDeclarationMetadata
     }
 
     private fun shouldRemoveExpectDeclaration(irDeclaration: IrDeclaration, expectActualMap: Map<IrSymbol, IrSymbol>): Boolean {

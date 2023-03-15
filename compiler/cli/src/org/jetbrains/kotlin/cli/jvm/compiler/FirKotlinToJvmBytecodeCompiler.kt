@@ -153,7 +153,7 @@ object FirKotlinToJvmBytecodeCompiler {
         performanceManager?.notifyIRTranslationStarted()
 
         val fir2IrExtensions = JvmFir2IrExtensions(moduleConfiguration, JvmIrDeserializerImpl(), JvmIrMangler)
-        val fir2IrResult = firResult.convertToIrAndActualizeForJvm(
+        val (fir2IrResult, _) = firResult.convertToIrAndActualizeForJvm(
             fir2IrExtensions,
             irGenerationExtensions,
             linkViaSignatures = moduleConfiguration.getBoolean(JVMConfigurationKeys.LINK_VIA_SIGNATURES)

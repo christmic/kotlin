@@ -68,7 +68,6 @@ import org.jetbrains.kotlin.utils.PathUtil
 import org.jetbrains.kotlin.utils.join
 import java.io.File
 import java.io.IOException
-import java.nio.charset.Charset
 
 private val K2JSCompilerArguments.granularity: JsGenerationGranularity
     get() = when {
@@ -493,14 +492,14 @@ class K2JsIrCompiler : CLICompiler<K2JSCompilerArguments>() {
         ) ?: return null
 
         // FIR2IR
-        val irResult = transformFirToIr(moduleStructure, outputs)
+        val fir2IrResult = transformFirToIr(moduleStructure, outputs)
 
         // Serialize klib
         if (arguments.irProduceKlibDir || arguments.irProduceKlibFile) {
             serializeFirKlib(
                 moduleStructure = moduleStructure,
                 firOutputs = outputs,
-                irResult = irResult,
+                fir2IrResult = fir2IrResult,
                 outputKlibPath = outputKlibPath,
                 messageCollector = messageCollector,
                 diagnosticsReporter = diagnosticsReporter,

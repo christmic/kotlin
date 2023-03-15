@@ -10,12 +10,14 @@ import org.jetbrains.kotlin.backend.konan.driver.PhaseEngine
 import org.jetbrains.kotlin.backend.konan.fir2Ir
 import org.jetbrains.kotlin.backend.konan.ir.KonanSymbols
 import org.jetbrains.kotlin.fir.backend.Fir2IrResult
+import org.jetbrains.kotlin.fir.declarations.FirDeclaration
 import org.jetbrains.kotlin.fir.pipeline.FirResult
 
 internal data class Fir2IrOutput(
         val firResult: FirResult,
         val fir2irResult: Fir2IrResult,
-        val symbols: KonanSymbols
+        val symbols: KonanSymbols,
+        val removedExpectDeclarations: Set<FirDeclaration>
 )
 
 internal val Fir2IrPhase = createSimpleNamedCompilerPhase(

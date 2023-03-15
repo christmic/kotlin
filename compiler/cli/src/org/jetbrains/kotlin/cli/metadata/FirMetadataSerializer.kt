@@ -163,6 +163,7 @@ internal class FirMetadataSerializer(
                     firFile,
                     session,
                     scopeSession,
+                    removedExpectDeclarations = null,
                     FirKLibSerializerExtension(session, metadataVersion, FirElementAwareSerializableStringTable()),
                     languageVersionSettings
                 )

@@ -61,9 +61,15 @@ class FirJsKlibBackendFacade(
         val libraries = resolveJsLibraries(module, testServices, configuration)
 
         if (firstTimeCompilation) {
-            if (module.frontendKind == FrontendKinds.FIR && module.languageVersionSettings.supportsFeature(LanguageFeature.MultiPlatformProjects)) {
-                IrActualizer.actualize(inputArtifact.mainModuleFragment, inputArtifact.dependentModuleFragments)
-            }
+            val removedExpectDeclarations =
+                if (module.frontendKind == FrontendKinds.FIR && module.languageVersionSettings.supportsFeature(LanguageFeature.MultiPlatformProjects)) {
+                    IrActualizer.actualize(
+                        inputArtifact.mainModuleFragment,
+                        inputArtifact.dependentModuleFragments)
+
+                } else {
+                    null
+                }
 
             serializeModuleIntoKlib(
                 configuration[CommonConfigurationKeys.MODULE_NAME]!!,
@@ -79,9 +85,10 @@ class FirJsKlibBackendFacade(
                 perFile = false,
                 containsErrorCode = inputArtifact.hasErrors,
                 abiVersion = KotlinAbiVersion.CURRENT, // TODO get from test file data
-                jsOutputName = null,
-                inputArtifact.serializeSingleFile
-            )
+                jsOutputName = null
+            ) {
+                inputArtifact.serializeSingleFile(it, removedExpectDeclarations)
+            }
         }
 
         // TODO: consider avoiding repeated libraries resolution

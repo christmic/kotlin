@@ -16,7 +16,9 @@ import org.jetbrains.kotlin.config.languageVersionSettings
 import org.jetbrains.kotlin.descriptors.deserialization.PlatformDependentTypeTransformer
 import org.jetbrains.kotlin.descriptors.impl.ModuleDescriptorImpl
 import org.jetbrains.kotlin.descriptors.konan.isNativeStdlib
-import org.jetbrains.kotlin.fir.backend.*
+import org.jetbrains.kotlin.fir.backend.Fir2IrExtensions
+import org.jetbrains.kotlin.fir.backend.Fir2IrResult
+import org.jetbrains.kotlin.fir.backend.Fir2IrVisibilityConverter
 import org.jetbrains.kotlin.fir.descriptors.FirModuleDescriptor
 import org.jetbrains.kotlin.fir.pipeline.convertToIrAndActualize
 import org.jetbrains.kotlin.incremental.components.LookupTracker
@@ -60,7 +62,7 @@ internal fun PhaseContext.fir2Ir(
         moduleDescriptor.setDependencies(ArrayList(dependencies))
     }
 
-    val fir2irResult = input.firResult.convertToIrAndActualize(
+    val (fir2irResult, removedExpectDeclarations) = input.firResult.convertToIrAndActualize(
             fir2IrExtensions,
             IrGenerationExtension.getInstances(config.project),
             linkViaSignatures = false,
@@ -69,7 +71,7 @@ internal fun PhaseContext.fir2Ir(
             visibilityConverter = Fir2IrVisibilityConverter.Default,
             kotlinBuiltIns = builtInsModule ?: DefaultBuiltIns.Instance,
     ).also {
-        (it.irModuleFragment.descriptor as? FirModuleDescriptor)?.let { it.allDependencyModules = librariesDescriptors }
+        (it.fir2IrResult.irModuleFragment.descriptor as? FirModuleDescriptor)?.let { it.allDependencyModules = librariesDescriptors }
     }
     assert(fir2irResult.irModuleFragment.name.isSpecial) {
         "`${fir2irResult.irModuleFragment.name}` must be Name.special, since it's required by KlibMetadataModuleDescriptorFactoryImpl.createDescriptorOptionalBuiltIns()"
@@ -77,7 +79,7 @@ internal fun PhaseContext.fir2Ir(
 
     val symbols = createKonanSymbols(fir2irResult)
     // TODO KT-55580 Invoke CopyDefaultValuesToActualPhase, same as PsiToir phase does.
-    return Fir2IrOutput(input.firResult, fir2irResult, symbols)
+    return Fir2IrOutput(input.firResult, fir2irResult, symbols, removedExpectDeclarations)
 }
 
 private fun PhaseContext.createKonanSymbols(

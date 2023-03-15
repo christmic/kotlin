@@ -21,8 +21,10 @@ import org.jetbrains.kotlin.fir.FirAnalyzerFacade
 import org.jetbrains.kotlin.fir.backend.*
 import org.jetbrains.kotlin.fir.backend.jvm.Fir2IrJvmSpecialAnnotationSymbolProvider
 import org.jetbrains.kotlin.fir.backend.jvm.FirJvmKotlinMangler
+import org.jetbrains.kotlin.fir.declarations.FirDeclaration
 import org.jetbrains.kotlin.fir.declarations.FirFile
 import org.jetbrains.kotlin.fir.descriptors.FirModuleDescriptor
+import org.jetbrains.kotlin.fir.pipeline.extractFirDeclarations
 import org.jetbrains.kotlin.fir.serialization.FirElementAwareSerializableStringTable
 import org.jetbrains.kotlin.fir.serialization.FirKLibSerializerExtension
 import org.jetbrains.kotlin.fir.serialization.serializeSingleFirFile
@@ -107,6 +109,8 @@ class Fir2IrJsResultsConverter(
         }
         val hasErrors = diagnosticsMap.any { entry -> entry.value.any { it.severity == Severity.ERROR } }
 
+        var removedExpectDeclarations: Set<FirDeclaration>? = null
+
         return IrBackendInput.JsIrBackendInput(
             mainIrPart,
             dependentIrParts,
@@ -115,13 +119,17 @@ class Fir2IrJsResultsConverter(
             configuration.incrementalDataProvider?.getSerializedData(sourceFiles) ?: emptyList(),
             expectDescriptorToSymbol = mutableMapOf(),
             hasErrors = hasErrors
-        ) { file ->
+        ) { file, removedExpectDeclarationMetadata ->
             val (firFile, components) = firFilesAndComponentsBySourceFile[file]
                 ?: error("cannot find FIR file by source file ${file.name} (${file.path})")
+            if (removedExpectDeclarations == null && removedExpectDeclarationMetadata != null) {
+                removedExpectDeclarations = removedExpectDeclarationMetadata.extractFirDeclarations()
+            }
             serializeSingleFirFile(
                 firFile,
                 components.session,
                 components.scopeSession,
+                removedExpectDeclarations,
                 FirKLibSerializerExtension(components.session, metadataVersion, FirElementAwareSerializableStringTable()),
                 configuration.languageVersionSettings,
             )

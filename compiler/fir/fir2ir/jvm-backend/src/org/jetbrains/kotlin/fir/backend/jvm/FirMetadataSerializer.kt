@@ -123,9 +123,8 @@ class FirMetadataSerializer(
         val message = when (metadata) {
             is FirMetadataSource.Class -> serializer!!.classProto(metadata.fir).build()
             is FirMetadataSource.File ->
-                serializer!!.packagePartProto(metadata.files.first().packageFqName, metadata.files).apply {
-                    serializerExtension.serializeJvmPackage(this)
-                }.build()
+                serializer!!.packagePartProto(metadata.files.first().packageFqName, metadata.files, removedExpectDeclarations = null)
+                    .apply { serializerExtension.serializeJvmPackage(this) }.build()
             is FirMetadataSource.Function -> {
                 val withTypeParameters = metadata.fir.copyToFreeAnonymousFunction(approximator)
                 serializationBindings.get(FirJvmSerializerExtension.METHOD_FOR_FIR_FUNCTION, metadata.fir)?.let {

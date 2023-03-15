@@ -65,12 +65,12 @@ abstract class FirAbstractInvalidationTest(
         )
 
         if (outputs != null) {
-            val irResult = transformFirToIr(moduleStructure, outputs)
+            val fir2IrResult = transformFirToIr(moduleStructure, outputs)
 
             serializeFirKlib(
                 moduleStructure = moduleStructure,
                 firOutputs = outputs,
-                irResult = irResult,
+                fir2IrResult = fir2IrResult,
                 outputKlibPath = outputKlibFile.absolutePath,
                 messageCollector = messageCollector,
                 diagnosticsReporter = diagnosticsReporter,

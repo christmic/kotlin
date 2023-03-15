@@ -111,7 +111,7 @@ class ClassicFrontend2IrConverter(
             icData,
             expectDescriptorToSymbol = expectDescriptorToSymbol,
             hasErrors
-        ) { file ->
+        ) { file, _ ->
             metadataSerializer.serializeScope(file, analysisResult.bindingContext, moduleFragment.descriptor)
         }
     }

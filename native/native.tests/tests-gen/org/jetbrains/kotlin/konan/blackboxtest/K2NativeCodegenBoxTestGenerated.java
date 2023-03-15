@@ -26240,6 +26240,12 @@ public class K2NativeCodegenBoxTestGenerated extends AbstractNativeCodegenBoxTes
                     public void testExpectProperty() throws Exception {
                         runTest("compiler/testData/codegen/box/multiplatform/k2/basic/expectProperty.kt");
                     }
+
+                    @Test
+                    @TestMetadata("removeExpectDeclarationsFromMetadata.kt")
+                    public void testRemoveExpectDeclarationsFromMetadata() throws Exception {
+                        runTest("compiler/testData/codegen/box/multiplatform/k2/basic/removeExpectDeclarationsFromMetadata.kt");
+                    }
                 }
 
                 @Nested
