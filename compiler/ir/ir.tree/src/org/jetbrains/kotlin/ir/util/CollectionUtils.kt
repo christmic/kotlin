@@ -76,7 +76,7 @@ inline fun <reified T> Collection<*>.memoryOptimizedFilterIsInstance(): List<T> 
 infix fun <T> List<T>.memoryOptimizedPlus(elements: List<T>): List<T> =
     when (val resultSize = size + elements.size) {
         0 -> emptyList()
-        1 -> ifEmpty { elements }
+        1 -> SmartList(if (isEmpty()) elements.first() else first())
         else -> ArrayList<T>(resultSize).also {
             it.addAll(this)
             it.addAll(elements)
