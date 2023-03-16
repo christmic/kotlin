@@ -52,6 +52,12 @@ class KlibBasedSymbolProvider(
         }
     }
 
+    private val presentPackages: Set<String> by lazy {
+        fragmentNamesInLibraries.keys.flatMap { fragmentName ->
+            generateSequence(fragmentName) { if (it.contains(".")) it.substringBeforeLast(".") else null }
+        }.toSet()
+    }
+
     private val annotationDeserializer = KlibBasedAnnotationDeserializer(session)
     private val constDeserializer = FirConstDeserializer(session, KlibMetadataSerializerProtocol)
     private val deserializationConfiguration = CompilerDeserializationConfiguration(session.languageVersionSettings)
@@ -182,7 +188,7 @@ class KlibBasedSymbolProvider(
     override fun isNewPlaceForBodyGeneration(classProto: ProtoBuf.Class) = false
 
     override fun getPackage(fqName: FqName): FqName? {
-        return if (fqName.toString() in fragmentNamesInLibraries) {
+        return if (fqName.toString() in presentPackages) {
             fqName
         } else {
             null
