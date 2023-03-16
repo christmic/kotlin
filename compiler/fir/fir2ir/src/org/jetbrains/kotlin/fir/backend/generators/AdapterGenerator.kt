@@ -239,7 +239,7 @@ internal class AdapterGenerator(
                             IrDeclarationOrigin.ADAPTER_PARAMETER_FOR_CALLABLE_REFERENCE
                         )
             }
-            irAdapterFunction.valueParameters = irAdapterFunction.valueParameters memoryOptimizedPlus parameterTypes.memoryOptimizedMapIndexed { index, parameterType ->
+            irAdapterFunction.valueParameters += parameterTypes.mapIndexed { index, parameterType ->
                 createAdapterParameter(
                     irAdapterFunction,
                     Name.identifier("p$index"),
@@ -677,7 +677,7 @@ internal class AdapterGenerator(
                 argumentType,
                 IrDeclarationOrigin.ADAPTER_PARAMETER_FOR_SUSPEND_CONVERSION
             )
-            irAdapterFunction.valueParameters = irAdapterFunction.valueParameters memoryOptimizedPlus parameterTypes.memoryOptimizedMapIndexed { index, parameterType ->
+            irAdapterFunction.valueParameters += parameterTypes.mapIndexed { index, parameterType ->
                 createAdapterParameter(
                     irAdapterFunction,
                     Name.identifier("p$index"),

@@ -111,7 +111,7 @@ class Fir2IrLazyClass(
         set(_) = mutationNotSupported()
 
     override var superTypes: List<IrType> by lazyVar(lock) {
-        fir.superTypeRefs.memoryOptimizedMap { it.toIrType(typeConverter) }
+        fir.superTypeRefs.map { it.toIrType(typeConverter) }
     }
 
     override var sealedSubclasses: List<IrClassSymbol> by lazyVar(lock) {
@@ -124,7 +124,7 @@ class Fir2IrLazyClass(
 
     override var thisReceiver: IrValueParameter? by lazyVar(lock) {
         symbolTable.enterScope(this)
-        val typeArguments = fir.typeParameters.memoryOptimizedMap {
+        val typeArguments = fir.typeParameters.map {
             IrSimpleTypeImpl(
                 classifierStorage.getCachedIrTypeParameter(it.symbol.fir)!!.symbol,
                 hasQuestionMark = false, arguments = emptyList(), annotations = emptyList()

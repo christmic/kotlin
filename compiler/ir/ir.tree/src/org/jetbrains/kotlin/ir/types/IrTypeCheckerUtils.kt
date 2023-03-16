@@ -5,7 +5,6 @@
 
 package org.jetbrains.kotlin.ir.types
 
-import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.ir.declarations.IrTypeParameter
 import org.jetbrains.kotlin.types.model.TypeConstructorMarker
 import org.jetbrains.kotlin.utils.newHashMapWithExpectedSize
@@ -21,8 +20,8 @@ class IrTypeSystemContextWithAdditionalAxioms(
         }
     }
 
-    private val firstTypeParameterConstructors = firstParameters.memoryOptimizedMap { it.symbol }
-    private val secondTypeParameterConstructors = secondParameters.memoryOptimizedMap { it.symbol }
+    private val firstTypeParameterConstructors = firstParameters.map { it.symbol }
+    private val secondTypeParameterConstructors = secondParameters.map { it.symbol }
     private val matchingTypeConstructors = firstTypeParameterConstructors
         .zip(secondTypeParameterConstructors)
         .toMap(newHashMapWithExpectedSize(firstTypeParameterConstructors.size))

@@ -24,7 +24,10 @@ import org.jetbrains.kotlin.ir.expressions.impl.IrSetFieldImpl
 import org.jetbrains.kotlin.ir.symbols.impl.IrValueParameterSymbolImpl
 import org.jetbrains.kotlin.ir.symbols.impl.IrVariableSymbolImpl
 import org.jetbrains.kotlin.ir.types.IrSimpleType
-import org.jetbrains.kotlin.ir.util.*
+import org.jetbrains.kotlin.ir.util.indexOrMinusOne
+import org.jetbrains.kotlin.ir.util.isCrossinline
+import org.jetbrains.kotlin.ir.util.isNoinline
+import org.jetbrains.kotlin.ir.util.varargElementType
 import org.jetbrains.kotlin.name.SpecialNames
 import org.jetbrains.kotlin.psi.KtDestructuringDeclaration
 import org.jetbrains.kotlin.psi.KtScript
@@ -79,7 +82,7 @@ internal class ScriptGenerator(declarationGenerator: DeclarationGenerator) : Dec
             // TODO: implement implicit receiver parameters handling properly
             var parametersIndex = 0
 
-            irScript.earlierScripts = context.extensions.getPreviousScripts()?.memoryOptimizedFilter {
+            irScript.earlierScripts = context.extensions.getPreviousScripts()?.filter {
                 // TODO: probably unnecessary filtering
                 it.owner != irScript && it.descriptor !in importedScripts
             }
@@ -104,7 +107,7 @@ internal class ScriptGenerator(declarationGenerator: DeclarationGenerator) : Dec
 
             val explicitCallParams = descriptor.explicitConstructorParameters.map(::createValueParameter)
 
-            irScript.explicitCallParameters = descriptor.explicitConstructorParameters.memoryOptimizedMap {
+            irScript.explicitCallParameters = descriptor.explicitConstructorParameters.map {
                 IrVariableImpl(
                     UNDEFINED_OFFSET, UNDEFINED_OFFSET,
                     IrDeclarationOrigin.SCRIPT_CALL_PARAMETER, IrVariableSymbolImpl(),
@@ -114,7 +117,7 @@ internal class ScriptGenerator(declarationGenerator: DeclarationGenerator) : Dec
                 ).also { it.parent = irScript }
             }
 
-            irScript.implicitReceiversParameters = descriptor.implicitReceivers.memoryOptimizedMap {
+            irScript.implicitReceiversParameters = descriptor.implicitReceivers.map {
                 makeParameter(it.thisAsReceiverParameter, IrDeclarationOrigin.SCRIPT_IMPLICIT_RECEIVER, parametersIndex++)
             }
 

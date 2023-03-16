@@ -636,13 +636,13 @@ class JvmSymbols(
     }
 
     override val getProgressionLastElementByReturnType: Map<IrClassifierSymbol, IrSimpleFunctionSymbol> by lazy(LazyThreadSafetyMode.PUBLICATION) {
-        progressionUtilClasses.asSequence()
-            .flatMap { klass ->
-                klass.functions
-                    .filter { it.owner.name.identifier == "getProgressionLastElement" }
-                    .map { it.owner.returnType.classifierOrFail to it }
+        progressionUtilClasses.flatMap { klass ->
+            klass.functions.filter {
+                it.owner.name.identifier == "getProgressionLastElement"
+            }.map {
+                it.owner.returnType.classifierOrFail to it
             }
-            .toMap()
+        }.toMap()
     }
 
 
