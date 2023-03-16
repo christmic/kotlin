@@ -161,7 +161,7 @@ abstract class KotlinToolRunner(
         executionContext.javaexec { spec ->
             @Suppress("DEPRECATION")
             if (GradleVersion.current() >= GradleVersion.version("7.0")) spec.mainClass.set(mainClass)
-            else spec.main = mainClass
+            else spec.mainClass.set(mainClass)
             spec.classpath = classpath
             spec.jvmArgs(jvmArgs)
             spec.systemProperties(systemProperties)

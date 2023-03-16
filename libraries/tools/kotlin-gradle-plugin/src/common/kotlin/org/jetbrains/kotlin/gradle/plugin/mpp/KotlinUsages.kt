@@ -23,6 +23,11 @@ object KotlinUsages {
     const val KOTLIN_CINTEROP = "kotlin-cinterop"
     const val KOTLIN_SOURCES = "kotlin-sources"
 
+    // Following two constants were removed in Gradle 8.0 from 'Usages' class
+    // Should be kept for backward compatibility until minimal supported Gradle version will become 8.0
+    private const val JAVA_RUNTIME_CLASSES = "java-runtime-classes"
+    private const val JAVA_RUNTIME_RESOURCES = "java-runtime-resources"
+
     val values = setOf(KOTLIN_API, KOTLIN_RUNTIME)
 
     private val jvmPlatformTypes: Set<KotlinPlatformType> = setOf(jvm, androidJvm)
