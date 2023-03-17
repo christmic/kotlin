@@ -174,6 +174,9 @@ class DiagnosticReporterByTrackingStrategy(
                 val expectedTypeArgumentsCount = diagnostic.descriptor.typeParameters.size
                 trace.report(WRONG_NUMBER_OF_TYPE_ARGUMENTS.on(reportElement, expectedTypeArgumentsCount, diagnostic.descriptor))
             }
+            else -> {
+                throw AssertionError("onTypeArguments should not be called with ${diagnostic::class.java}")
+            }
         }
     }
 
@@ -215,6 +218,9 @@ class DiagnosticReporterByTrackingStrategy(
                         originalTypeParameter?.containingDeclaration?.name ?: SpecialNames.NO_NAME_PROVIDED
                     )
                 )
+            }
+            else -> {
+                throw AssertionError("onCallReceiver should not be called with ${diagnostic::class.java}")
             }
         }
     }
@@ -366,6 +372,9 @@ class DiagnosticReporterByTrackingStrategy(
                 )
             )
             is ArgumentPassedTwice -> trace.report(ARGUMENT_PASSED_TWICE.on(nameReference))
+            else -> {
+                throw AssertionError()
+            }
         }
     }
 
@@ -386,6 +395,9 @@ class DiagnosticReporterByTrackingStrategy(
                         trace.report(NON_VARARG_SPREAD.on(context.languageVersionSettings, spreadElement))
                     }
                 }
+            }
+            else -> {
+                throw AssertionError("onCallArgumentSpread should not be called with ${diagnostic::class.java}")
             }
         }
     }
@@ -747,10 +759,16 @@ class DiagnosticReporterByTrackingStrategy(
                     trace.reportDiagnosticOnce(diagnostic)
                 }
             }
+            // ConstrainingTypeIsError means that some type isError, so it's reported somewhere else
             is ConstrainingTypeIsError -> {}
+            // LowerPriorityToPreserveCompatibility is not expected to report something
             is LowerPriorityToPreserveCompatibility -> {}
-            is NoSuccessfulFork -> {}
-            is NotEnoughInformationForTypeParameter<*> -> {}
+            // NoSuccessfulFork should not normally be here
+            // NotEnoughInformationForTypeParameterImpl is already considered above
+            is NoSuccessfulFork,
+            is NotEnoughInformationForTypeParameter<*> -> {
+                throw AssertionError("constraintError should not be called with ${error::class.java}")
+            }
         }
     }
 
