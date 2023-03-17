@@ -371,6 +371,9 @@ if (!buildProperties.inJpsBuildIdeaSync) {
             ":prepare:ide-plugin-dependencies:kotlin-compiler-fir-for-ide"
 }
 
+include ":build-tools-api",
+        ":build-tools"
+
 void intellij(String imlPath) {
     File imlFile = new File("${rootDir}/intellij/community/plugins/kotlin/${imlPath}")
     imlFile = imlFile.exists() ? imlFile : new File("${rootDir}/intellij/plugins/kotlin/${imlPath}")
@@ -822,3 +825,6 @@ if (buildProperties.isKotlinNativeEnabled) {
     include ':kotlin-native-shared'
     project(":kotlin-native-shared").projectDir = "$rootDir/kotlin-native/shared" as File
 }
+
+project(":build-tools-api").projectDir = "$rootDir/compiler/build-tools-api" as File
+project(":build-tools").projectDir = "$rootDir/compiler/build-tools-api/impl" as File
