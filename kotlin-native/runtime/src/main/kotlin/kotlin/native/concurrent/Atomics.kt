@@ -241,6 +241,110 @@ public class AtomicLong(public @Volatile var value: Long = 0)  {
 }
 
 /**
+ * Wrapper around Kotlin object with atomic operations.
+ *
+ * Legacy MM: An atomic reference to a frozen Kotlin object. Can be used in concurrent scenarious
+ * but frequently shall be of nullable type and be zeroed out once no longer needed.
+ * Otherwise memory leak could happen. To detect such leaks [kotlin.native.internal.GC.detectCycles]
+ * in debug mode could be helpful.
+ */
+@FrozenLegacyMM
+@LeakDetectorCandidate
+@NoReorderFields
+@OptIn(FreezingIsDeprecated::class)
+public class AtomicReference<T> {
+    private var value_: T
+
+    // A spinlock to fix potential ARC race.
+    private var lock: Int = 0
+
+    // Optimization for speeding up access.
+    private var cookie: Int = 0
+
+    /**
+     * Creates a new atomic reference pointing to given [ref].
+     * @throws InvalidMutabilityException with legacy MM if reference is not frozen.
+     */
+    constructor(value: T) {
+        if (this.isFrozen) {
+            checkIfFrozen(value)
+        }
+        value_ = value
+    }
+
+    /**
+     * The referenced value.
+     * Gets the value or sets the [new] value.
+     * Legacy MM: if [new] value is not null, it must be frozen or permanent object.
+     *
+     * @throws InvalidMutabilityException with legacy MM if the value is not frozen or a permanent object
+     */
+    public var value: T
+        get() = @Suppress("UNCHECKED_CAST")(getImpl() as T)
+        set(new) = setImpl(new)
+
+    /**
+     * Atomically sets to the given value [newValue] and returns the old value.
+     *
+     * @param newValue the new value
+     * @return the old value
+     */
+    public fun getAndSet(newValue: T): T = swap(newValue)
+
+    /**
+     * Compares value with [expected] and replaces it with [new] value if values matches.
+     * Note that comparison is identity-based, not value-based.
+     *
+     * Legacy MM: if [new] value is not null, it must be frozen or permanent object.
+     *
+     * @param expected the expected value
+     * @param new the new value
+     * @throws InvalidMutabilityException with legacy MM if the value is not frozen or a permanent object
+     * @return the old value
+     */
+    @GCUnsafeCall("Kotlin_AtomicReference_compareAndSwap")
+    external public fun compareAndSwap(expected: T, new: T): T
+
+    /**
+     * Atomically sets the value to the given updated value [new] if the current value equals the expected value [expected].
+     * Note that comparison is identity-based, not value-based.
+     *
+     * @param expected the expected value
+     * @param new the new value
+     * @return true if successful
+     */
+    @GCUnsafeCall("Kotlin_AtomicReference_compareAndSet")
+    external public fun compareAndSet(expected: T, new: T): Boolean
+
+    /**
+     * Returns the string representation of this object.
+     *
+     * @return string representation of this object
+     */
+    public override fun toString(): String =
+            "${debugString(this)} -> ${debugString(value)}"
+
+    internal fun swap(new: T): T {
+        while (true) {
+            val old = value
+            if (old === new) {
+                return old
+            }
+            if (compareAndSet(old, new)) {
+                return old
+            }
+        }
+    }
+
+    // Implementation details.
+    @GCUnsafeCall("Kotlin_AtomicReference_set")
+    private external fun setImpl(new: Any?): Unit
+
+    @GCUnsafeCall("Kotlin_AtomicReference_get")
+    private external fun getImpl(): Any?
+}
+
+/**
  * Wrapper around [kotlinx.cinterop.NativePtr] with atomic synchronized operations.
  *
  * Legacy MM: Atomic values and freezing: this type is unique with regard to freezing.
@@ -285,103 +389,6 @@ private fun idString(value: Any) = "${value.hashCode().toUInt().toString(16)}"
 private fun debugString(value: Any?): String {
     if (value == null) return "null"
     return "${value::class.qualifiedName}: ${idString(value)}"
-}
-
-/**
- * Wrapper around Kotlin object with atomic operations.
- *
- * Legacy MM: An atomic reference to a frozen Kotlin object. Can be used in concurrent scenarious
- * but frequently shall be of nullable type and be zeroed out once no longer needed.
- * Otherwise memory leak could happen. To detect such leaks [kotlin.native.internal.GC.detectCycles]
- * in debug mode could be helpful.
- */
-@FrozenLegacyMM
-@LeakDetectorCandidate
-@NoReorderFields
-@OptIn(FreezingIsDeprecated::class)
-public class AtomicReference<T> {
-    private var value_: T
-
-    // A spinlock to fix potential ARC race.
-    private var lock: Int = 0
-
-    // Optimization for speeding up access.
-    private var cookie: Int = 0
-
-    /**
-     * Creates a new atomic reference pointing to given [ref].
-     * @throws InvalidMutabilityException with legacy MM if reference is not frozen.
-     */
-    constructor(value: T) {
-        if (this.isFrozen) {
-            checkIfFrozen(value)
-        }
-        value_ = value
-    }
-
-    /**
-     * The referenced value.
-     * Gets the value or sets the [new] value.
-     * Legacy MM: if [new] value is not null, it must be frozen or permanent object.
-     *
-     * @throws InvalidMutabilityException with legacy MM if the value is not frozen or a permanent object
-     */
-    public var value: T
-        get() = @Suppress("UNCHECKED_CAST")(getImpl() as T)
-        set(new) = setImpl(new)
-
-    /**
-     * Compares value with [expected] and replaces it with [new] value if values matches.
-     * Note that comparison is identity-based, not value-based.
-     *
-     * Legacy MM: if [new] value is not null, it must be frozen or permanent object.
-     *
-     * @param expected the expected value
-     * @param new the new value
-     * @throws InvalidMutabilityException with legacy MM if the value is not frozen or a permanent object
-     * @return the old value
-     */
-    @GCUnsafeCall("Kotlin_AtomicReference_compareAndSwap")
-    external public fun compareAndSwap(expected: T, new: T): T
-
-    /**
-     * Compares value with [expected] and replaces it with [new] value if values matches.
-     * Note that comparison is identity-based, not value-based.
-     *
-     * @param expected the expected value
-     * @param new the new value
-     * @return true if successful
-     */
-    @GCUnsafeCall("Kotlin_AtomicReference_compareAndSet")
-    external public fun compareAndSet(expected: T, new: T): Boolean
-
-    /**
-     * Returns the string representation of this object.
-     *
-     * @return string representation of this object
-     */
-    public override fun toString(): String =
-            "${debugString(this)} -> ${debugString(value)}"
-
-    // TODO: Consider making this public.
-    internal fun swap(new: T): T {
-        while (true) {
-            val old = value
-            if (old === new) {
-                return old
-            }
-            if (compareAndSet(old, new)) {
-                return old
-            }
-        }
-    }
-
-    // Implementation details.
-    @GCUnsafeCall("Kotlin_AtomicReference_set")
-    private external fun setImpl(new: Any?): Unit
-
-    @GCUnsafeCall("Kotlin_AtomicReference_get")
-    private external fun getImpl(): Any?
 }
 
 /**
@@ -530,7 +537,7 @@ internal external fun <T> KMutableProperty0<T>.compareAndSetField(expectedValue:
  *
  * If property referenced by [this] has nontrivial setter it will not be called.
  *
- * Returns true if the actual field value before operation.
+ * Returns the field value before operation.
  *
  * Legacy MM: if [this] is a reference for a non-value represented field, [IllegalArgumentException] would be thrown.
  */
