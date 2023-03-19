@@ -21,7 +21,32 @@ import kotlin.concurrent.*
 @OptIn(FreezingIsDeprecated::class, ExperimentalStdlibApi::class)
 public class AtomicInt(public @Volatile var value: Int) {
     /**
-     * Increments the value by [delta] and returns the new value.
+     * Atomically sets the value to the given value [newValue] and returns the old value.
+     *
+     * @param newValue the new value
+     * @return the old value
+     */
+    public fun getAndSet(newValue: Int): Int = this::value.getAndSetField(newValue)
+
+    /**
+     * Atomically sets the value to the given updated value [new] if the current value equals the expected value [expected].
+     *
+     * @param expected the expected value
+     * @param new the new value
+     * @return true if successful
+     */
+    public fun compareAndSet(expected: Int, new: Int): Boolean = this::value.compareAndSetField(expected, new)
+
+    /**
+     * Atomically adds the given value [delta] to the current value and returns the old value.
+     *
+     * @param delta the value to add
+     * @return the old value
+     */
+    public fun getAndAdd(delta: Int): Int = this::value.getAndAddField(delta)
+
+    /**
+     * Atomically adds the given value [delta] to the current value and returns the new value.
      *
      * @param delta the value to add
      * @return the new value
@@ -29,6 +54,36 @@ public class AtomicInt(public @Volatile var value: Int) {
     public fun addAndGet(delta: Int): Int = this::value.getAndAddField(delta) + delta
 
     /**
+     * Atomically increments by one the current value and returns the old value.
+     *
+     * @return the old value
+     */
+    public fun getAndIncrement(): Int = this::value.getAndAddField(1)
+
+    /**
+     * Atomically increments by one the current value and returns the new value.
+     *
+     * @return the new value
+     */
+    public fun incrementAndGet(): Int = this::value.getAndAddField(1) + 1
+
+    /**
+     * Atomically decrements by one the current value and returns the new value.
+     *
+     * @return the new value
+     */
+    public fun decrementAndGet(): Int = this::value.getAndAddField(-1) - 1
+
+    /**
+     * Atomically decrements by one the current value and returns the old value.
+     *
+     * @return the old value
+     */
+    public fun getAndDecrement(): Int = this::value.getAndAddField(-1)
+
+
+    /**
+     * TODO: not consistent with JVM Atomic API, but can be easily impemented via compareAndSet
      * Compares value with [expected] and replaces it with [new] value if values matches.
      *
      * @param expected the expected value
@@ -38,17 +93,11 @@ public class AtomicInt(public @Volatile var value: Int) {
     public fun compareAndSwap(expected: Int, new: Int): Int = this::value.compareAndSwapField(expected, new)
 
     /**
-     * Compares value with [expected] and replaces it with [new] value if values matches.
-     *
-     * @param expected the expected value
-     * @param new the new value
-     * @return true if successful
-     */
-    public fun compareAndSet(expected: Int, new: Int): Boolean = this::value.compareAndSetField(expected, new)
-
-    /**
      * Increments value by one.
      */
+    @Deprecated(level = DeprecationLevel.ERROR, "This method is deprecated. Use incrementAndGet() or getAndIncrement() instead.",
+            ReplaceWith("this.incrementAndGet()"))
+    @DeprecatedSinceKotlin(warningSince = "1.9")
     public fun increment(): Unit {
         addAndGet(1)
     }
@@ -56,6 +105,9 @@ public class AtomicInt(public @Volatile var value: Int) {
     /**
      * Decrements value by one.
      */
+    @Deprecated(level = DeprecationLevel.ERROR, "This method is deprecated. Use decrementAndGet() or getAndDecrement() instead.",
+            ReplaceWith("this.decrementAndGet()"))
+    @DeprecatedSinceKotlin(warningSince = "1.9")
     public fun decrement(): Unit {
         addAndGet(-1)
     }
@@ -80,7 +132,32 @@ public class AtomicInt(public @Volatile var value: Int) {
 public class AtomicLong(public @Volatile var value: Long = 0)  {
 
     /**
-     * Increments the value by [delta] and returns the new value.
+     * Atomically sets the value to the given value [newValue] and returns the old value.
+     *
+     * @param newValue the new value
+     * @return the old value
+     */
+    public fun getAndSet(newValue: Long): Long = this::value.getAndSetField(newValue)
+
+    /**
+     * Atomically sets the value to the given updated value [new] if the current value equals the expected value [expected].
+     *
+     * @param expected the expected value
+     * @param new the new value
+     * @return true if successful
+     */
+    public fun compareAndSet(expected: Long, new: Long): Boolean = this::value.compareAndSetField(expected, new)
+
+    /**
+     * Atomically adds the given value [delta] to the current value and returns the old value.
+     *
+     * @param delta the value to add
+     * @return the old value
+     */
+    public fun getAndAdd(delta: Long): Long = this::value.getAndAddField(delta)
+
+    /**
+     * Atomically adds the given value [delta] to the current value and returns the new value.
      *
      * @param delta the value to add
      * @return the new value
@@ -88,14 +165,45 @@ public class AtomicLong(public @Volatile var value: Long = 0)  {
     public fun addAndGet(delta: Long): Long = this::value.getAndAddField(delta) + delta
 
     /**
+     * Atomically increments by one the current value and returns the old value.
+     *
+     * @return the old value
+     */
+    public fun getAndIncrement(): Long = this::value.getAndAddField(1L)
+
+    /**
+     * Atomically increments by one the current value and returns the new value.
+     *
+     * @return the new value
+     */
+    public fun incrementAndGet(): Long = this::value.getAndAddField(1L) + 1L
+
+    /**
+     * Atomically decrements by one the current value and returns the new value.
+     *
+     * @return the new value
+     */
+    public fun decrementAndGet(): Long = this::value.getAndAddField(-1L) - 1L
+
+    /**
+     * Atomically decrements by one the current value and returns the old value.
+     *
+     * @return the old value
+     */
+    public fun getAndDecrement(): Long = this::value.getAndAddField(-1L)
+
+    /**
      * Increments the value by [delta] and returns the new value.
      *
      * @param delta the value to add
      * @return the new value
      */
+    @Deprecated(level = DeprecationLevel.ERROR, "This method is deprecated. Use addAndGet(delta: Long) instead.")
+    @DeprecatedSinceKotlin(warningSince = "1.9")
     public fun addAndGet(delta: Int): Long = addAndGet(delta.toLong())
 
     /**
+     * TODO: not consistent with JVM Atomic API, but can be easily impemented via compareAndSet
      * Compares value with [expected] and replaces it with [new] value if values matches.
      *
      * @param expected the expected value
@@ -105,17 +213,11 @@ public class AtomicLong(public @Volatile var value: Long = 0)  {
     public fun compareAndSwap(expected: Long, new: Long): Long = this::value.compareAndSwapField(expected, new)
 
     /**
-     * Compares value with [expected] and replaces it with [new] value if values matches.
-     *
-     * @param expected the expected value
-     * @param new the new value
-     * @return true if successful, false if state is unchanged
-     */
-    public fun compareAndSet(expected: Long, new: Long): Boolean = this::value.compareAndSetField(expected, new)
-
-    /**
      * Increments value by one.
      */
+    @Deprecated(level = DeprecationLevel.ERROR, "This method is deprecated. Use incrementAndGet() or getAndIncrement() instead.",
+            ReplaceWith("this.incrementAndGet()"))
+    @DeprecatedSinceKotlin(warningSince = "1.9")
     public fun increment(): Unit {
         addAndGet(1L)
     }
@@ -123,6 +225,9 @@ public class AtomicLong(public @Volatile var value: Long = 0)  {
     /**
      * Decrements value by one.
      */
+    @Deprecated(level = DeprecationLevel.ERROR, "This method is deprecated. Use decrementAndGet() or getAndDecrement() instead.",
+            ReplaceWith("this.decrementAndGet()"))
+    @DeprecatedSinceKotlin(warningSince = "1.9")
     fun decrement(): Unit {
         addAndGet(-1L)
     }
