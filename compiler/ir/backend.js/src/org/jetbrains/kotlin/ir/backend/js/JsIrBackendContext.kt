@@ -102,7 +102,7 @@ class JsIrBackendContext(
     val devMode = configuration[JSConfigurationKeys.DEVELOPER_MODE] ?: false
     val errorPolicy = configuration[JSConfigurationKeys.ERROR_TOLERANCE_POLICY] ?: ErrorTolerancePolicy.DEFAULT
 
-    val externalPackageFragment = hashMapOf<IrFileSymbol, IrFile>()
+    val externalPackageFragment = mutableMapOf<IrFileSymbol, IrFile>()
 
     val additionalExportedDeclarations = hashSetOf<IrDeclaration>()
 

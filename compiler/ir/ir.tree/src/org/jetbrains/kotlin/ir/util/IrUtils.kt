@@ -842,7 +842,7 @@ fun IrFunction.copyReceiverParametersFrom(from: IrFunction, substitutionMap: Map
 fun IrFunction.copyValueParametersFrom(from: IrFunction, substitutionMap: Map<IrTypeParameterSymbol, IrType>) {
     copyReceiverParametersFrom(from, substitutionMap)
     val shift = valueParameters.size
-    valueParameters = valueParameters memoryOptimizedPlus from.valueParameters.memoryOptimizedMap {
+    valueParameters = valueParameters memoryOptimizedPlus from.valueParameters.map {
         it.copyTo(this, index = it.index + shift, type = it.type.substitute(substitutionMap))
     }
 }

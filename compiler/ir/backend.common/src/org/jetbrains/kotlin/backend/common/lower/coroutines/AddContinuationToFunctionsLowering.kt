@@ -120,7 +120,7 @@ private fun IrSimpleFunction.createSuspendFunctionStub(context: CommonBackendCon
         val substitutionMap = makeTypeParameterSubstitutionMap(this, function)
         function.copyReceiverParametersFrom(this, substitutionMap)
 
-        function.overriddenSymbols = function.overriddenSymbols memoryOptimizedPlus overriddenSymbols.memoryOptimizedMap {
+        function.overriddenSymbols = function.overriddenSymbols memoryOptimizedPlus overriddenSymbols.map {
             factory.stageController.restrictTo(it.owner) {
                 it.owner.getOrCreateFunctionWithContinuationStub(context).symbol
             }

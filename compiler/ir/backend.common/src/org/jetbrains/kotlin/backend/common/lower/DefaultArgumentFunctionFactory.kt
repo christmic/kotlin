@@ -122,7 +122,7 @@ abstract class DefaultArgumentFunctionFactory(open val context: CommonBackendCon
 
                     if (forceSetOverrideSymbols) {
                         (defaultsFunction as IrSimpleFunction).overriddenSymbols =
-                            defaultsFunction.overriddenSymbols memoryOptimizedPlus declaration.overriddenSymbols.memoryOptimizedMapNotNull {
+                            defaultsFunction.overriddenSymbols memoryOptimizedPlus declaration.overriddenSymbols.mapNotNull {
                                 generateDefaultsFunction(
                                     it.owner,
                                     skipInlineMethods,

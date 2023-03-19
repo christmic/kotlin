@@ -148,7 +148,7 @@ class SymbolTypeMismatch(
         val idSignature = cause.actual.signature
         // There might be multiple declaring modules. Which is also an error, and should re reported separately.
         val declaringModuleIds: Set<ResolvedDependencyId> = if (idSignature != null) {
-            allModuleDeserializers.mapNotNullTo(hashSetOf()) { deserializer ->
+            allModuleDeserializers.mapNotNullTo(mutableSetOf()) { deserializer ->
                 if (idSignature in deserializer) userVisibleIrModulesSupport.getProblemModuleId(deserializer, allModules) else null
             }
         } else emptySet()
