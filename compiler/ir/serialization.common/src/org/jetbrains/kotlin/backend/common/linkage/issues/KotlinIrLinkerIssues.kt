@@ -358,7 +358,7 @@ private fun findPotentiallyConflictingOutgoingDependencies(
         }
     }
 
-    val dependencyStatesMap: MutableMap<ResolvedDependencyId, MutableSet<DependencyState>> = hashMapOf()
+    val dependencyStatesMap: MutableMap<ResolvedDependencyId, MutableSet<DependencyState>> = mutableMapOf()
 
     fun recurse(moduleId: ResolvedDependencyId, underConflictingDependency: Boolean) {
         val outgoingDependencies: List<OutgoingDependency> = outgoingDependenciesIndex[moduleId].orEmpty()
@@ -400,7 +400,7 @@ private fun findPotentiallyConflictingOutgoingDependencies(
                 else -> DependencyState.SUCCESS
             }
 
-            val dependencyStates: MutableSet<DependencyState> = dependencyStatesMap.getOrPut(outgoingDependency.id) { hashSetOf() }
+            val dependencyStates: MutableSet<DependencyState> = dependencyStatesMap.getOrPut(outgoingDependency.id) { mutableSetOf() }
             val notBeenHereYet = dependencyStates.add(dependencyState)
 
             if (notBeenHereYet) {
@@ -438,7 +438,7 @@ private fun findPotentiallyConflictingIncomingDependencies(
     sourceCodeModuleId: ResolvedDependencyId
 ): Map<ResolvedDependencyId, PotentialConflictDescription> {
 
-    val dependencyStatesMap: MutableMap<ResolvedDependencyId, MutableSet<DependencyState>> = hashMapOf()
+    val dependencyStatesMap: MutableMap<ResolvedDependencyId, MutableSet<DependencyState>> = mutableMapOf()
 
     fun recurse(moduleId: ResolvedDependencyId, aboveConflictingDependency: Boolean) {
         val module = allModules.findMatchingModule(moduleId)
@@ -482,7 +482,7 @@ private fun findPotentiallyConflictingIncomingDependencies(
                 else -> DependencyState.SUCCESS
             }
 
-            val dependencyStates: MutableSet<DependencyState> = dependencyStatesMap.getOrPut(incomingDependencyId) { hashSetOf() }
+            val dependencyStates: MutableSet<DependencyState> = dependencyStatesMap.getOrPut(incomingDependencyId) { mutableSetOf() }
             val notBeenHereYet = dependencyStates.add(dependencyState)
 
             if (notBeenHereYet) {

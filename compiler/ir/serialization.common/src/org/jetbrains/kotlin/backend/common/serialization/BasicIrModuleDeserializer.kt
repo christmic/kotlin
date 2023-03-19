@@ -31,7 +31,7 @@ abstract class BasicIrModuleDeserializer(
     private val shouldSaveDeserializationState: Boolean = true,
 ) : IrModuleDeserializer(moduleDescriptor, libraryAbiVersion) {
 
-    private val fileToDeserializerMap = hashMapOf<IrFile, IrFileDeserializer>()
+    private val fileToDeserializerMap = mutableMapOf<IrFile, IrFileDeserializer>()
 
     private val moduleDeserializationState = ModuleDeserializationState()
 
