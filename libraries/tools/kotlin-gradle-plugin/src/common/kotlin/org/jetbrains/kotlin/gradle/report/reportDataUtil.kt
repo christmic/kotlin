@@ -98,13 +98,9 @@ internal fun prepareData(
         gcTimeMetrics = buildMetrics.gcMetrics.asGcTimeMap(),
         finishTime = finishTime,
         startTimeMs = startTime,
-        fromKotlinPlugin = buildOperationRecord?.isFromKotlinPlugin,
-        compilerArguments = taskExecutionResult?.taskInfo?.compilerArguments?.asList() ?: emptyList(),
-        skipMessage = buildOperationRecord?.skipMessage,
-        icLogLines = buildOperationRecord?.icLogLines ?: emptyList(),
-        compilerArguments = taskExecutionResult?.taskInfo?.compilerArguments?.asList() ?: emptyList(),
-        gcCountMetrics = buildMetrics?.gcMetrics?.asGcCountMap(),
-        gcTimeMetrics = buildMetrics?.gcMetrics?.asGcTimeMap()
+        fromKotlinPlugin = buildOperationRecord.isFromKotlinPlugin,
+        skipMessage = buildOperationRecord.skipMessage,
+        icLogLines = buildOperationRecord.icLogLines,
     )
 }
 
