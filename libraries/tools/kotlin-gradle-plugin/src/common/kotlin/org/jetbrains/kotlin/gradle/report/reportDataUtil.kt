@@ -63,7 +63,7 @@ internal fun prepareData(
     additionalTags: List<StatTag> = emptyList(),
     metricsToShow: Set<String>? = null
 ): CompileStatisticsData? {
-    if (onlyKotlinTask && taskPath.contains("Kotlin") && buildOperationRecord !is TaskRecord) {
+    if (onlyKotlinTask && !(taskPath.contains("Kotlin") && buildOperationRecord is TaskRecord)) {
         return null
     }
     val buildMetrics = buildOperationRecord.buildMetrics

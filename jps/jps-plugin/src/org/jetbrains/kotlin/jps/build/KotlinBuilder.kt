@@ -102,7 +102,7 @@ class KotlinBuilder : ModuleLevelBuilder(BuilderCategory.SOURCE_PROCESSOR) {
 
     override fun buildStarted(context: CompileContext) {
         logSettings(context)
-        reportService.buildStarter(context)
+        reportService.buildStarted(context)
     }
 
     private fun logSettings(context: CompileContext) {

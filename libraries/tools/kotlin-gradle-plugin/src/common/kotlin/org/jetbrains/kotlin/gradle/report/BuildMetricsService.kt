@@ -63,15 +63,15 @@ abstract class BuildMetricsService : BuildService<BuildMetricsService.Parameters
         val label: Property<String?>
         val projectName: Property<String>
         val kotlinVersion: Property<String>
-        val additionalTags: ListProperty<StatTag>
+        val buildConfigurationTags: ListProperty<StatTag>
     }
 
     private val log = Logging.getLogger(this.javaClass)
     private val buildReportService = BuildReportsService()
 
     // Tasks and transforms' records
-    internal val buildOperationRecords = ConcurrentLinkedQueue<BuildOperationRecord>()
-    internal val failureMessages = ConcurrentLinkedQueue<String>()
+    private val buildOperationRecords = ConcurrentLinkedQueue<BuildOperationRecord>()
+    private val failureMessages = ConcurrentLinkedQueue<String>()
 
     // Info for tasks only
     private val taskPathToMetricsReporter = ConcurrentHashMap<String, BuildMetricsReporter>()
@@ -159,7 +159,7 @@ abstract class BuildMetricsService : BuildService<BuildMetricsService.Parameters
             )
             buildReportService.onFinish(event, buildOperation, parameters.toBuildReportParameters())
             if (result is TaskFailureResult) {
-                failureMessages.addAll(result.failures.map { it.message })
+                failureMessages.addAll(result.failures.mapNotNull { it.message })
             }
         }
     }
@@ -180,7 +180,7 @@ abstract class BuildMetricsService : BuildService<BuildMetricsService.Parameters
             label = label.orNull,
             projectName = projectName.get(),
             kotlinVersion = kotlinVersion.get(),
-            additionalTags = HashSet(additionalTags.get())
+            additionalTags = HashSet(buildConfigurationTags.get())
         )
 
         private fun registerIfAbsentImpl(
@@ -217,7 +217,7 @@ abstract class BuildMetricsService : BuildService<BuildMetricsService.Parameters
                 }
                 it.parameters.projectDir.set(project.rootProject.layout.projectDirectory)
                 //init gradle tags for build scan and http reports
-                it.parameters.additionalTags.value(setupTags(project.gradle))
+                it.parameters.buildConfigurationTags.value(setupTags(project.gradle))
             }.also {
                 subscribeForTaskEvents(project, it)
             }

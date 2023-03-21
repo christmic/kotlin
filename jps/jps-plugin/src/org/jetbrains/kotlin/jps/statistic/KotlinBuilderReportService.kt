@@ -135,7 +135,7 @@ class KotlinBuilderReportService(
     private val log = Logger.getInstance("#org.jetbrains.kotlin.jps.statistic.KotlinBuilderReportService")
     private val loggerAdapter = JpsLoggerAdapter(log)
     private val httpService = httpReportSettings?.let { HttpReportServiceImpl(it.url, it.user, it.password) }
-    fun buildStarter(context: CompileContext) {
+    fun buildStarted(context: CompileContext) {
         if (contextMetrics[context] != null) {
             log.error("Service already initialized for context")
         }

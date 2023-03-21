@@ -22,7 +22,6 @@ class HttpReportServiceImpl(
     private val password: String?,
     private val user: String?,
 ) : HttpReportService, Serializable {
-//    constructor(httpSettings: HttpReportSettings) : this(httpSettings.url, httpSettings.password, httpSettings.user)
 
     private var invalidUrl = false
     private var requestPreviousFailed = false

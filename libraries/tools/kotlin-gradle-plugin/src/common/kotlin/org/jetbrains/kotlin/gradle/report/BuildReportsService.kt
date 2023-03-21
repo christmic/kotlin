@@ -48,7 +48,7 @@ class BuildReportsService {
 
     fun close(
         buildOperationRecords: Collection<BuildOperationRecord>,
-        failureMessages: List<String?>,
+        failureMessages: List<String>,
         parameters: BuildReportParameters
     ) {
         val buildData = BuildExecutionData(
@@ -60,7 +60,7 @@ class BuildReportsService {
         val reportingSettings = parameters.reportingSettings
 
         reportingSettings.httpReportSettings?.also {
-            executorService.submit { reportBuildFinish(parameters) } //
+            executorService.submit { reportBuildFinish(parameters) }
         }
         reportingSettings.fileReportSettings?.also {
             FileReportService.reportBuildStatInFile(
@@ -84,7 +84,7 @@ class BuildReportsService {
                     )
                 },
                 parameters.startParameters,
-                failureMessages.filter { !it.isNullOrEmpty() } as List<String>,
+                failureMessages.filter { it.isNotEmpty() },
                 loggerAdapter
             )
         }
@@ -116,7 +116,7 @@ class BuildReportsService {
         val buildFinishData = BuildFinishStatisticsData(
             projectName = parameters.projectName,
             startParameters = parameters.startParameters
-                .includeVerboseEnvironment(parameters.reportingSettings.httpReportSettings?.verboseEnvironment ?: false),
+                .includeVerboseEnvironment(parameters.reportingSettings.httpReportSettings.verboseEnvironment),
             buildUuid = buildUuid,
             label = parameters.label,
             totalTime = TimeUnit.NANOSECONDS.toMillis((System.nanoTime() - startTime)),
@@ -168,7 +168,6 @@ class BuildReportsService {
         }
 
     }
-
 
     internal fun addBuildScanReport(
         event: TaskFinishEvent,
