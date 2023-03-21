@@ -23,7 +23,7 @@ typealias ExpectForActualData = Map<ExpectActualCompatibility<FirBasedSymbol<*>>
 var FirDeclaration.expectForActual: ExpectForActualData? by FirDeclarationDataRegistry.data(ExpectForActualAttributeKey)
 private var FirDeclaration.actualForExpectMap: WeakHashMap<FirSession, FirBasedSymbol<*>>? by FirDeclarationDataRegistry.data(ActualForExpectAttributeKey)
 
-fun FirFunctionSymbol<*>.getSingleCompatibleExpectForActualOrNull() =
+fun FirFunctionSymbol<*>.getSingleCompatibleExpectForActualOrNull(): FirFunctionSymbol<*>? =
     (this as FirBasedSymbol<*>).getSingleCompatibleExpectForActualOrNull() as? FirFunctionSymbol<*>
 
 fun FirBasedSymbol<*>.getSingleCompatibleExpectForActualOrNull(): FirBasedSymbol<*>? {
@@ -58,16 +58,6 @@ private fun FirDeclaration.getOrCreateActualForExpectMap(): WeakHashMap<FirSessi
         }
     }
     return map!!
-}
-
-@SymbolInternals
-fun FirDeclaration.getActualForExpect(useSiteSession: FirSession): FirBasedSymbol<*>? {
-    return actualForExpectMap?.get(useSiteSession)
-}
-
-fun FirBasedSymbol<*>.getActualForExpect(session: FirSession): FirBasedSymbol<*>? {
-    lazyResolveToPhase(FirResolvePhase.EXPECT_ACTUAL_MATCHING)
-    return fir.getActualForExpect(session)
 }
 
 @SymbolInternals
