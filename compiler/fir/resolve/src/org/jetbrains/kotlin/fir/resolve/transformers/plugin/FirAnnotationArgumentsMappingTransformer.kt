@@ -114,6 +114,7 @@ private class FirDeclarationsResolveTransformerForAnnotationArgumentsMapping(
                 .transformReturnTypeRef(transformer, data)
                 .transformGetter(transformer, data)
                 .transformSetter(transformer, data)
+                .transformBackingField(transformer, data)
         }
 
         return property
@@ -153,6 +154,11 @@ private class FirDeclarationsResolveTransformerForAnnotationArgumentsMapping(
         }
 
         return field
+    }
+
+    override fun transformBackingField(backingField: FirBackingField, data: ResolutionMode): FirStatement {
+        backingField.transformAnnotations(transformer, data)
+        return backingField
     }
 
     override fun transformTypeAlias(typeAlias: FirTypeAlias, data: ResolutionMode): FirTypeAlias {

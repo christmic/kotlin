@@ -8,6 +8,7 @@ package org.jetbrains.kotlin.fir.resolve.transformers
 import kotlinx.collections.immutable.*
 import org.jetbrains.kotlin.KtFakeSourceElementKind
 import org.jetbrains.kotlin.descriptors.annotations.AnnotationUseSiteTarget
+import org.jetbrains.kotlin.descriptors.annotations.AnnotationUseSiteTarget.*
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.correspondingProperty
 import org.jetbrains.kotlin.fir.copyWithNewSourceKind
@@ -128,7 +129,7 @@ open class FirTypeResolveTransformer(
             if (result.isPrimary) {
                 for (valueParameter in result.valueParameters) {
                     if (valueParameter.correspondingProperty != null) {
-                        valueParameter.removeIrrelevantAnnotations()
+                        valueParameter.moveOrDeleteIrrelevantAnnotations()
                     }
                 }
             }
@@ -190,10 +191,7 @@ open class FirTypeResolveTransformer(
 
                 unboundCyclesInTypeParametersSupertypes(property)
 
-                if (property.source?.kind == KtFakeSourceElementKind.PropertyFromParameter) {
-                    property.removeIrrelevantAnnotations()
-                }
-
+                property.moveOrDeleteIrrelevantAnnotations()
                 calculateDeprecations(property)
                 property
             }
@@ -448,23 +446,23 @@ open class FirTypeResolveTransformer(
      * the [kotlin.annotation.Target] meta-annotation. In latter case, the method will assign a use-site target to the corresponding
      * annotation.
      */
-    private fun FirVariable.removeIrrelevantAnnotations() {
+    private fun FirVariable.moveOrDeleteIrrelevantAnnotations() {
         replaceAnnotations(annotations.filter { annotation ->
-            when(annotation.useSiteTarget) {
+            when (annotation.useSiteTarget) {
                 null -> {
                     val allowedTargets = annotation.useSiteTargetsFromMetaAnnotation(session)
                     when {
-                        this is FirValueParameter -> AnnotationUseSiteTarget.CONSTRUCTOR_PARAMETER in allowedTargets
-                        this.source?.kind == KtFakeSourceElementKind.PropertyFromParameter && AnnotationUseSiteTarget.CONSTRUCTOR_PARAMETER in allowedTargets -> false
-                        this is FirProperty && AnnotationUseSiteTarget.FIELD in allowedTargets && AnnotationUseSiteTarget.PROPERTY !in allowedTargets && backingField != null -> {
+                        this is FirValueParameter -> CONSTRUCTOR_PARAMETER in allowedTargets
+                        this.source?.kind == KtFakeSourceElementKind.PropertyFromParameter && CONSTRUCTOR_PARAMETER in allowedTargets -> false
+                        this is FirProperty && backingField != null && annotationShouldBeMovedToField(allowedTargets) -> {
                             (this as? FirProperty)?.backingField?.replaceAnnotations(backingField!!.annotations + annotation)
                             false
                         }
                         else -> true
                     }
                 }
-                AnnotationUseSiteTarget.CONSTRUCTOR_PARAMETER -> this is FirValueParameter
-                AnnotationUseSiteTarget.FIELD -> {
+                CONSTRUCTOR_PARAMETER -> this is FirValueParameter || this.source?.kind != KtFakeSourceElementKind.PropertyFromParameter
+                PROPERTY_DELEGATE_FIELD, FIELD -> {
                     (this as? FirProperty)?.backingField?.replaceAnnotations(backingField!!.annotations + annotation)
                     false
                 }
@@ -478,4 +476,7 @@ open class FirTypeResolveTransformer(
             callableDeclaration.replaceDeprecationsProvider(callableDeclaration.getDeprecationsProvider(session))
         }
     }
+
+    private fun annotationShouldBeMovedToField(allowedTargets: Set<AnnotationUseSiteTarget>): Boolean =
+        (FIELD in allowedTargets || PROPERTY_DELEGATE_FIELD in allowedTargets) && PROPERTY !in allowedTargets
 }
