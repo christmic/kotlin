@@ -45,8 +45,12 @@ class KlibBasedSymbolProvider(
         buildMap<String, SmartList<KotlinLibrary>> {
             for ((library, header) in moduleHeaders) {
                 for (fragmentName in header.packageFragmentNameList) {
-                    getOrPut(fragmentName) { SmartList() }
-                        .add(library)
+                    var curFragment = fragmentName
+                    while (curFragment.isNotEmpty()) {
+                        getOrPut(curFragment) { SmartList() }
+                            .add(library)
+                        curFragment = curFragment.substringBeforeLast('.', "")
+                    }
                 }
             }
         }
