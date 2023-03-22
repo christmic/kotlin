@@ -72,13 +72,13 @@ class FirElementSerializer private constructor(
     fun packagePartProto(
         packageFqName: FqName,
         files: List<FirFile>,
-        removedExpectDeclarations: Set<FirDeclaration>?
+        actualizedExpectDeclarations: Set<FirDeclaration>?
     ): ProtoBuf.Package.Builder {
         val builder = ProtoBuf.Package.newBuilder()
 
         fun addDeclaration(declaration: FirDeclaration, onUnsupportedDeclaration: (FirDeclaration) -> Unit) {
             if (declaration is FirMemberDeclaration) {
-                if (!declaration.shouldBeSerialized(removedExpectDeclarations)) return
+                if (!declaration.shouldBeSerialized(actualizedExpectDeclarations)) return
                 when (declaration) {
                     is FirProperty -> propertyProto(declaration)?.let { builder.addProperty(it) }
                     is FirSimpleFunction -> functionProto(declaration)?.let { builder.addFunction(it) }

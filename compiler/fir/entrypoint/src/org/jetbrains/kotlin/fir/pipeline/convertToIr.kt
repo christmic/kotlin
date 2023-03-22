@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.fir.pipeline
 
+import org.jetbrains.kotlin.backend.common.actualizer.IrActualizationResult
 import org.jetbrains.kotlin.backend.common.actualizer.IrActualizer
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.backend.jvm.serialization.JvmIdSignatureDescriptor
@@ -15,13 +16,11 @@ import org.jetbrains.kotlin.fir.backend.*
 import org.jetbrains.kotlin.fir.backend.jvm.Fir2IrJvmSpecialAnnotationSymbolProvider
 import org.jetbrains.kotlin.fir.backend.jvm.FirJvmKotlinMangler
 import org.jetbrains.kotlin.fir.backend.jvm.FirJvmVisibilityConverter
-import org.jetbrains.kotlin.fir.declarations.FirDeclaration
 import org.jetbrains.kotlin.fir.declarations.FirFile
 import org.jetbrains.kotlin.fir.languageVersionSettings
 import org.jetbrains.kotlin.fir.resolve.ScopeSession
 import org.jetbrains.kotlin.ir.backend.jvm.serialization.JvmDescriptorMangler
 import org.jetbrains.kotlin.ir.backend.jvm.serialization.JvmIrMangler
-import org.jetbrains.kotlin.ir.declarations.MetadataSource
 import org.jetbrains.kotlin.ir.declarations.impl.IrFactoryImpl
 import org.jetbrains.kotlin.ir.util.IdSignatureComposer
 import org.jetbrains.kotlin.ir.util.KotlinMangler
@@ -36,7 +35,7 @@ data class ModuleCompilerAnalyzedOutput(
 
 data class Fir2IrAndIrActualizerResult(
     val fir2IrResult: Fir2IrResult,
-    val removedExpectDeclarations: Set<FirDeclaration>,
+    val irActualizationResult: IrActualizationResult?,
 )
 
 fun FirResult.convertToIrAndActualizeForJvm(
@@ -64,7 +63,7 @@ fun FirResult.convertToIrAndActualize(
     fir2IrResultPostCompute: Fir2IrResult.() -> Unit = {},
 ): Fir2IrAndIrActualizerResult {
     val fir2IrResult: Fir2IrResult
-    val removedExpectDeclarationMetadata: List<MetadataSource>
+    val actualizationResult: IrActualizationResult?
 
     val commonMemberStorage = Fir2IrCommonMemberStorage(
         generateSignatures = linkViaSignatures,
@@ -85,7 +84,7 @@ fun FirResult.convertToIrAndActualize(
                 visibilityConverter,
                 kotlinBuiltIns,
             )
-            removedExpectDeclarationMetadata = emptyList()
+            actualizationResult = null
         }
         else -> {
             val platformOutput = outputs.last()
@@ -121,14 +120,14 @@ fun FirResult.convertToIrAndActualize(
                 fir2IrResultPostCompute(it)
             }
 
-            removedExpectDeclarationMetadata = IrActualizer.actualize(
+            actualizationResult = IrActualizer.actualize(
                 fir2IrResult.irModuleFragment,
                 commonIrOutputs.map { it.irModuleFragment }
             )
         }
     }
 
-    return Fir2IrAndIrActualizerResult(fir2IrResult, removedExpectDeclarationMetadata.extractFirDeclarations())
+    return Fir2IrAndIrActualizerResult(fir2IrResult, actualizationResult)
 }
 
 private fun ModuleCompilerAnalyzedOutput.convertToIr(

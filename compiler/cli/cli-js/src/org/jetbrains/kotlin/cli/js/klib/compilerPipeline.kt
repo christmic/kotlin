@@ -25,6 +25,7 @@ import org.jetbrains.kotlin.fir.DependencyListForCliModule
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.backend.Fir2IrExtensions
 import org.jetbrains.kotlin.fir.backend.Fir2IrVisibilityConverter
+import org.jetbrains.kotlin.fir.backend.extractFirDeclarations
 import org.jetbrains.kotlin.fir.declarations.FirFile
 import org.jetbrains.kotlin.fir.descriptors.FirModuleDescriptor
 import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrar
@@ -182,7 +183,7 @@ fun serializeFirKlib(
             firFile,
             session,
             scopeSession,
-            fir2IrResult.removedExpectDeclarations,
+            fir2IrResult.irActualizationResult.extractFirDeclarations(),
             FirKLibSerializerExtension(session, metadataVersion, FirElementAwareSerializableStringTable()),
             moduleStructure.compilerConfiguration.languageVersionSettings,
         )

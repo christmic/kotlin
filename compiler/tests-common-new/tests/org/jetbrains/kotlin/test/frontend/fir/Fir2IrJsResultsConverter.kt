@@ -24,7 +24,6 @@ import org.jetbrains.kotlin.fir.backend.jvm.FirJvmKotlinMangler
 import org.jetbrains.kotlin.fir.declarations.FirDeclaration
 import org.jetbrains.kotlin.fir.declarations.FirFile
 import org.jetbrains.kotlin.fir.descriptors.FirModuleDescriptor
-import org.jetbrains.kotlin.fir.pipeline.extractFirDeclarations
 import org.jetbrains.kotlin.fir.serialization.FirElementAwareSerializableStringTable
 import org.jetbrains.kotlin.fir.serialization.FirKLibSerializerExtension
 import org.jetbrains.kotlin.fir.serialization.serializeSingleFirFile
@@ -119,11 +118,11 @@ class Fir2IrJsResultsConverter(
             configuration.incrementalDataProvider?.getSerializedData(sourceFiles) ?: emptyList(),
             expectDescriptorToSymbol = mutableMapOf(),
             hasErrors = hasErrors
-        ) { file, removedExpectDeclarationMetadata ->
+        ) { file, irActualizationResult ->
             val (firFile, components) = firFilesAndComponentsBySourceFile[file]
                 ?: error("cannot find FIR file by source file ${file.name} (${file.path})")
-            if (removedExpectDeclarations == null && removedExpectDeclarationMetadata != null) {
-                removedExpectDeclarations = removedExpectDeclarationMetadata.extractFirDeclarations()
+            if (removedExpectDeclarations == null && irActualizationResult != null) {
+                removedExpectDeclarations = irActualizationResult.extractFirDeclarations()
             }
             serializeSingleFirFile(
                 firFile,

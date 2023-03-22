@@ -275,7 +275,7 @@ class IncrementalFirJvmCompilerRunner(
             val extensions = JvmFir2IrExtensions(configuration, JvmIrDeserializerImpl(), JvmIrMangler)
             val irGenerationExtensions =
                 (projectEnvironment as? VfsBasedProjectEnvironment)?.project?.let { IrGenerationExtension.getInstances(it) }.orEmpty()
-            val (platformIrOutput, _) = cycleResult.convertToIrAndActualizeForJvm(extensions, irGenerationExtensions, linkViaSignatures = false)
+            val (platformIrOutput, irActualizationResult) = cycleResult.convertToIrAndActualizeForJvm(extensions, irGenerationExtensions, linkViaSignatures = false)
 
             performanceManager?.notifyIRTranslationFinished()
 
@@ -285,7 +285,8 @@ class IncrementalFirJvmCompilerRunner(
                 extensions,
                 platformIrOutput.irModuleFragment,
                 platformIrOutput.components,
-                platformIrOutput.pluginContext
+                platformIrOutput.pluginContext,
+                irActualizationResult
             )
 
             val codegenOutput = generateCodeFromIr(irInput, compilerEnvironment, performanceManager)

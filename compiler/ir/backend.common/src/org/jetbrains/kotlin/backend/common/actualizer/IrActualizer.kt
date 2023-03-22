@@ -5,31 +5,30 @@
 
 package org.jetbrains.kotlin.backend.common.actualizer
 
-import org.jetbrains.kotlin.backend.common.ir.isProperExpect
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.symbols.IrSymbol
 import org.jetbrains.kotlin.name.FqName
 
+data class IrActualizationResult(val actualizedExpectDeclarations: List<IrDeclaration>)
+
 object IrActualizer {
-    fun actualize(mainFragment: IrModuleFragment, dependentFragments: List<IrModuleFragment>): List<MetadataSource> {
+    fun actualize(mainFragment: IrModuleFragment, dependentFragments: List<IrModuleFragment>): IrActualizationResult {
         val (expectActualMap, typeAliasMap) = ExpectActualCollector(mainFragment, dependentFragments).collect()
         FunctionDefaultParametersActualizer(expectActualMap).actualize()
         val removedExpectDeclarationMetadata = removeExpectDeclarations(dependentFragments, expectActualMap)
         addMissingFakeOverrides(expectActualMap, dependentFragments, typeAliasMap)
         linkExpectToActual(expectActualMap, dependentFragments)
         mergeIrFragments(mainFragment, dependentFragments)
-        return removedExpectDeclarationMetadata
+        return IrActualizationResult(removedExpectDeclarationMetadata)
     }
 
-    private fun removeExpectDeclarations(dependentFragments: List<IrModuleFragment>, expectActualMap: Map<IrSymbol, IrSymbol>): List<MetadataSource> {
-        val removingDeclarationMetadata = mutableListOf<MetadataSource>()
+    private fun removeExpectDeclarations(dependentFragments: List<IrModuleFragment>, expectActualMap: Map<IrSymbol, IrSymbol>): List<IrDeclaration> {
+        val removedDeclarationMetadata = mutableListOf<IrDeclaration>()
         for (fragment in dependentFragments) {
             for (file in fragment.files) {
                 file.declarations.removeIf {
                     if (shouldRemoveExpectDeclaration(it, expectActualMap)) {
-                        if (it is IrMetadataSourceOwner) {
-                            it.metadata?.let { metadata -> removingDeclarationMetadata.add(metadata) }
-                        }
+                        removedDeclarationMetadata.add(it)
                         true
                     } else {
                         false
@@ -37,7 +36,7 @@ object IrActualizer {
                 }
             }
         }
-        return removingDeclarationMetadata
+        return removedDeclarationMetadata
     }
 
     private fun shouldRemoveExpectDeclaration(irDeclaration: IrDeclaration, expectActualMap: Map<IrSymbol, IrSymbol>): Boolean {
