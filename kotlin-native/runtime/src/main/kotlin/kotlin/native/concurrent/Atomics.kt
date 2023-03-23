@@ -404,7 +404,7 @@ public class AtomicNativePtr(public @Volatile var value: NativePtr) {
      * @param new the new value
      * @return the old value
      */
-    //public fun getAndSet(new: NativePtr): NativePtr = this::value.getAndSetField(new)
+    public fun getAndSet(new: NativePtr): NativePtr = this::value.getAndSetField(new)
 
     /**
      * TODO: documentation
