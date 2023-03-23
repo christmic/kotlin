@@ -1,10 +1,10 @@
 /*
- * Copyright 2010-2018 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license
- * that can be found in the LICENSE file.
+ * Copyright 2010-2023 JetBrains s.r.o. and Kotlin Programming Language contributors.
+ * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
  */
 
 @file:OptIn(FreezingIsDeprecated::class)
-package runtime.workers.atomic0
+package runtime.atomics.atomic0
 
 import kotlin.test.*
 
@@ -174,4 +174,3 @@ fun test7() {
     }
     println("OK")
 }
-
