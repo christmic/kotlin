@@ -11,7 +11,7 @@ import kotlin.reflect.*
 import kotlin.concurrent.*
 
 /**
- * Wrapper around [Int] with atomic synchronized operations.
+ * An [Int] value that may be updated atomically.
  *
  * Legacy MM: Atomic values and freezing: this type is unique with regard to freezing.
  * Namely, it provides mutating operations, while can participate in frozen subgraphs.
@@ -21,21 +21,44 @@ import kotlin.concurrent.*
 @OptIn(FreezingIsDeprecated::class, ExperimentalStdlibApi::class)
 public class AtomicInt(public @Volatile var value: Int) {
     /**
-     * Atomically sets the value to the given value [newValue] and returns the old value.
-     *
-     * @param newValue the new value
-     * @return the old value
+     * Gets the current value.
      */
-    public fun getAndSet(newValue: Int): Int = this::value.getAndSetField(newValue)
+    public fun get(): Int = value
 
     /**
-     * Atomically sets the value to the given updated value [new] if the current value equals the expected value [expected].
+     * Sets to the given value [new].
+     */
+    public fun set(new: Int) {
+        value = new
+    }
+
+    /**
+     * Atomically sets the value to the given value [new] and returns the old value.
+     *
+     * @param new the new value
+     * @return the old value
+     */
+    public fun getAndSet(new: Int): Int = this::value.getAndSetField(new)
+
+    /**
+     * Atomically sets the value to the given updated value [new] if the current value equals the expected value [expected]
+     * and returns true if operation was successful.
      *
      * @param expected the expected value
      * @param new the new value
      * @return true if successful
      */
     public fun compareAndSet(expected: Int, new: Int): Boolean = this::value.compareAndSetField(expected, new)
+
+    /**
+     * Atomically sets the value to the given updated value [new] if the current value equals the expected value [expected]
+     * and returns the old value.
+     *
+     * @param expected the expected value
+     * @param new the new value
+     * @return the old value
+     */
+    public fun compareAndSwap(expected: Int, new: Int): Int = this::value.compareAndSwapField(expected, new)
 
     /**
      * Atomically adds the given value [delta] to the current value and returns the old value.
@@ -81,33 +104,20 @@ public class AtomicInt(public @Volatile var value: Int) {
      */
     public fun getAndDecrement(): Int = this::value.getAndAddField(-1)
 
-
     /**
-     * TODO: not consistent with JVM Atomic API, but can be easily impemented via compareAndSet
-     * Compares value with [expected] and replaces it with [new] value if values matches.
-     *
-     * @param expected the expected value
-     * @param new the new value
-     * @return the old value
+     * Atomically incrementsthe current value by one.
      */
-    public fun compareAndSwap(expected: Int, new: Int): Int = this::value.compareAndSwapField(expected, new)
-
-    /**
-     * Increments value by one.
-     */
-    @Deprecated(level = DeprecationLevel.ERROR, "This method is deprecated. Use incrementAndGet() or getAndIncrement() instead.",
-            ReplaceWith("this.incrementAndGet()"))
-    @DeprecatedSinceKotlin(warningSince = "1.9")
+    @Deprecated(level = DeprecationLevel.WARNING, message = "This method is deprecated. Use incrementAndGet() or getAndIncrement() instead.",
+            replaceWith = ReplaceWith("this.incrementAndGet()"))
     public fun increment(): Unit {
         addAndGet(1)
     }
 
     /**
-     * Decrements value by one.
+     * Atomically decrements the current value by one.
      */
-    @Deprecated(level = DeprecationLevel.ERROR, "This method is deprecated. Use decrementAndGet() or getAndDecrement() instead.",
-            ReplaceWith("this.decrementAndGet()"))
-    @DeprecatedSinceKotlin(warningSince = "1.9")
+    @Deprecated(level = DeprecationLevel.WARNING, message = "This method is deprecated. Use decrementAndGet() or getAndDecrement() instead.",
+            replaceWith = ReplaceWith("this.decrementAndGet()"))
     public fun decrement(): Unit {
         addAndGet(-1)
     }
@@ -121,7 +131,7 @@ public class AtomicInt(public @Volatile var value: Int) {
 }
 
 /**
- * Wrapper around [Long] with atomic synchronized operations.
+ * A [Long] value that may be updated atomically.
  *
  * Legacy MM: Atomic values and freezing: this type is unique with regard to freezing.
  * Namely, it provides mutating operations, while can participate in frozen subgraphs.
@@ -130,23 +140,45 @@ public class AtomicInt(public @Volatile var value: Int) {
 @Frozen
 @OptIn(FreezingIsDeprecated::class, ExperimentalStdlibApi::class)
 public class AtomicLong(public @Volatile var value: Long = 0)  {
+    /**
+     * Gets the current value.
+     */
+    public fun get(): Long = value
 
     /**
-     * Atomically sets the value to the given value [newValue] and returns the old value.
+     * Sets to the given value [new].
+     */
+    public fun set(new: Long) {
+        value = new
+    }
+
+    /**
+     * Atomically sets the value to the given value [new] and returns the old value.
      *
-     * @param newValue the new value
+     * @param new the new value
      * @return the old value
      */
-    public fun getAndSet(newValue: Long): Long = this::value.getAndSetField(newValue)
+    public fun getAndSet(new: Long): Long = this::value.getAndSetField(new)
 
     /**
-     * Atomically sets the value to the given updated value [new] if the current value equals the expected value [expected].
+     * Atomically sets the value to the given updated value [new] if the current value equals the expected value [expected]
+     * and returns true if operation was successful.
      *
      * @param expected the expected value
      * @param new the new value
      * @return true if successful
      */
     public fun compareAndSet(expected: Long, new: Long): Boolean = this::value.compareAndSetField(expected, new)
+
+    /**
+     * Atomically sets the value to the given updated value [new] if the current value equals the expected value [expected]
+     * and returns the old value.
+     *
+     * @param expected the expected value
+     * @param new the new value
+     * @return the old value
+     */
+    public fun compareAndSwap(expected: Long, new: Long): Long = this::value.compareAndSwapField(expected, new)
 
     /**
      * Atomically adds the given value [delta] to the current value and returns the old value.
@@ -193,41 +225,28 @@ public class AtomicLong(public @Volatile var value: Long = 0)  {
     public fun getAndDecrement(): Long = this::value.getAndAddField(-1L)
 
     /**
-     * Increments the value by [delta] and returns the new value.
+     * Atomically increments the value by [delta] and returns the new value.
      *
      * @param delta the value to add
      * @return the new value
      */
-    @Deprecated(level = DeprecationLevel.ERROR, "This method is deprecated. Use addAndGet(delta: Long) instead.")
-    @DeprecatedSinceKotlin(warningSince = "1.9")
+    @Deprecated(level = DeprecationLevel.WARNING, message = "This method is deprecated. Use addAndGet(delta: Long) instead.")
     public fun addAndGet(delta: Int): Long = addAndGet(delta.toLong())
 
     /**
-     * TODO: not consistent with JVM Atomic API, but can be easily impemented via compareAndSet
-     * Compares value with [expected] and replaces it with [new] value if values matches.
-     *
-     * @param expected the expected value
-     * @param new the new value
-     * @return the old value
+     * Atomically increments value by one.
      */
-    public fun compareAndSwap(expected: Long, new: Long): Long = this::value.compareAndSwapField(expected, new)
-
-    /**
-     * Increments value by one.
-     */
-    @Deprecated(level = DeprecationLevel.ERROR, "This method is deprecated. Use incrementAndGet() or getAndIncrement() instead.",
-            ReplaceWith("this.incrementAndGet()"))
-    @DeprecatedSinceKotlin(warningSince = "1.9")
+    @Deprecated(level = DeprecationLevel.WARNING, message = "This method is deprecated. Use incrementAndGet() or getAndIncrement() instead.",
+            replaceWith = ReplaceWith("this.incrementAndGet()"))
     public fun increment(): Unit {
         addAndGet(1L)
     }
 
     /**
-     * Decrements value by one.
+     * Atomically decrements value by one.
      */
-    @Deprecated(level = DeprecationLevel.ERROR, "This method is deprecated. Use decrementAndGet() or getAndDecrement() instead.",
-            ReplaceWith("this.decrementAndGet()"))
-    @DeprecatedSinceKotlin(warningSince = "1.9")
+    @Deprecated(level = DeprecationLevel.WARNING, message = "This method is deprecated. Use decrementAndGet() or getAndDecrement() instead.",
+            replaceWith = ReplaceWith("this.decrementAndGet()"))
     fun decrement(): Unit {
         addAndGet(-1L)
     }
@@ -279,19 +298,43 @@ public class AtomicReference<T> {
      *
      * @throws InvalidMutabilityException with legacy MM if the value is not frozen or a permanent object
      */
+    // TODO: deprecate
     public var value: T
         get() = @Suppress("UNCHECKED_CAST")(getImpl() as T)
         set(new) = setImpl(new)
 
     /**
-     * Atomically sets to the given value [newValue] and returns the old value.
-     *
-     * @param newValue the new value
-     * @return the old value
+     * Gets the current value.
      */
-    public fun getAndSet(newValue: T): T = swap(newValue)
+    public fun get(): T = @Suppress("UNCHECKED_CAST")(getImpl() as T)
 
     /**
+     * Sets to the given value [new].
+     */
+    public fun set(new: T) = setImpl(new)
+
+    /**
+     * Atomically sets the value to the given value [new] and returns the old value.
+     *
+     * @param new the new value
+     * @return the old value
+     */
+    public fun getAndSet(new: T): T = swap(new)
+
+    /**
+     * TODO: documentation
+     * Atomically sets the value to the given updated value [new] if the current value equals the expected value [expected].
+     * Note that comparison is identity-based, not value-based.
+     *
+     * @param expected the expected value
+     * @param new the new value
+     * @return true if successful
+     */
+    @GCUnsafeCall("Kotlin_AtomicReference_compareAndSet")
+    external public fun compareAndSet(expected: T, new: T): Boolean
+
+    /**
+     * TODO: documentation
      * Compares value with [expected] and replaces it with [new] value if values matches.
      * Note that comparison is identity-based, not value-based.
      *
@@ -304,17 +347,6 @@ public class AtomicReference<T> {
      */
     @GCUnsafeCall("Kotlin_AtomicReference_compareAndSwap")
     external public fun compareAndSwap(expected: T, new: T): T
-
-    /**
-     * Atomically sets the value to the given updated value [new] if the current value equals the expected value [expected].
-     * Note that comparison is identity-based, not value-based.
-     *
-     * @param expected the expected value
-     * @param new the new value
-     * @return true if successful
-     */
-    @GCUnsafeCall("Kotlin_AtomicReference_compareAndSet")
-    external public fun compareAndSet(expected: T, new: T): Boolean
 
     /**
      * Returns the string representation of this object.
@@ -354,18 +386,28 @@ public class AtomicReference<T> {
 @Frozen
 @OptIn(FreezingIsDeprecated::class, ExperimentalStdlibApi::class)
 public class AtomicNativePtr(public @Volatile var value: NativePtr) {
+    /**
+     * Gets the current value.
+     */
+    public fun get(): NativePtr = value
 
     /**
-     * Compares value with [expected] and replaces it with [new] value if values matches.
-     *
-     * @param expected the expected value
+     * Sets to the given value [new].
+     */
+    public fun set(new: NativePtr) {
+        value = new
+    }
+
+    /**
+     * Atomically sets the value to the given value [new] and returns the old value.
+     * TODO: fails with an error:
      * @param new the new value
      * @return the old value
      */
-    public fun compareAndSwap(expected: NativePtr, new: NativePtr): NativePtr =
-            this::value.compareAndSwapField(expected, new)
+    //public fun getAndSet(new: NativePtr): NativePtr = this::value.getAndSetField(new)
 
     /**
+     * TODO: documentation
      * Compares value with [expected] and replaces it with [new] value if values matches.
      *
      * @param expected the expected value
@@ -374,6 +416,17 @@ public class AtomicNativePtr(public @Volatile var value: NativePtr) {
      */
     public fun compareAndSet(expected: NativePtr, new: NativePtr): Boolean =
             this::value.compareAndSetField(expected, new)
+
+    /**
+     * TODO: documentation
+     * Compares value with [expected] and replaces it with [new] value if values matches.
+     *
+     * @param expected the expected value
+     * @param new the new value
+     * @return the old value
+     */
+    public fun compareAndSwap(expected: NativePtr, new: NativePtr): NativePtr =
+            this::value.compareAndSwapField(expected, new)
 
     /**
      * Returns the string representation of this object.
