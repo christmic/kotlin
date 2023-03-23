@@ -26,6 +26,7 @@ import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.resolve.CompilerDeserializationConfiguration
 import org.jetbrains.kotlin.serialization.deserialization.getClassId
 import org.jetbrains.kotlin.utils.SmartList
+import org.jetbrains.kotlin.utils.SmartSet
 import java.nio.file.Paths
 
 class KlibBasedSymbolProvider(
@@ -41,13 +42,13 @@ class KlibBasedSymbolProvider(
         resolvedLibraries.associate { it to parseModuleHeader(it.moduleHeaderData) }
     }
 
-    private val fragmentNamesInLibraries: Map<String, List<KotlinLibrary>> by lazy {
-        buildMap<String, SmartList<KotlinLibrary>> {
+    private val fragmentNamesInLibraries: Map<String, Set<KotlinLibrary>> by lazy {
+        buildMap<String, SmartSet<KotlinLibrary>> {
             for ((library, header) in moduleHeaders) {
                 for (fragmentName in header.packageFragmentNameList) {
                     var curFragment = fragmentName
                     while (curFragment.isNotEmpty()) {
-                        getOrPut(curFragment) { SmartList() }
+                        getOrPut(curFragment) { SmartSet.create() }
                             .add(library)
                         curFragment = curFragment.substringBeforeLast('.', "")
                     }
