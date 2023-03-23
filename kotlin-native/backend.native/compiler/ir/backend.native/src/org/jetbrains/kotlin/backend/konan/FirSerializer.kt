@@ -177,13 +177,15 @@ class FirNativeKLibSerializerExtension(
     ) {
         // inspired by KlibMetadataSerializerExtension.serializeProperty
         declarationFileId(property)?.let { proto.setExtension(KlibMetadataProtoBuf.propertyFile, it) }
-        property.nonSourceAnnotations(session).forEach {
+        property.backingField?.nonSourceAnnotations(session)?.forEach {
             val extension = when (it.useSiteTarget) {  // Revise this code after KT-54385
-                AnnotationUseSiteTarget.FIELD -> KlibMetadataProtoBuf.propertyBackingFieldAnnotation
                 AnnotationUseSiteTarget.PROPERTY_DELEGATE_FIELD -> KlibMetadataProtoBuf.propertyDelegatedFieldAnnotation
-                else -> KlibMetadataProtoBuf.propertyAnnotation
+                else -> KlibMetadataProtoBuf.propertyBackingFieldAnnotation
             }
             proto.addExtension(extension, annotationSerializer.serializeAnnotation(it))
+        }
+        property.nonSourceAnnotations(session).forEach {
+            proto.addExtension(KlibMetadataProtoBuf.propertyAnnotation, annotationSerializer.serializeAnnotation(it))
         }
         property.receiverParameter?.nonSourceAnnotations(session)?.forEach {
             proto.addExtension(KlibMetadataProtoBuf.propertyExtensionReceiverAnnotation, annotationSerializer.serializeAnnotation(it))
