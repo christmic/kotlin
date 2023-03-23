@@ -28,8 +28,23 @@ fun Map<String, List<IrDeclaration>>.getMatch(
     expectActualTypeAliasMap: Map<FqName, FqName>
 ): IrDeclaration? {
     val members = this[generateIrElementFullNameFromExpect(expectDeclaration, expectActualTypeAliasMap)] ?: return null
-    return if (expectDeclaration is IrFunction) {
-        members.firstNotNullOfOrNull { runIf(expectDeclaration.match(it as IrFunction, expectActualTypesMap)) { it } }
+    return if (expectDeclaration is IrFunction || expectDeclaration is IrProperty) {
+        val isFunction: Boolean
+        val expectFunction = if (expectDeclaration is IrFunction) {
+            isFunction = true
+            expectDeclaration
+        } else {
+            isFunction = false
+            (expectDeclaration as IrProperty).getter!!
+        }
+        members.firstNotNullOfOrNull { member ->
+            runIf(
+                expectFunction.match(
+                    if (isFunction) (member as IrFunction) else (member as IrProperty).getter!!,
+                    expectActualTypesMap
+                )
+            ) { member }
+        }
     } else {
         members.singleOrNull()
     }

@@ -11,7 +11,13 @@ expect fun foo(s: S): S
 
 expect fun foo(i: Int): Int
 
+expect val Int.k: Int
+
+expect val String.k: String
+
 fun test(s: S) = foo(s)
+
+fun k() = "K".k
 
 // MODULE: platform()()(common)
 // FILE: platform.kt
@@ -20,6 +26,10 @@ actual fun foo(i: Int) = i
 
 actual fun foo(s: String) = s
 
+actual val Int.k: Int get() = 42
+
+actual val String.k: String get() = this
+
 actual typealias S = String
 
-fun box() = test("OK")
+fun box() = test("O") + k()
