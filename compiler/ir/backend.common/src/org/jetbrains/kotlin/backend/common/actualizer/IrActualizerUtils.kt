@@ -15,6 +15,7 @@ import org.jetbrains.kotlin.ir.symbols.IrSymbol
 import org.jetbrains.kotlin.ir.symbols.IrTypeParameterSymbol
 import org.jetbrains.kotlin.ir.types.IrDynamicType
 import org.jetbrains.kotlin.ir.types.classifierOrFail
+import org.jetbrains.kotlin.ir.types.classifierOrNull
 import org.jetbrains.kotlin.ir.util.hasAnnotation
 import org.jetbrains.kotlin.ir.util.kotlinFqName
 import org.jetbrains.kotlin.ir.util.module
@@ -27,11 +28,26 @@ fun Map<String, List<IrDeclaration>>.getMatch(
     expectActualTypesMap: Map<IrSymbol, IrSymbol>,
     expectActualTypeAliasMap: Map<FqName, FqName>
 ): IrDeclaration? {
+    fun getActualizedValueParameterSymbol(
+        expectParameter: IrValueParameter,
+        localTypeParametersMap: Map<IrTypeParameterSymbol, IrTypeParameterSymbol>? = null
+    ): IrSymbol {
+        return expectParameter.type.classifierOrFail.let {
+            val localMappedSymbol = if (localTypeParametersMap != null && it is IrTypeParameterSymbol) {
+                localTypeParametersMap[it]
+            } else {
+                null
+            }
+            localMappedSymbol ?: expectActualTypesMap[it] ?: it
+        }
+    }
     val members = this[generateIrElementFullNameFromExpect(expectDeclaration, expectActualTypeAliasMap)] ?: return null
-    return if (expectDeclaration is IrFunction) {
-        members.firstNotNullOfOrNull { runIf(expectDeclaration.match(it as IrFunction, expectActualTypesMap)) { it } }
-    } else {
-        members.singleOrNull()
+    return when (expectDeclaration)  {
+        is IrFunction -> members.firstNotNullOfOrNull { runIf(expectDeclaration.match(it as IrFunction, expectActualTypesMap)) { it } }
+        is IrProperty -> members.singleOrNull {
+            (it as IrProperty).getter?.extensionReceiverParameter?.let { getActualizedValueParameterSymbol(it) } == expectDeclaration.getter?.extensionReceiverParameter?.let { getActualizedValueParameterSymbol(it) }
+        }
+        else -> members.singleOrNull()
     }
 }
 
