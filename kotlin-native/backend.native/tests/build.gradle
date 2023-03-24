@@ -1166,12 +1166,12 @@ standaloneTest("freeze_disabled") {
 }
 
 task atomicSmokeTest(type: KonanLocalTest) {
-    enabled = (project.testTarget != 'wasm32') // do not run the test on the legacy MM
+    enabled = isExperimentalMM // do not run the test on the legacy MM
     source = "runtime/atomics/atomic_smoke.kt"
 }
 
 task atomicStressTest(type: KonanLocalTest) {
-    enabled = (project.testTarget != 'wasm32') // do not run the test on the legacy MM
+    enabled = isExperimentalMM // do not run the test on the legacy MM
     source = "runtime/atomics/atomic_stress.kt"
 }
 
