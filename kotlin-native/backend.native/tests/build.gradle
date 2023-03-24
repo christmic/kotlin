@@ -5394,7 +5394,7 @@ for (i in 0..2) {
         source = "produce_dynamic/kt-42796/main-${i}.kt"
         cSource = "$projectDir/produce_dynamic/kt-42796/main.cpp"
         useGoldenData = true
-        //clangFlags = ["-DTEST=$i", "-Werror"]
+        clangFlags = ["-DTEST=$i", "-Werror"]
     }
 }
 
