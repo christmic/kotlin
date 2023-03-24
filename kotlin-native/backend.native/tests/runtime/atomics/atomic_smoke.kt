@@ -181,6 +181,6 @@ fun testNativePtr() {
     assertEquals(NativePtr.NULL.plus(20L), atomic.compareAndSwap(NativePtr.NULL.plus(20L), NativePtr.NULL.plus(30L)))
     assertEquals(NativePtr.NULL.plus(30L), atomic.compareAndSwap(NativePtr.NULL.plus(20L), NativePtr.NULL.plus(40L)))
     assertEquals(NativePtr.NULL.plus(30L), atomic.compareAndSwap(NativePtr.NULL.plus(20L), NativePtr.NULL.plus(50L)))
-    assertEquals(30L, atomic.getAndSet(55L).toLong())
+    assertEquals(30L, atomic.getAndSet(NativePtr.NULL.plus(55L)).toLong())
     assertEquals(55L, atomic.get().toLong())
 }
