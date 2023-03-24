@@ -1,5 +1,6 @@
 KtKotlinPropertySymbol:
   annotationsList: []
+  backingFieldSymbol: null
   callableIdIfNonLocal: /I.zoo
   contextReceivers: []
   getter: KtPropertyGetterSymbol:
@@ -241,6 +242,7 @@ KtFunctionSymbol:
 
 KtKotlinPropertySymbol:
   annotationsList: []
+  backingFieldSymbol: null
   callableIdIfNonLocal: /I.foo
   contextReceivers: []
   getter: KtPropertyGetterSymbol:
@@ -307,6 +309,7 @@ KtKotlinPropertySymbol:
 
 KtKotlinPropertySymbol:
   annotationsList: []
+  backingFieldSymbol: null
   callableIdIfNonLocal: /I.bar
   contextReceivers: []
   getter: KtPropertyGetterSymbol:
@@ -444,6 +447,7 @@ KtKotlinPropertySymbol:
 
 KtKotlinPropertySymbol:
   annotationsList: []
+  backingFieldSymbol: null
   callableIdIfNonLocal: /I.doo
   contextReceivers: []
   getter: KtPropertyGetterSymbol:

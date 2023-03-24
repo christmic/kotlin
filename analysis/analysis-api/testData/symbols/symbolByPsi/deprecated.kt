@@ -35,4 +35,4 @@ val j: Int = 2
 val j2: Int = 2
 
 @java.lang.Deprecated
-val j2: Int = 2
+val j3: Int = 2
