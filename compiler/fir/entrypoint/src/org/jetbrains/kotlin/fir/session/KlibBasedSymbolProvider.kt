@@ -52,6 +52,14 @@ class KlibBasedSymbolProvider(
         }
     }
 
+    private val knownPackages: Set<FqName> by lazy {
+        fragmentNamesInLibraries.keys.flatMapTo(HashSet()) {
+            generateSequence(FqName(it)) {
+                if (it.isRoot) null else it.parent()
+            }
+        }
+    }
+
     private val annotationDeserializer = KlibBasedAnnotationDeserializer(session)
     private val constDeserializer = FirConstDeserializer(session, KlibMetadataSerializerProtocol)
     private val deserializationConfiguration = CompilerDeserializationConfiguration(session.languageVersionSettings)
@@ -181,11 +189,6 @@ class KlibBasedSymbolProvider(
 
     override fun isNewPlaceForBodyGeneration(classProto: ProtoBuf.Class) = false
 
-    override fun getPackage(fqName: FqName): FqName? {
-        return if (fqName.toString() in fragmentNamesInLibraries) {
-            fqName
-        } else {
-            null
-        }
-    }
+    override fun getPackage(fqName: FqName): FqName? =
+        if (fqName in knownPackages) fqName else null
 }
