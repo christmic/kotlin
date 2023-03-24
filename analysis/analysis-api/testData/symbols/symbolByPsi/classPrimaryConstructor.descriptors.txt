@@ -21,6 +21,7 @@ KtConstructorSymbol:
       contextReceivers: []
       generatedPrimaryConstructorProperty: KtKotlinPropertySymbol:
         annotationsList: []
+        backingFieldSymbol: null
         callableIdIfNonLocal: /A.a
         contextReceivers: []
         getter: KtPropertyGetterSymbol:

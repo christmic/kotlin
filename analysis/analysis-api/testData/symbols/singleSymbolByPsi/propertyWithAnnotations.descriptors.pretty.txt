@@ -1,4 +1,5 @@
 @PropertyAnnotation
+@property:PropertyAnnotation
 var prop: kotlin.Int
   @GetAnnotation
   get()

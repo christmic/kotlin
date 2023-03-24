@@ -44,6 +44,7 @@ internal class KtFirSymbolInfoProvider(
         return when (val firSymbol = symbol.firSymbol) {
             is FirPropertySymbol -> {
                 firSymbol.getDeprecationForCallSite(apiVersion, AnnotationUseSiteTarget.PROPERTY)
+                    ?: firSymbol.backingFieldSymbol?.getDeprecationForCallSite(apiVersion, AnnotationUseSiteTarget.FIELD)
             }
             else -> {
                 firSymbol.getDeprecationForCallSite(apiVersion)
@@ -115,7 +116,9 @@ internal class KtFirSymbolInfoProvider(
     }
 
     private fun getJvmName(property: FirProperty, isSetter: Boolean): Name {
-        if (property.hasAnnotation(StandardClassIds.Annotations.JvmField, analysisSession.useSiteSession)) return property.name
+        if (property.backingField?.hasAnnotation(StandardClassIds.Annotations.JvmField, analysisSession.useSiteSession) == true) {
+            return property.name
+        }
         return Name.identifier(getJvmNameAsString(property, isSetter))
     }
 
