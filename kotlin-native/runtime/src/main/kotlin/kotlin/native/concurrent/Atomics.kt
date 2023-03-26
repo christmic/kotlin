@@ -19,17 +19,26 @@ import kotlin.concurrent.*
  */
 @Frozen
 @OptIn(FreezingIsDeprecated::class, ExperimentalStdlibApi::class)
-public class AtomicInt(public @Volatile var value: Int) {
+public class AtomicInt(private @Volatile var value_: Int) {
+    /**
+     * The current value.
+     * Gets the current value or sets the [new] value.
+     */
+    @Deprecated(level = DeprecationLevel.WARNING, message = "This property is deprecated. To access the current value use get() or set(new: Int) instead.")
+    public var value: Int
+        get() = get()
+        set(new) = set(new)
+
     /**
      * Gets the current value.
      */
-    public fun get(): Int = value
+    public fun get(): Int = value_
 
     /**
      * Sets to the given value [new].
      */
     public fun set(new: Int) {
-        value = new
+        value_ = new
     }
 
     /**
@@ -38,7 +47,7 @@ public class AtomicInt(public @Volatile var value: Int) {
      * @param new the new value
      * @return the old value
      */
-    public fun getAndSet(new: Int): Int = this::value.getAndSetField(new)
+    public fun getAndSet(new: Int): Int = this::value_.getAndSetField(new)
 
     /**
      * Atomically sets the value to the given value [new] if the current value equals the expected value [expected]
@@ -48,7 +57,7 @@ public class AtomicInt(public @Volatile var value: Int) {
      * @param new the new value
      * @return true if successful
      */
-    public fun compareAndSet(expected: Int, new: Int): Boolean = this::value.compareAndSetField(expected, new)
+    public fun compareAndSet(expected: Int, new: Int): Boolean = this::value_.compareAndSetField(expected, new)
 
     /**
      * Atomically sets the value to the given value [new] if the current value equals the expected value [expected]
@@ -58,7 +67,7 @@ public class AtomicInt(public @Volatile var value: Int) {
      * @param new the new value
      * @return the old value
      */
-    public fun compareAndSwap(expected: Int, new: Int): Int = this::value.compareAndSwapField(expected, new)
+    public fun compareAndSwap(expected: Int, new: Int): Int = this::value_.compareAndSwapField(expected, new)
 
     /**
      * Atomically adds the given value [delta] to the current value and returns the old value.
@@ -66,7 +75,7 @@ public class AtomicInt(public @Volatile var value: Int) {
      * @param delta the value to add
      * @return the old value
      */
-    public fun getAndAdd(delta: Int): Int = this::value.getAndAddField(delta)
+    public fun getAndAdd(delta: Int): Int = this::value_.getAndAddField(delta)
 
     /**
      * Atomically adds the given value [delta] to the current value and returns the new value.
@@ -74,35 +83,35 @@ public class AtomicInt(public @Volatile var value: Int) {
      * @param delta the value to add
      * @return the new value
      */
-    public fun addAndGet(delta: Int): Int = this::value.getAndAddField(delta) + delta
+    public fun addAndGet(delta: Int): Int = this::value_.getAndAddField(delta) + delta
 
     /**
      * Atomically increments by one the current value and returns the old value.
      *
      * @return the old value
      */
-    public fun getAndIncrement(): Int = this::value.getAndAddField(1)
+    public fun getAndIncrement(): Int = this::value_.getAndAddField(1)
 
     /**
      * Atomically increments by one the current value and returns the new value.
      *
      * @return the new value
      */
-    public fun incrementAndGet(): Int = this::value.getAndAddField(1) + 1
+    public fun incrementAndGet(): Int = this::value_.getAndAddField(1) + 1
 
     /**
      * Atomically decrements by one the current value and returns the new value.
      *
      * @return the new value
      */
-    public fun decrementAndGet(): Int = this::value.getAndAddField(-1) - 1
+    public fun decrementAndGet(): Int = this::value_.getAndAddField(-1) - 1
 
     /**
      * Atomically decrements by one the current value and returns the old value.
      *
      * @return the old value
      */
-    public fun getAndDecrement(): Int = this::value.getAndAddField(-1)
+    public fun getAndDecrement(): Int = this::value_.getAndAddField(-1)
 
     /**
      * Atomically increments the current value by one.
@@ -127,7 +136,7 @@ public class AtomicInt(public @Volatile var value: Int) {
      *
      * @return the string representation
      */
-    public override fun toString(): String = value.toString()
+    public override fun toString(): String = value_.toString()
 }
 
 /**
@@ -139,17 +148,26 @@ public class AtomicInt(public @Volatile var value: Int) {
  */
 @Frozen
 @OptIn(FreezingIsDeprecated::class, ExperimentalStdlibApi::class)
-public class AtomicLong(public @Volatile var value: Long = 0)  {
+public class AtomicLong(private @Volatile var value_: Long)  {
+    /**
+     * The current value.
+     * Gets the current value or sets the [new] value.
+     */
+    @Deprecated(level = DeprecationLevel.WARNING, message = "This property is deprecated. To access the current value use get() or set(new: Long) instead.")
+    public var value: Long
+        get() = get()
+        set(new) = set(new)
+
     /**
      * Gets the current value.
      */
-    public fun get(): Long = value
+    public fun get(): Long = value_
 
     /**
      * Sets to the given value [new].
      */
     public fun set(new: Long) {
-        value = new
+        value_ = new
     }
 
     /**
@@ -158,7 +176,7 @@ public class AtomicLong(public @Volatile var value: Long = 0)  {
      * @param new the new value
      * @return the old value
      */
-    public fun getAndSet(new: Long): Long = this::value.getAndSetField(new)
+    public fun getAndSet(new: Long): Long = this::value_.getAndSetField(new)
 
     /**
      * Atomically sets the value to the given value [new] if the current value equals the expected value [expected]
@@ -168,7 +186,7 @@ public class AtomicLong(public @Volatile var value: Long = 0)  {
      * @param new the new value
      * @return true if successful
      */
-    public fun compareAndSet(expected: Long, new: Long): Boolean = this::value.compareAndSetField(expected, new)
+    public fun compareAndSet(expected: Long, new: Long): Boolean = this::value_.compareAndSetField(expected, new)
 
     /**
      * Atomically sets the value to the given value [new] if the current value equals the expected value [expected]
@@ -178,7 +196,7 @@ public class AtomicLong(public @Volatile var value: Long = 0)  {
      * @param new the new value
      * @return the old value
      */
-    public fun compareAndSwap(expected: Long, new: Long): Long = this::value.compareAndSwapField(expected, new)
+    public fun compareAndSwap(expected: Long, new: Long): Long = this::value_.compareAndSwapField(expected, new)
 
     /**
      * Atomically adds the given value [delta] to the current value and returns the old value.
@@ -186,7 +204,7 @@ public class AtomicLong(public @Volatile var value: Long = 0)  {
      * @param delta the value to add
      * @return the old value
      */
-    public fun getAndAdd(delta: Long): Long = this::value.getAndAddField(delta)
+    public fun getAndAdd(delta: Long): Long = this::value_.getAndAddField(delta)
 
     /**
      * Atomically adds the given value [delta] to the current value and returns the new value.
@@ -194,35 +212,35 @@ public class AtomicLong(public @Volatile var value: Long = 0)  {
      * @param delta the value to add
      * @return the new value
      */
-    public fun addAndGet(delta: Long): Long = this::value.getAndAddField(delta) + delta
+    public fun addAndGet(delta: Long): Long = this::value_.getAndAddField(delta) + delta
 
     /**
      * Atomically increments by one the current value and returns the old value.
      *
      * @return the old value
      */
-    public fun getAndIncrement(): Long = this::value.getAndAddField(1L)
+    public fun getAndIncrement(): Long = this::value_.getAndAddField(1L)
 
     /**
      * Atomically increments by one the current value and returns the new value.
      *
      * @return the new value
      */
-    public fun incrementAndGet(): Long = this::value.getAndAddField(1L) + 1L
+    public fun incrementAndGet(): Long = this::value_.getAndAddField(1L) + 1L
 
     /**
      * Atomically decrements by one the current value and returns the new value.
      *
      * @return the new value
      */
-    public fun decrementAndGet(): Long = this::value.getAndAddField(-1L) - 1L
+    public fun decrementAndGet(): Long = this::value_.getAndAddField(-1L) - 1L
 
     /**
      * Atomically decrements by one the current value and returns the old value.
      *
      * @return the old value
      */
-    public fun getAndDecrement(): Long = this::value.getAndAddField(-1L)
+    public fun getAndDecrement(): Long = this::value_.getAndAddField(-1L)
 
     /**
      * Atomically increments the value by [delta] and returns the new value.
@@ -256,7 +274,7 @@ public class AtomicLong(public @Volatile var value: Long = 0)  {
      *
      * @return the string representation of this object
      */
-    public override fun toString(): String = value.toString()
+    public override fun toString(): String = value_.toString()
 }
 
 /**
@@ -392,17 +410,26 @@ public class AtomicReference<T> {
  */
 @Frozen
 @OptIn(FreezingIsDeprecated::class, ExperimentalStdlibApi::class)
-public class AtomicNativePtr(public @Volatile var value: NativePtr) {
+public class AtomicNativePtr(private @Volatile var value_: NativePtr) {
+    /**
+     * The current value.
+     * Gets the current value or sets the [new] value.
+     */
+    @Deprecated(level = DeprecationLevel.WARNING, message = "This property is deprecated. To access the current value use get() or set(new: NativePtr) instead.")
+    public var value: NativePtr
+        get() = get()
+        set(new) = set(new)
+
     /**
      * Gets the current value.
      */
-    public fun get(): NativePtr = value
+    public fun get(): NativePtr = value_
 
     /**
      * Sets to the given value [new].
      */
     public fun set(new: NativePtr) {
-        value = new
+        value_ = new
     }
 
     /**
@@ -417,7 +444,7 @@ public class AtomicNativePtr(public @Volatile var value: NativePtr) {
         // Check: https://youtrack.jetbrains.com/issue/KT-57557
         while (true) {
             val old = get()
-            if (this::value.compareAndSetField(old, new)) {
+            if (this::value_.compareAndSetField(old, new)) {
                 return old
             }
         }
@@ -434,7 +461,7 @@ public class AtomicNativePtr(public @Volatile var value: NativePtr) {
      * @return true if successful
      */
     public fun compareAndSet(expected: NativePtr, new: NativePtr): Boolean =
-            this::value.compareAndSetField(expected, new)
+            this::value_.compareAndSetField(expected, new)
 
     /**
      * Atomically sets the value to the given value [new] if the current value equals the expected value [expected]
@@ -447,14 +474,14 @@ public class AtomicNativePtr(public @Volatile var value: NativePtr) {
      * @return the old value
      */
     public fun compareAndSwap(expected: NativePtr, new: NativePtr): NativePtr =
-            this::value.compareAndSwapField(expected, new)
+            this::value_.compareAndSwapField(expected, new)
 
     /**
      * Returns the string representation of this object.
      *
      * @return string representation of this object
      */
-    public override fun toString(): String = value.toString()
+    public override fun toString(): String = value_.toString()
 }
 
 
