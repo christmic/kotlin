@@ -9,6 +9,7 @@ import org.jetbrains.kotlin.KtFakeSourceElementKind
 import org.jetbrains.kotlin.descriptors.annotations.AnnotationUseSiteTarget
 import org.jetbrains.kotlin.fir.FirAnnotationContainer
 import org.jetbrains.kotlin.fir.backend.Fir2IrComponents
+import org.jetbrains.kotlin.fir.declarations.FirBackingField
 import org.jetbrains.kotlin.fir.declarations.FirProperty
 import org.jetbrains.kotlin.fir.declarations.FirValueParameter
 import org.jetbrains.kotlin.fir.declarations.useSiteTargetsFromMetaAnnotation
@@ -58,16 +59,8 @@ class AnnotationGenerator(private val components: Fir2IrComponents) : Fir2IrComp
             .toIrAnnotations()
     }
 
-    fun generate(irField: IrField, property: FirProperty) {
-        val irProperty = irField.correspondingPropertySymbol?.owner ?: throw AssertionError("$irField is not a property field")
-
-        val applicableTargets = if (irProperty.isDelegated) delegatedPropertyTargets else propertyTargets
-        property.backingField?.let {
-            irField.annotations += it.annotations.filter {
-                val target = it.target(applicableTargets)
-                target == AnnotationUseSiteTarget.FIELD || target == AnnotationUseSiteTarget.PROPERTY_DELEGATE_FIELD
-            }.toIrAnnotations()
-        }
+    fun generate(irField: IrField, backingField: FirBackingField) {
+        irField.annotations += backingField.annotations.toIrAnnotations()
     }
 
     fun generate(propertyAccessor: IrFunction, property: FirProperty) {
