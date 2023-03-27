@@ -266,7 +266,7 @@ internal class ClassMemberGenerator(
             }
             declarationStorage.leaveScope(this@initializeBackingField)
         }
-        annotationGenerator.generate(irField, property)
+        property.backingField?.let { annotationGenerator.generate(irField, it) }
     }
 
     private fun IrSimpleFunction.setPropertyAccessorContent(

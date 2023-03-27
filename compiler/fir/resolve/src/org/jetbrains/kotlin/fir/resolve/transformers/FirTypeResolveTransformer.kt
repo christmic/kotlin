@@ -447,6 +447,9 @@ open class FirTypeResolveTransformer(
      * annotation.
      */
     private fun FirVariable.moveOrDeleteIrrelevantAnnotations() {
+        if (annotations.isEmpty()) return
+        val backingFieldAnnotations by lazy { backingField?.annotations?.toMutableList() ?: mutableListOf() }
+        var replaceBackingFieldAnnotations = false
         replaceAnnotations(annotations.filter { annotation ->
             when (annotation.useSiteTarget) {
                 null -> {
@@ -455,20 +458,19 @@ open class FirTypeResolveTransformer(
                         this is FirValueParameter -> CONSTRUCTOR_PARAMETER in allowedTargets
                         this.source?.kind == KtFakeSourceElementKind.PropertyFromParameter && CONSTRUCTOR_PARAMETER in allowedTargets -> false
                         this is FirProperty && backingField != null && annotationShouldBeMovedToField(allowedTargets) -> {
-                            (this as? FirProperty)?.backingField?.replaceAnnotations(backingField!!.annotations + annotation)
+                            backingFieldAnnotations += annotation
+                            replaceBackingFieldAnnotations = true
                             false
                         }
                         else -> true
                     }
                 }
-                CONSTRUCTOR_PARAMETER -> this is FirValueParameter || this.source?.kind != KtFakeSourceElementKind.PropertyFromParameter
-                PROPERTY_DELEGATE_FIELD, FIELD -> {
-                    (this as? FirProperty)?.backingField?.replaceAnnotations(backingField!!.annotations + annotation)
-                    false
-                }
                 else -> true
             }
         })
+        if (replaceBackingFieldAnnotations) {
+            backingField?.replaceAnnotations(backingFieldAnnotations)
+        }
     }
 
     private fun calculateDeprecations(callableDeclaration: FirCallableDeclaration) {
