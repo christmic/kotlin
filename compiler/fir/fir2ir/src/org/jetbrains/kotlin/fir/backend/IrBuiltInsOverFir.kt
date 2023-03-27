@@ -497,7 +497,7 @@ class IrBuiltInsOverFir(
         }
 
     override val extensionToString: IrSimpleFunctionSymbol by lazy {
-        findFunctions(kotlinPackage, OperatorNameConventions.TO_STRING).single { function ->
+        findFunctions(kotlinPackage, OperatorNameConventions.TO_STRING).distinct().single { function ->
             function.owner.extensionReceiverParameter?.let { receiver -> receiver.type == anyNType } ?: false
         }
     }
