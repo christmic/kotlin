@@ -11,7 +11,8 @@ import kotlin.reflect.*
 import kotlin.concurrent.*
 
 /**
- * An [Int] value that may be updated atomically.
+ * An [Int] value that is always updated atomically.
+ * For additional details about atomicity guarantees for reads and writes see [kotlin.concurrent.Volatile].
  *
  * Legacy MM: Atomic values and freezing: this type is unique with regard to freezing.
  * Namely, it provides mutating operations, while can participate in frozen subgraphs.
@@ -140,7 +141,8 @@ public class AtomicInt(private @Volatile var value_: Int) {
 }
 
 /**
- * A [Long] value that may be updated atomically.
+ * A [Long] value that is always updated atomically.
+ * For additional details about atomicity guarantees for reads and writes see [kotlin.concurrent.Volatile].
  *
  * Legacy MM: Atomic values and freezing: this type is unique with regard to freezing.
  * Namely, it provides mutating operations, while can participate in frozen subgraphs.
@@ -278,7 +280,7 @@ public class AtomicLong(private @Volatile var value_: Long)  {
 }
 
 /**
- * An object reference that may be updated atomically.
+ * An object reference that is always updated atomically.
  *
  * Legacy MM: An atomic reference to a frozen Kotlin object. Can be used in concurrent scenarious
  * but frequently shall be of nullable type and be zeroed out once no longer needed.
@@ -399,7 +401,8 @@ public class AtomicReference<T> {
 }
 
 /**
- * A [kotlinx.cinterop.NativePtr] value that may be updated atomically.
+ * A [kotlinx.cinterop.NativePtr] value that is always updated atomically.
+ * For additional details about atomicity guarantees for reads and writes see [kotlin.concurrent.Volatile].
  *
  * [kotlinx.cinterop.NativePtr] is a value type, hence it is stored in [AtomicNativePtr] without boxing
  * and [compareAndSet], [compareAndSwap] operations perform comparison by value.
