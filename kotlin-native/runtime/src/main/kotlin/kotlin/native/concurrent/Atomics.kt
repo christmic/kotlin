@@ -23,12 +23,12 @@ import kotlin.concurrent.*
 public class AtomicInt(private @Volatile var value_: Int) {
     /**
      * The current value.
-     * Gets the current value or sets the [new] value.
+     * Gets the current value or sets to the given [new value][newValue].
      */
-    @Deprecated(level = DeprecationLevel.WARNING, message = "This property is deprecated. To access the current value use get() or set(new: Int) instead.")
+    @Deprecated(level = DeprecationLevel.WARNING, message = "This property is deprecated. To access the current value use get() or set(newValue: Int) instead.")
     public var value: Int
         get() = get()
-        set(new) = set(new)
+        set(newValue) = set(newValue)
 
     /**
      * Gets the current value.
@@ -36,42 +36,42 @@ public class AtomicInt(private @Volatile var value_: Int) {
     public fun get(): Int = value_
 
     /**
-     * Sets to the given value [new].
+     * Sets to the given [new value][newValue].
      */
-    public fun set(new: Int) {
-        value_ = new
+    public fun set(newValue: Int) {
+        value_ = newValue
     }
 
     /**
-     * Atomically sets the value to the given value [new] and returns the old value.
+     * Atomically sets the value to the given [new value][newValue] and returns the old value.
      *
-     * @param new the new value
+     * @param newValue the new value
      * @return the old value
      */
-    public fun getAndSet(new: Int): Int = this::value_.getAndSetField(new)
+    public fun getAndSet(newValue: Int): Int = this::value_.getAndSetField(newValue)
 
     /**
-     * Atomically sets the value to the given value [new] if the current value equals the expected value [expected]
+     * Atomically sets the value to the given [new value][newValue] if the current value equals the [expected value][expected]
      * and returns true if operation was successful.
      *
      * @param expected the expected value
-     * @param new the new value
+     * @param newValue the new value
      * @return true if successful
      */
-    public fun compareAndSet(expected: Int, new: Int): Boolean = this::value_.compareAndSetField(expected, new)
+    public fun compareAndSet(expected: Int, newValue: Int): Boolean = this::value_.compareAndSetField(expected, newValue)
 
     /**
-     * Atomically sets the value to the given value [new] if the current value equals the expected value [expected]
+     * Atomically sets the value to the given [new value][newValue] if the current value equals the [expected value][expected]
      * and returns the old value in any case.
      *
      * @param expected the expected value
-     * @param new the new value
+     * @param newValue the new value
      * @return the old value
      */
-    public fun compareAndSwap(expected: Int, new: Int): Int = this::value_.compareAndSwapField(expected, new)
+    public fun compareAndSwap(expected: Int, newValue: Int): Int = this::value_.compareAndSwapField(expected, newValue)
 
     /**
-     * Atomically adds the given value [delta] to the current value and returns the old value.
+     * Atomically adds the [given value][delta] to the current value and returns the old value.
      *
      * @param delta the value to add
      * @return the old value
@@ -79,7 +79,7 @@ public class AtomicInt(private @Volatile var value_: Int) {
     public fun getAndAdd(delta: Int): Int = this::value_.getAndAddField(delta)
 
     /**
-     * Atomically adds the given value [delta] to the current value and returns the new value.
+     * Atomically adds the [given value][delta] to the current value and returns the new value.
      *
      * @param delta the value to add
      * @return the new value
@@ -153,12 +153,12 @@ public class AtomicInt(private @Volatile var value_: Int) {
 public class AtomicLong(private @Volatile var value_: Long)  {
     /**
      * The current value.
-     * Gets the current value or sets the [new] value.
+     * Gets the current value or sets to the given [new value][newValue].
      */
-    @Deprecated(level = DeprecationLevel.WARNING, message = "This property is deprecated. To access the current value use get() or set(new: Long) instead.")
+    @Deprecated(level = DeprecationLevel.WARNING, message = "This property is deprecated. To access the current value use get() or set(newValue: Long) instead.")
     public var value: Long
         get() = get()
-        set(new) = set(new)
+        set(newValue) = set(newValue)
 
     /**
      * Gets the current value.
@@ -166,42 +166,42 @@ public class AtomicLong(private @Volatile var value_: Long)  {
     public fun get(): Long = value_
 
     /**
-     * Sets to the given value [new].
+     * Sets to the given [new value][newValue].
      */
-    public fun set(new: Long) {
-        value_ = new
+    public fun set(newValue: Long) {
+        value_ = newValue
     }
 
     /**
-     * Atomically sets the value to the given value [new] and returns the old value.
+     * Atomically sets the value to the given [new value][newValue] and returns the old value.
      *
-     * @param new the new value
+     * @param newValue the new value
      * @return the old value
      */
-    public fun getAndSet(new: Long): Long = this::value_.getAndSetField(new)
+    public fun getAndSet(newValue: Long): Long = this::value_.getAndSetField(newValue)
 
     /**
-     * Atomically sets the value to the given value [new] if the current value equals the expected value [expected]
+     * Atomically sets the value to the given [new value][newValue] if the current value equals the [expected value][expected]
      * and returns true if operation was successful.
      *
      * @param expected the expected value
-     * @param new the new value
+     * @param newValue the new value
      * @return true if successful
      */
-    public fun compareAndSet(expected: Long, new: Long): Boolean = this::value_.compareAndSetField(expected, new)
+    public fun compareAndSet(expected: Long, newValue: Long): Boolean = this::value_.compareAndSetField(expected, newValue)
 
     /**
-     * Atomically sets the value to the given value [new] if the current value equals the expected value [expected]
+     * Atomically sets the value to the given [new value][newValue] if the current value equals the [expected value][expected]
      * and returns the old value in any case.
      *
      * @param expected the expected value
-     * @param new the new value
+     * @param newValue the new value
      * @return the old value
      */
-    public fun compareAndSwap(expected: Long, new: Long): Long = this::value_.compareAndSwapField(expected, new)
+    public fun compareAndSwap(expected: Long, newValue: Long): Long = this::value_.compareAndSwapField(expected, newValue)
 
     /**
-     * Atomically adds the given value [delta] to the current value and returns the old value.
+     * Atomically adds the [given value][delta] to the current value and returns the old value.
      *
      * @param delta the value to add
      * @return the old value
@@ -209,7 +209,7 @@ public class AtomicLong(private @Volatile var value_: Long)  {
     public fun getAndAdd(delta: Long): Long = this::value_.getAndAddField(delta)
 
     /**
-     * Atomically adds the given value [delta] to the current value and returns the new value.
+     * Atomically adds the [given value][delta] to the current value and returns the new value.
      *
      * @param delta the value to add
      * @return the new value
@@ -245,7 +245,7 @@ public class AtomicLong(private @Volatile var value_: Long)  {
     public fun getAndDecrement(): Long = this::value_.getAndAddField(-1L)
 
     /**
-     * Atomically increments the value by [delta] and returns the new value.
+     * Atomically adds the [given value][delta] to the current value and returns the new value.
      *
      * @param delta the value to add
      * @return the new value
@@ -301,7 +301,7 @@ public class AtomicReference<T> {
     private var cookie: Int = 0
 
     /**
-     * Creates a new atomic reference pointing to the given [value].
+     * Creates a new atomic reference pointing to the [given value][value].
      *
      * @throws InvalidMutabilityException with legacy MM if reference is not frozen.
      */
@@ -314,16 +314,16 @@ public class AtomicReference<T> {
 
     /**
      * The current value.
-     * Gets the current value or sets the [new] value.
+     * Gets the current value or sets to the given [new value][newValue].
      *
-     * Legacy MM: if [new] value is not null, it must be frozen or permanent object.
+     * Legacy MM: if the [new value][newValue] value is not null, it must be frozen or permanent object.
      *
      * @throws InvalidMutabilityException with legacy MM if the value is not frozen or a permanent object
      */
-    @Deprecated(level = DeprecationLevel.WARNING, message = "This property is deprecated. To access the current value use get() or set(new: T) instead.")
+    @Deprecated(level = DeprecationLevel.WARNING, message = "This property is deprecated. To access the current value use get() or set(newValue: T) instead.")
     public var value: T
         get() = @Suppress("UNCHECKED_CAST")(getImpl() as T)
-        set(new) = setImpl(new)
+        set(newValue) = setImpl(newValue)
 
     /**
      * Gets the current value.
@@ -331,46 +331,46 @@ public class AtomicReference<T> {
     public fun get(): T = @Suppress("UNCHECKED_CAST")(getImpl() as T)
 
     /**
-     * Sets to the given value [new].
+     * Sets to the given [new value][newValue].
      */
-    public fun set(new: T) = setImpl(new)
+    public fun set(newValue: T) = setImpl(newValue)
 
     /**
-     * Atomically sets the value to the given value [new] and returns the old value.
+     * Atomically sets the value to the given [new value][newValue] and returns the old value.
      *
-     * @param new the new value
+     * @param newValue the new value
      * @return the old value
      */
-    public fun getAndSet(new: T): T = swap(new)
+    public fun getAndSet(newValue: T): T = swap(newValue)
 
     /**
-     * Atomically sets the value to the given value [new] if the current value equals the expected value [expected]
+     * Atomically sets the value to the given [new value][newValue] if the current value equals the [expected value][expected]
      * and returns true if operation was successful.
      *
      * Comparison of values is done by reference.
      *
      * @param expected the expected value
-     * @param new the new value
+     * @param newValue the new value
      * @return true if successful
      */
     @GCUnsafeCall("Kotlin_AtomicReference_compareAndSet")
-    external public fun compareAndSet(expected: T, new: T): Boolean
+    external public fun compareAndSet(expected: T, newValue: T): Boolean
 
     /**
-     * Atomically sets the value to the given value [new] if the current value equals the expected value [expected]
+     * Atomically sets the value to the given [new value][newValue] if the current value equals the [expected value][expected]
      * and returns the old value in any case.
      *
      * Comparison of values is done by reference.
      *
-     * Legacy MM: if [new] value is not null, it must be frozen or permanent object.
+     * Legacy MM: if the [new value][newValue] value is not null, it must be frozen or permanent object.
      *
      * @param expected the expected value
-     * @param new the new value
+     * @param newValue the new value
      * @throws InvalidMutabilityException with legacy MM if the value is not frozen or a permanent object
      * @return the old value
      */
     @GCUnsafeCall("Kotlin_AtomicReference_compareAndSwap")
-    external public fun compareAndSwap(expected: T, new: T): T
+    external public fun compareAndSwap(expected: T, newValue: T): T
 
     /**
      * Returns the string representation of this object.
@@ -380,13 +380,13 @@ public class AtomicReference<T> {
     public override fun toString(): String =
             "${debugString(this)} -> ${debugString(get())}"
 
-    internal fun swap(new: T): T {
+    internal fun swap(newValue: T): T {
         while (true) {
             val old = get()
-            if (old === new) {
+            if (old === newValue) {
                 return old
             }
-            if (compareAndSet(old, new)) {
+            if (compareAndSet(old, newValue)) {
                 return old
             }
         }
@@ -394,7 +394,7 @@ public class AtomicReference<T> {
 
     // Implementation details.
     @GCUnsafeCall("Kotlin_AtomicReference_set")
-    private external fun setImpl(new: Any?): Unit
+    private external fun setImpl(newValue: Any?): Unit
 
     @GCUnsafeCall("Kotlin_AtomicReference_get")
     private external fun getImpl(): Any?
@@ -416,12 +416,12 @@ public class AtomicReference<T> {
 public class AtomicNativePtr(private @Volatile var value_: NativePtr) {
     /**
      * The current value.
-     * Gets the current value or sets the [new] value.
+     * Gets the current value or sets to the given [new value][newValue].
      */
-    @Deprecated(level = DeprecationLevel.WARNING, message = "This property is deprecated. To access the current value use get() or set(new: NativePtr) instead.")
+    @Deprecated(level = DeprecationLevel.WARNING, message = "This property is deprecated. To access the current value use get() or set(newValue: NativePtr) instead.")
     public var value: NativePtr
         get() = get()
-        set(new) = set(new)
+        set(newValue) = set(newValue)
 
     /**
      * Gets the current value.
@@ -429,55 +429,55 @@ public class AtomicNativePtr(private @Volatile var value_: NativePtr) {
     public fun get(): NativePtr = value_
 
     /**
-     * Sets to the given value [new].
+     * Sets to the given [new value][newValue].
      */
-    public fun set(new: NativePtr) {
-        value_ = new
+    public fun set(newValue: NativePtr) {
+        value_ = newValue
     }
 
     /**
-     * Atomically sets the value to the given value [new] and returns the old value.
+     * Atomically sets the value to the given [new value][newValue] and returns the old value.
      *
-     * @param new the new value
+     * @param newValue the new value
      * @return the old value
      */
-    public fun getAndSet(new: NativePtr): NativePtr {
+    public fun getAndSet(newValue: NativePtr): NativePtr {
         // Pointer types are allowed for atomicrmw xchg operand since LLVM 15.0,
         // after LLVM version update, it may be implemented via getAndSetField intrinsic.
         // Check: https://youtrack.jetbrains.com/issue/KT-57557
         while (true) {
             val old = get()
-            if (this::value_.compareAndSetField(old, new)) {
+            if (this::value_.compareAndSetField(old, newValue)) {
                 return old
             }
         }
     }
 
     /**
-     * Atomically sets the value to the given value [new] if the current value equals the expected value [expected]
+     * Atomically sets the value to the given [new value][newValue] if the current value equals the [expected value][expected]
      * and returns true if operation was successful.
      *
      * Comparison of values is done by value.
      *
      * @param expected the expected value
-     * @param new the new value
+     * @param newValue the new value
      * @return true if successful
      */
-    public fun compareAndSet(expected: NativePtr, new: NativePtr): Boolean =
-            this::value_.compareAndSetField(expected, new)
+    public fun compareAndSet(expected: NativePtr, newValue: NativePtr): Boolean =
+            this::value_.compareAndSetField(expected, newValue)
 
     /**
-     * Atomically sets the value to the given value [new] if the current value equals the expected value [expected]
+     * Atomically sets the value to the given [new value][newValue] if the current value equals the [expected value][expected]
      * and returns the old value in any case.
      *
      * Comparison of values is done by value.
      *
      * @param expected the expected value
-     * @param new the new value
+     * @param newValue the new value
      * @return the old value
      */
-    public fun compareAndSwap(expected: NativePtr, new: NativePtr): NativePtr =
-            this::value_.compareAndSwapField(expected, new)
+    public fun compareAndSwap(expected: NativePtr, newValue: NativePtr): NativePtr =
+            this::value_.compareAndSwapField(expected, newValue)
 
     /**
      * Returns the string representation of this object.
@@ -516,53 +516,57 @@ public class FreezableAtomicReference<T>(private var value_: T) {
 
     /**
      * The referenced value.
-     * Gets the value or sets the [new] value. If [new] value is not null,
+     * Gets the value or sets to the given [new value][newValue]. If the [new value][newValue] is not null,
      * and `this` is frozen - it must be frozen or permanent object.
      *
      * @throws InvalidMutabilityException if the value is not frozen or a permanent object
      */
     public var value: T
         get() = @Suppress("UNCHECKED_CAST")(getImpl() as T)
-        set(new) {
+        set(newValue) {
             if (this.isShareable())
-                setImpl(new)
+                setImpl(newValue)
             else
-                value_ = new
+                value_ = newValue
         }
 
     /**
-     * Compares value with [expected] and replaces it with [new] value if values matches.
-     * Legacy MM: If [new] value is not null and object is frozen, it must be frozen or permanent object.
+     * Atomically sets the value to the given [new value][newValue] if the current value equals the [expected value][expected]
+     * and returns the old value in any case.
+     *
+     * Legacy MM: If the [new value][newValue] value is not null and object is frozen, it must be frozen or permanent object.
      *
      * @param expected the expected value
-     * @param new the new value
+     * @param newValue the new value
      * @throws InvalidMutabilityException with legacy MM if the value is not frozen or a permanent object
      * @return the old value
      */
-     public fun compareAndSwap(expected: T, new: T): T {
+     public fun compareAndSwap(expected: T, newValue: T): T {
         return if (this.isShareable()) {
-            @Suppress("UNCHECKED_CAST")(compareAndSwapImpl(expected, new) as T)
+            @Suppress("UNCHECKED_CAST")(compareAndSwapImpl(expected, newValue) as T)
         } else {
             val old = value_
-            if (old === expected) value_ = new
+            if (old === expected) value_ = newValue
             old
         }
     }
 
     /**
-     * Compares value with [expected] and replaces it with [new] value if values matches.
+     * Atomically sets the value to the given [new value][newValue] if the current value equals the [expected value][expected]
+     * and returns true if operation was successful.
+     *
      * Note that comparison is identity-based, not value-based.
      *
      * @param expected the expected value
-     * @param new the new value
+     * @param newValue the new value
      * @return true if successful
      */
-    public fun compareAndSet(expected: T, new: T): Boolean {
+    public fun compareAndSet(expected: T, newValue: T): Boolean {
         if (this.isShareable())
-            return compareAndSetImpl(expected, new)
+            return compareAndSetImpl(expected, newValue)
         val old = value_
         if (old === expected) {
-            value_ = new
+            value_ = newValue
             return true
         } else {
             return false
@@ -578,13 +582,13 @@ public class FreezableAtomicReference<T>(private var value_: T) {
             "${debugString(this)} -> ${debugString(value)}"
 
     // TODO: Consider making this public.
-    internal fun swap(new: T): T {
+    internal fun swap(newValue: T): T {
         while (true) {
             val old = value
-            if (old === new) {
+            if (old === newValue) {
                 return old
             }
-            if (compareAndSet(old, new)) {
+            if (compareAndSet(old, newValue)) {
                 return old
             }
         }
@@ -592,16 +596,16 @@ public class FreezableAtomicReference<T>(private var value_: T) {
 
     // Implementation details.
     @GCUnsafeCall("Kotlin_AtomicReference_set")
-    private external fun setImpl(new: Any?): Unit
+    private external fun setImpl(newValue: Any?): Unit
 
     @GCUnsafeCall("Kotlin_AtomicReference_get")
     private external fun getImpl(): Any?
 
     @GCUnsafeCall("Kotlin_AtomicReference_compareAndSwap")
-    private external fun compareAndSwapImpl(expected: Any?, new: Any?): Any?
+    private external fun compareAndSwapImpl(expected: Any?, newValue: Any?): Any?
 
     @GCUnsafeCall("Kotlin_AtomicReference_compareAndSet")
-    private external fun compareAndSetImpl(expected: Any?, new: Any?): Boolean
+    private external fun compareAndSetImpl(expected: Any?, newValue: Any?): Boolean
 }
 
 
