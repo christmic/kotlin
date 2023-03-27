@@ -3695,6 +3695,11 @@ internal class JvmInlineWithoutValueClassImpl(
     override val token: KtLifetimeToken,
 ) : KtFirDiagnostic.JvmInlineWithoutValueClass(), KtAbstractFirDiagnostic<PsiElement>
 
+internal class MultiFieldValueClassWithInlineModifierImpl(
+    override val firDiagnostic: KtPsiDiagnostic,
+    override val token: KtLifetimeToken,
+) : KtFirDiagnostic.MultiFieldValueClassWithInlineModifier(), KtAbstractFirDiagnostic<PsiElement>
+
 internal class JavaTypeMismatchImpl(
     override val expectedType: KtType,
     override val actualType: KtType,
