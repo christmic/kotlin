@@ -23,73 +23,52 @@ import kotlin.concurrent.*
 public class AtomicInt(public @Volatile var value: Int) {
     /**
      * Atomically sets the value to the given [new value][newValue] and returns the old value.
-     *
-     * @param newValue the new value
-     * @return the old value
      */
     public fun getAndSet(newValue: Int): Int = this::value.getAndSetField(newValue)
 
     /**
-     * Atomically sets the value to the given [new value][newValue] if the current value equals the [expected value][expected]
-     * and returns true if the operation was successful. Provides sequential consistent ordering guarantees and cannot fail spuriously.
+     * Atomically sets the value to the given [new value][newValue] if the current value equals the [expected value][expected],
+     * returns true if the operation was successful and false only if the current value was not equal to the expected value.
      *
-     * @param expected the expected value
-     * @param newValue the new value
-     * @return true if the operation was successful and false only if the current value was not equal to the expected value.
+     * Provides sequential consistent ordering guarantees and cannot fail spuriously.
      */
     public fun compareAndSet(expected: Int, newValue: Int): Boolean = this::value.compareAndSetField(expected, newValue)
 
     /**
      * Atomically sets the value to the given [new value][newValue] if the current value equals the [expected value][expected]
-     * and returns the old value in any case. Provides sequential consistent ordering guarantees and cannot fail spuriously.
+     * and returns the old value in any case.
      *
-     * @param expected the expected value
-     * @param newValue the new value
-     * @return the old value
+     * Provides sequential consistent ordering guarantees and cannot fail spuriously.
      */
     public fun compareAndSwap(expected: Int, newValue: Int): Int = this::value.compareAndSwapField(expected, newValue)
 
     /**
      * Atomically adds the [given value][delta] to the current value and returns the old value.
-     *
-     * @param delta the value to add
-     * @return the old value
      */
     public fun getAndAdd(delta: Int): Int = this::value.getAndAddField(delta)
 
     /**
      * Atomically adds the [given value][delta] to the current value and returns the new value.
-     *
-     * @param delta the value to add
-     * @return the new value
      */
     public fun addAndGet(delta: Int): Int = this::value.getAndAddField(delta) + delta
 
     /**
      * Atomically increments by one the current value and returns the old value.
-     *
-     * @return the old value
      */
     public fun getAndIncrement(): Int = this::value.getAndAddField(1)
 
     /**
      * Atomically increments by one the current value and returns the new value.
-     *
-     * @return the new value
      */
     public fun incrementAndGet(): Int = this::value.getAndAddField(1) + 1
 
     /**
      * Atomically decrements by one the current value and returns the new value.
-     *
-     * @return the new value
      */
     public fun decrementAndGet(): Int = this::value.getAndAddField(-1) - 1
 
     /**
      * Atomically decrements by one the current value and returns the old value.
-     *
-     * @return the old value
      */
     public fun getAndDecrement(): Int = this::value.getAndAddField(-1)
 
@@ -113,8 +92,6 @@ public class AtomicInt(public @Volatile var value: Int) {
 
     /**
      * Returns the string representation of this object.
-     *
-     * @return the string representation
      */
     public override fun toString(): String = value.toString()
 }
@@ -136,81 +113,57 @@ public class AtomicLong(public @Volatile var value: Long)  {
 
     /**
      * Atomically sets the value to the given [new value][newValue] and returns the old value.
-     *
-     * @param newValue the new value
-     * @return the old value
      */
     public fun getAndSet(newValue: Long): Long = this::value.getAndSetField(newValue)
 
     /**
-     * Atomically sets the value to the given [new value][newValue] if the current value equals the [expected value][expected]
-     * and returns true if the operation was successful. Provides sequential consistent ordering guarantees and cannot fail spuriously.
+     * Atomically sets the value to the given [new value][newValue] if the current value equals the [expected value][expected],
+     * returns true if the operation was successful and false only if the current value was not equal to the expected value.
      *
-     * @param expected the expected value
-     * @param newValue the new value
-     * @return true if the operation was successful and false only if the current value was not equal to the expected value.
+     * Provides sequential consistent ordering guarantees and cannot fail spuriously.
      */
     public fun compareAndSet(expected: Long, newValue: Long): Boolean = this::value.compareAndSetField(expected, newValue)
 
     /**
      * Atomically sets the value to the given [new value][newValue] if the current value equals the [expected value][expected]
-     * and returns the old value in any case. Provides sequential consistent ordering guarantees and cannot fail spuriously.
+     * and returns the old value in any case.
      *
-     * @param expected the expected value
-     * @param newValue the new value
-     * @return the old value
+     * Provides sequential consistent ordering guarantees and cannot fail spuriously.
      */
     public fun compareAndSwap(expected: Long, newValue: Long): Long = this::value.compareAndSwapField(expected, newValue)
 
     /**
      * Atomically adds the [given value][delta] to the current value and returns the old value.
-     *
-     * @param delta the value to add
-     * @return the old value
      */
     public fun getAndAdd(delta: Long): Long = this::value.getAndAddField(delta)
 
     /**
      * Atomically adds the [given value][delta] to the current value and returns the new value.
-     *
-     * @param delta the value to add
-     * @return the new value
      */
     public fun addAndGet(delta: Long): Long = this::value.getAndAddField(delta) + delta
 
     /**
      * Atomically increments by one the current value and returns the old value.
-     *
-     * @return the old value
      */
     public fun getAndIncrement(): Long = this::value.getAndAddField(1L)
 
     /**
      * Atomically increments by one the current value and returns the new value.
-     *
-     * @return the new value
      */
     public fun incrementAndGet(): Long = this::value.getAndAddField(1L) + 1L
 
     /**
      * Atomically decrements by one the current value and returns the new value.
-     *
-     * @return the new value
      */
     public fun decrementAndGet(): Long = this::value.getAndAddField(-1L) - 1L
 
     /**
      * Atomically decrements by one the current value and returns the old value.
-     *
-     * @return the old value
      */
     public fun getAndDecrement(): Long = this::value.getAndAddField(-1L)
 
     /**
      * Atomically adds the [given value][delta] to the current value and returns the new value.
-     *
-     * @param delta the value to add
-     * @return the new value
      */
     @Deprecated(level = DeprecationLevel.WARNING, message = "This method is deprecated. Use addAndGet(delta: Long) instead.")
     public fun addAndGet(delta: Int): Long = addAndGet(delta.toLong())
@@ -235,8 +188,6 @@ public class AtomicLong(public @Volatile var value: Long)  {
 
     /**
      * Returns the string representation of this object.
-     *
-     * @return the string representation of this object
      */
     public override fun toString(): String = value.toString()
 }
@@ -288,45 +239,37 @@ public class AtomicReference<T> {
 
     /**
      * Atomically sets the value to the given [new value][newValue] and returns the old value.
-     *
-     * @param newValue the new value
-     * @return the old value
      */
     public fun getAndSet(newValue: T): T = swap(newValue)
 
     /**
-     * Atomically sets the value to the given [new value][newValue] if the current value equals the [expected value][expected]
-     * and returns true if the operation was successful. Provides sequential consistent ordering guarantees and cannot fail spuriously.
+     * Atomically sets the value to the given [new value][newValue] if the current value equals the [expected value][expected],
+     * returns true if the operation was successful and false only if the current value was not equal to the expected value.
+     *
+     * Provides sequential consistent ordering guarantees and cannot fail spuriously.
      *
      * Comparison of values is done by reference.
-     *
-     * @param expected the expected value
-     * @param newValue the new value
-     * @return true if the operation was successful and false only if the current value was not equal to the expected value.
      */
     @GCUnsafeCall("Kotlin_AtomicReference_compareAndSet")
     external public fun compareAndSet(expected: T, newValue: T): Boolean
 
     /**
      * Atomically sets the value to the given [new value][newValue] if the current value equals the [expected value][expected]
-     * and returns the old value in any case. Provides sequential consistent ordering guarantees and cannot fail spuriously.
+     * and returns the old value in any case.
+     *
+     * Provides sequential consistent ordering guarantees and cannot fail spuriously.
      *
      * Comparison of values is done by reference.
      *
      * Legacy MM: if the [new value][newValue] value is not null, it must be frozen or permanent object.
      *
-     * @param expected the expected value
-     * @param newValue the new value
      * @throws InvalidMutabilityException with legacy MM if the value is not frozen or a permanent object
-     * @return the old value
      */
     @GCUnsafeCall("Kotlin_AtomicReference_compareAndSwap")
     external public fun compareAndSwap(expected: T, newValue: T): T
 
     /**
      * Returns the string representation of this object.
-     *
-     * @return string representation of this object
      */
     public override fun toString(): String =
             "${debugString(this)} -> ${debugString(value)}"
@@ -367,9 +310,6 @@ public class AtomicReference<T> {
 public class AtomicNativePtr(public @Volatile var value: NativePtr) {
     /**
      * Atomically sets the value to the given [new value][newValue] and returns the old value.
-     *
-     * @param newValue the new value
-     * @return the old value
      */
     public fun getAndSet(newValue: NativePtr): NativePtr {
         // Pointer types are allowed for atomicrmw xchg operand since LLVM 15.0,
@@ -384,35 +324,29 @@ public class AtomicNativePtr(public @Volatile var value: NativePtr) {
     }
 
     /**
-     * Atomically sets the value to the given [new value][newValue] if the current value equals the [expected value][expected]
-     * and returns true if the operation was successful. Provides sequential consistent ordering guarantees and cannot fail spuriously.
+     * Atomically sets the value to the given [new value][newValue] if the current value equals the [expected value][expected],
+     * returns true if the operation was successful and false only if the current value was not equal to the expected value.
+     *
+     * Provides sequential consistent ordering guarantees and cannot fail spuriously.
      *
      * Comparison of values is done by value.
-     *
-     * @param expected the expected value
-     * @param newValue the new value
-     * @return true if the operation was successful and false only if the current value was not equal to the expected value.
      */
     public fun compareAndSet(expected: NativePtr, newValue: NativePtr): Boolean =
             this::value.compareAndSetField(expected, newValue)
 
     /**
      * Atomically sets the value to the given [new value][newValue] if the current value equals the [expected value][expected]
-     * and returns the old value in any case. Provides sequential consistent ordering guarantees and cannot fail spuriously.
+     * and returns the old value in any case.
+     *
+     * Provides sequential consistent ordering guarantees and cannot fail spuriously.
      *
      * Comparison of values is done by value.
-     *
-     * @param expected the expected value
-     * @param newValue the new value
-     * @return the old value
      */
     public fun compareAndSwap(expected: NativePtr, newValue: NativePtr): NativePtr =
             this::value.compareAndSwapField(expected, newValue)
 
     /**
      * Returns the string representation of this object.
-     *
-     * @return string representation of this object
      */
     public override fun toString(): String = value.toString()
 }
