@@ -334,7 +334,7 @@ private fun IrProperty.isStatic(currentContainer: IrDeclarationContainer) =
 
 fun getRootNode(context: JvmBackendContext, mfvc: IrClass): RootMfvcNode {
     require(mfvc.isMultiFieldValueClass) { "${mfvc.defaultType.render()} does not require flattening" }
-    val oldPrimaryConstructor = mfvc.primaryConstructor!!
+    val oldPrimaryConstructor = mfvc.primaryConstructor
     val oldFields = mfvc.declarations.mapNotNull { it as? IrField ?: (it as? IrProperty)?.backingField }.filter { !it.isStatic }
     val representation = mfvc.multiFieldValueClassRepresentation!!
     val properties = collectPropertiesAfterLowering(mfvc, context).associateBy { it.isStatic(mfvc) to it.name }
@@ -344,8 +344,10 @@ fun getRootNode(context: JvmBackendContext, mfvc: IrClass): RootMfvcNode {
     val leaves = subnodes.leaves
     val fields = subnodes.fields
 
-    val newPrimaryConstructor = makeMfvcPrimaryConstructor(context, oldPrimaryConstructor, mfvc, leaves, fields)
-    val primaryConstructorImpl = makePrimaryConstructorImpl(context, oldPrimaryConstructor, mfvc, leaves, subnodes)
+    val newPrimaryConstructor = oldPrimaryConstructor?.let { makeMfvcPrimaryConstructor(context, it, mfvc, leaves, fields) }
+    val primaryConstructorImpl = oldPrimaryConstructor?.let {
+        makePrimaryConstructorImpl(context, it, mfvc, leaves, subnodes)
+    }
     val boxMethod = makeBoxMethod(context, mfvc, leaves, newPrimaryConstructor)
 
     val customEqualsAny = mfvc.functions.singleOrNull {
@@ -408,7 +410,7 @@ private fun makeBoxMethod(
     context: JvmBackendContext,
     mfvc: IrClass,
     leaves: List<LeafMfvcNode>,
-    newPrimaryConstructor: IrConstructor
+    newPrimaryConstructor: IrConstructor?,
 ) = context.irFactory.buildFun {
     name = Name.identifier(KotlinTypeMapper.BOX_JVM_METHOD_NAME)
     origin = JvmLoweredDeclarationOrigin.SYNTHETIC_MULTI_FIELD_VALUE_CLASS_MEMBER
@@ -423,7 +425,7 @@ private fun makeBoxMethod(
     val parameters = leaves.map { leaf -> addValueParameter(leaf.fullFieldName, leaf.type.substitute(mapping)) }
     if (!mfvc.isKotlinExternalStub()) {
         body = with(context.createJvmIrBuilder(this.symbol)) {
-            irExprBody(irCall(newPrimaryConstructor).apply {
+            irExprBody(irCall(newPrimaryConstructor!!).apply {
                 for ((index, parameter) in parameters.withIndex()) {
                     putValueArgument(index, irGet(parameter))
                 }

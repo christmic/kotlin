@@ -779,16 +779,16 @@ internal class JvmMultiFieldValueClassLowering(
     private fun RootMfvcNode.replacePrimaryMultiFieldValueClassConstructor() {
         val rootMfvcNode = this
         mfvc.declarations.removeIf { it is IrConstructor && it.isPrimary }
-        mfvc.declarations += listOf(newPrimaryConstructor, primaryConstructorImpl)
+        mfvc.declarations += listOf(newPrimaryConstructor!!, primaryConstructorImpl!!)
 
         val initializersBlocks = mfvc.declarations.filterIsInstance<IrAnonymousInitializer>()
-        val typeArguments = makeTypeParameterSubstitutionMap(mfvc, primaryConstructorImpl)
+        val typeArguments = makeTypeParameterSubstitutionMap(mfvc, primaryConstructorImpl!!)
         if (!mfvc.isKotlinExternalStub()) {
-            primaryConstructorImpl.body = context.createJvmIrBuilder(primaryConstructorImpl.symbol).irBlockBody {
+            primaryConstructorImpl!!.body = context.createJvmIrBuilder(primaryConstructorImpl!!.symbol).irBlockBody {
                 val mfvcNodeInstance =
-                    ValueDeclarationMfvcNodeInstance(rootMfvcNode, typeArguments, primaryConstructorImpl.valueParameters)
+                    ValueDeclarationMfvcNodeInstance(rootMfvcNode, typeArguments, primaryConstructorImpl!!.valueParameters)
                 valueDeclarationsRemapper.registerReplacement(
-                    oldPrimaryConstructor.constructedClass.thisReceiver!!,
+                    oldPrimaryConstructor!!.constructedClass.thisReceiver!!,
                     mfvcNodeInstance
                 )
                 for (initializer in initializersBlocks) {
@@ -1343,7 +1343,7 @@ internal class JvmMultiFieldValueClassLowering(
                 for ((subnode, argument) in rootNode.subnodes zip oldArguments) {
                     flattenExpressionTo(argument, instance[subnode.name]!!)
                 }
-                +irCall(rootNode.primaryConstructorImpl).apply {
+                +irCall(rootNode.primaryConstructorImpl!!).apply {
                     copyTypeArgumentsFrom(expression)
                     val flattenedGetterExpressions =
                         instance.makeFlattenedGetterExpressions(this@flattenExpressionTo, irCurrentClass, ::registerPossibleExtraBoxUsage)
