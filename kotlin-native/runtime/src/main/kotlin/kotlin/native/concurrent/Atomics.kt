@@ -52,17 +52,17 @@ public class AtomicInt(private @Volatile var value_: Int) {
 
     /**
      * Atomically sets the value to the given [new value][newValue] if the current value equals the [expected value][expected]
-     * and returns true if operation was successful.
+     * and returns true if the operation was successful. Provides sequential consistent ordering guarantees and cannot fail spuriously.
      *
      * @param expected the expected value
      * @param newValue the new value
-     * @return true if successful
+     * @return true if the operation was successful and false only if the current value was not equal to the expected value.
      */
     public fun compareAndSet(expected: Int, newValue: Int): Boolean = this::value_.compareAndSetField(expected, newValue)
 
     /**
      * Atomically sets the value to the given [new value][newValue] if the current value equals the [expected value][expected]
-     * and returns the old value in any case.
+     * and returns the old value in any case. Provides sequential consistent ordering guarantees and cannot fail spuriously.
      *
      * @param expected the expected value
      * @param newValue the new value
@@ -182,17 +182,17 @@ public class AtomicLong(private @Volatile var value_: Long)  {
 
     /**
      * Atomically sets the value to the given [new value][newValue] if the current value equals the [expected value][expected]
-     * and returns true if operation was successful.
+     * and returns true if the operation was successful. Provides sequential consistent ordering guarantees and cannot fail spuriously.
      *
      * @param expected the expected value
      * @param newValue the new value
-     * @return true if successful
+     * @return true if the operation was successful and false only if the current value was not equal to the expected value.
      */
     public fun compareAndSet(expected: Long, newValue: Long): Boolean = this::value_.compareAndSetField(expected, newValue)
 
     /**
      * Atomically sets the value to the given [new value][newValue] if the current value equals the [expected value][expected]
-     * and returns the old value in any case.
+     * and returns the old value in any case. Provides sequential consistent ordering guarantees and cannot fail spuriously.
      *
      * @param expected the expected value
      * @param newValue the new value
@@ -345,20 +345,20 @@ public class AtomicReference<T> {
 
     /**
      * Atomically sets the value to the given [new value][newValue] if the current value equals the [expected value][expected]
-     * and returns true if operation was successful.
+     * and returns true if the operation was successful. Provides sequential consistent ordering guarantees and cannot fail spuriously.
      *
      * Comparison of values is done by reference.
      *
      * @param expected the expected value
      * @param newValue the new value
-     * @return true if successful
+     * @return true if the operation was successful and false only if the current value was not equal to the expected value.
      */
     @GCUnsafeCall("Kotlin_AtomicReference_compareAndSet")
     external public fun compareAndSet(expected: T, newValue: T): Boolean
 
     /**
      * Atomically sets the value to the given [new value][newValue] if the current value equals the [expected value][expected]
-     * and returns the old value in any case.
+     * and returns the old value in any case. Provides sequential consistent ordering guarantees and cannot fail spuriously.
      *
      * Comparison of values is done by reference.
      *
@@ -455,20 +455,20 @@ public class AtomicNativePtr(private @Volatile var value_: NativePtr) {
 
     /**
      * Atomically sets the value to the given [new value][newValue] if the current value equals the [expected value][expected]
-     * and returns true if operation was successful.
+     * and returns true if the operation was successful. Provides sequential consistent ordering guarantees and cannot fail spuriously.
      *
      * Comparison of values is done by value.
      *
      * @param expected the expected value
      * @param newValue the new value
-     * @return true if successful
+     * @return true if the operation was successful and false only if the current value was not equal to the expected value.
      */
     public fun compareAndSet(expected: NativePtr, newValue: NativePtr): Boolean =
             this::value_.compareAndSetField(expected, newValue)
 
     /**
      * Atomically sets the value to the given [new value][newValue] if the current value equals the [expected value][expected]
-     * and returns the old value in any case.
+     * and returns the old value in any case. Provides sequential consistent ordering guarantees and cannot fail spuriously.
      *
      * Comparison of values is done by value.
      *
