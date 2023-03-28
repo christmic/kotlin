@@ -396,8 +396,8 @@ class IrDeclarationDeserializer(
                     else -> computeMissingInlineClassRepresentationForCompatibility(this)
                 }
 
-                // It has been desided not to deserialize the list of sealed subclasses because of KT-54028
-                // sealedSubclasses = proto.sealedSubclassList.map { deserializeIrSymbol(it).checkSymbolType(CLASS_SYMBOL) }
+                // It has been decided not to deserialize the list of sealed subclasses because of KT-54028
+                // sealedSubclasses = proto.sealedSubclassList.memoryOptimizedMap { deserializeIrSymbol(it).checkSymbolType(CLASS_SYMBOL) }
 
                 fakeOverrideBuilder.enqueueClass(this, signature, compatibilityMode)
             }
