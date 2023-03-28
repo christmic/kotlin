@@ -45,7 +45,7 @@ private class LockFreeStack<T> {
 
     fun push(value: T) {
         while(true) {
-            val cur = top.get()
+            val cur = top.value
             val upd = Node(value, cur)
             if (top.compareAndSet(cur, upd)) return
         }
@@ -53,7 +53,7 @@ private class LockFreeStack<T> {
 
     fun pop(): T? {
         while(true) {
-            val cur = top.get()
+            val cur = top.value
             if (cur == null) return null
             if (top.compareAndSet(cur, cur.next)) return cur.value
         }

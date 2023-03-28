@@ -18,12 +18,12 @@ internal object NativeRandom : Random() {
      * Random generator seed value.
      */
     private val seed: Long
-        get() = _seed.get()
+        get() = _seed.value
 
     private fun mult(value: Long) = (value xor MULTIPLIER) and ((1L shl 48) - 1)
 
     private fun update(seed: Long): Unit {
-        _seed.set(seed)
+        _seed.value = seed
     }
 
     override fun nextBits(bitCount: Int): Int {
