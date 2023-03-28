@@ -53,22 +53,22 @@ public class AtomicInt(public @Volatile var value: Int) {
     public fun addAndGet(delta: Int): Int = this::value.getAndAddField(delta) + delta
 
     /**
-     * Atomically increments by one the current value and returns the old value.
+     * Atomically increments the current value by one and returns the old value.
      */
     public fun getAndIncrement(): Int = this::value.getAndAddField(1)
 
     /**
-     * Atomically increments by one the current value and returns the new value.
+     * Atomically increments the current value by one and returns the new value.
      */
     public fun incrementAndGet(): Int = this::value.getAndAddField(1) + 1
 
     /**
-     * Atomically decrements by one the current value and returns the new value.
+     * Atomically decrements the current value by one and returns the new value.
      */
     public fun decrementAndGet(): Int = this::value.getAndAddField(-1) - 1
 
     /**
-     * Atomically decrements by one the current value and returns the old value.
+     * Atomically decrements the current value by one and returns the old value.
      */
     public fun getAndDecrement(): Int = this::value.getAndAddField(-1)
 
@@ -143,22 +143,22 @@ public class AtomicLong(public @Volatile var value: Long)  {
     public fun addAndGet(delta: Long): Long = this::value.getAndAddField(delta) + delta
 
     /**
-     * Atomically increments by one the current value and returns the old value.
+     * Atomically increments the current value by one and returns the old value.
      */
     public fun getAndIncrement(): Long = this::value.getAndAddField(1L)
 
     /**
-     * Atomically increments by one the current value and returns the new value.
+     * Atomically increments the current value by one and returns the new value.
      */
     public fun incrementAndGet(): Long = this::value.getAndAddField(1L) + 1L
 
     /**
-     * Atomically decrements by one the current value and returns the new value.
+     * Atomically decrements the current value by one and returns the new value.
      */
     public fun decrementAndGet(): Long = this::value.getAndAddField(-1L) - 1L
 
     /**
-     * Atomically decrements by one the current value and returns the old value.
+     * Atomically decrements the current value by one and returns the old value.
      */
     public fun getAndDecrement(): Long = this::value.getAndAddField(-1L)
 
@@ -169,7 +169,7 @@ public class AtomicLong(public @Volatile var value: Long)  {
     public fun addAndGet(delta: Int): Long = addAndGet(delta.toLong())
 
     /**
-     * Atomically increments value by one.
+     * Atomically increments the current value by one.
      */
     @Deprecated(level = DeprecationLevel.WARNING, message = "This method is deprecated. Use incrementAndGet() or getAndIncrement() instead.",
             replaceWith = ReplaceWith("this.incrementAndGet()"))
@@ -178,7 +178,7 @@ public class AtomicLong(public @Volatile var value: Long)  {
     }
 
     /**
-     * Atomically decrements value by one.
+     * Atomically decrements the current value by one.
      */
     @Deprecated(level = DeprecationLevel.WARNING, message = "This method is deprecated. Use decrementAndGet() or getAndDecrement() instead.",
             replaceWith = ReplaceWith("this.decrementAndGet()"))
