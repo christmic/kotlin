@@ -130,6 +130,10 @@ public class AtomicInt(public @Volatile var value: Int) {
 @Frozen
 @OptIn(FreezingIsDeprecated::class, ExperimentalStdlibApi::class)
 public class AtomicLong(public @Volatile var value: Long)  {
+
+    @Deprecated("Constructor with default parameter value is deprecated, pass an initial value")
+    constructor() : this(0L)
+
     /**
      * Atomically sets the value to the given [new value][newValue] and returns the old value.
      *
