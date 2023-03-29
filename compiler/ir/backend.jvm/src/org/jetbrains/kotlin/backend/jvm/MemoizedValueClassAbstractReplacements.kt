@@ -30,7 +30,7 @@ abstract class MemoizedValueClassAbstractReplacements(
      * Get a replacement for a function or a constructor.
      */
     fun getReplacementFunction(function: IrFunction) =
-        if (quickCheckIfFunctionIsNotApplicable(function)) null else getReplacementFunctionImpl(function)
+        if (checkIfFunctionMayBeApplicable(function)) getReplacementFunctionImpl(function) else null
 
     protected abstract val getReplacementFunctionImpl: (IrFunction) -> IrSimpleFunction?
 
@@ -139,5 +139,5 @@ abstract class MemoizedValueClassAbstractReplacements(
             function.overriddenSymbols = replaceOverriddenSymbols(function)
         }
 
-    abstract fun quickCheckIfFunctionIsNotApplicable(function: IrFunction): Boolean
+    abstract fun checkIfFunctionMayBeApplicable(function: IrFunction): Boolean
 }

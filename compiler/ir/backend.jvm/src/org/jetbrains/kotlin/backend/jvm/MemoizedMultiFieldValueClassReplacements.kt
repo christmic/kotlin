@@ -15,9 +15,7 @@ import org.jetbrains.kotlin.ir.builders.irGet
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.symbols.IrTypeParameterSymbol
-import org.jetbrains.kotlin.ir.types.IrSimpleType
-import org.jetbrains.kotlin.ir.types.IrType
-import org.jetbrains.kotlin.ir.types.defaultType
+import org.jetbrains.kotlin.ir.types.*
 import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.resolve.InlineClassDescriptorResolver
@@ -281,12 +279,16 @@ class MemoizedMultiFieldValueClassReplacements(
             }
         }
 
-    override fun quickCheckIfFunctionIsNotApplicable(function: IrFunction): Boolean = !(
-            function.parent.let { it is IrClass && it.isMultiFieldValueClass } ||
-                    function.dispatchReceiverParameter?.type?.needsMfvcFlattening() == true ||
-                    function.extensionReceiverParameter?.type?.needsMfvcFlattening() == true ||
-                    function.valueParameters.any { it.type.needsMfvcFlattening() }
-            )
+    override fun checkIfFunctionMayBeApplicable(function: IrFunction): Boolean {
+        fun IrType?.isOk() = this != null && needsMfvcFlattening()
+        return function.parent.let { it is IrClass && it.isMultiFieldValueClass } ||
+                function.dispatchReceiverParameter?.type.isOk() ||
+                function.extensionReceiverParameter?.type.isOk() ||
+                function.valueParameters.any { it.type.isOk() } ||
+                function.returnType.let { t ->
+                    t.isOk() || t.makeNotNull().isNothing() && function is IrSimpleFunction && function.allOverridden().any { it.returnType.isOk() }
+                }
+    }
 
     private val getReplacementForRegularClassConstructorImpl: (IrConstructor) -> IrConstructor? =
         storageManager.createMemoizedFunctionWithNullableValues { constructor ->

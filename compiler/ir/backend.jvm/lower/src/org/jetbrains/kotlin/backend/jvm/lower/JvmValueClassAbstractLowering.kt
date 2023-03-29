@@ -246,32 +246,48 @@ internal abstract class JvmValueClassAbstractLowering(
     // Functions for common lowering dispatching
     private inner class NeedsToVisit : IrElementVisitor<Boolean, Nothing?> {
         override fun visitElement(element: IrElement, data: Nothing?): Boolean = false
+
+        private fun List<IrTypeParameter>.handleTypeParameters() = any { it.superTypes.any { it.needsHandling } }
+
         override fun visitClass(declaration: IrClass, data: Nothing?): Boolean =
-            declaration.isSpecificLoweringLogicApplicable() || declaration.declarations.any { it.accept(this, null) }
+            visitClassHeader(declaration) || declaration.declarations.any { it.accept(this, null) }
+
+        private fun visitClassHeader(declaration: IrClass): Boolean =
+            declaration.isSpecificLoweringLogicApplicable() || declaration.typeParameters.handleTypeParameters() ||
+                    declaration.getAllSuperclasses().any { it.typeParameters.handleTypeParameters() }
 
         override fun visitFunction(declaration: IrFunction, data: Nothing?): Boolean =
-            replacements.quickCheckIfFunctionIsNotApplicable(declaration)
+            replacements.checkIfFunctionMayBeApplicable(declaration) || declaration.typeParameters.handleTypeParameters()
 
         override fun visitFunctionReference(expression: IrFunctionReference, data: Nothing?): Boolean =
-            visitFunction(expression.symbol.owner, data)
+            visitFunction(expression.symbol.owner, data) || super.visitFunctionReference(expression, data)
 
         override fun visitFunctionAccess(expression: IrFunctionAccessExpression, data: Nothing?): Boolean =
-            visitFunction(expression.symbol.owner, data)
+            visitFunction(expression.symbol.owner, data) || super.visitFunctionAccess(expression, data)
 
         override fun visitField(declaration: IrField, data: Nothing?): Boolean = declaration.type.needsHandling
         override fun visitFieldAccess(expression: IrFieldAccessExpression, data: Nothing?): Boolean =
-            visitField(expression.symbol.owner, data)
+            visitField(expression.symbol.owner, data) || super.visitFieldAccess(expression, data)
 
         override fun visitVariable(declaration: IrVariable, data: Nothing?): Boolean = visitValueDeclaration(declaration)
 
         private fun visitValueDeclaration(declaration: IrValueDeclaration) = declaration.type.needsHandling
         override fun visitValueParameter(declaration: IrValueParameter, data: Nothing?): Boolean = visitValueDeclaration(declaration)
         override fun visitValueAccess(expression: IrValueAccessExpression, data: Nothing?): Boolean =
-            visitValueDeclaration(expression.symbol.owner)
+            visitValueDeclaration(expression.symbol.owner) || super.visitValueAccess(expression, data)
 
-        override fun visitStringConcatenation(expression: IrStringConcatenation, data: Nothing?): Boolean = false
-        override fun visitReturn(expression: IrReturn, data: Nothing?): Boolean = (expression.returnTargetSymbol.owner as? IrFunction)
-            ?.let { replacements.quickCheckIfFunctionIsNotApplicable(it) } ?: false
+        override fun visitStringConcatenation(expression: IrStringConcatenation, data: Nothing?): Boolean =
+            expression.arguments.any { it.type.needsHandling } || super.visitStringConcatenation(expression, data)
+
+
+        override fun visitCall(expression: IrCall, data: Nothing?): Boolean {
+            fun argumentsNeedHandling() =
+                (0 until expression.valueArgumentsCount).any { expression.getValueArgument(it)?.type?.needsHandling == true }
+            if (expression.symbol == context.irBuiltIns.eqeqSymbol && argumentsNeedHandling()) {
+                return true
+            }
+            return super.visitCall(expression, data)
+        }
 
         override fun visitAnonymousInitializer(declaration: IrAnonymousInitializer, data: Nothing?): Boolean =
             (declaration.parent as? IrClass)?.isSpecificLoweringLogicApplicable() == true
@@ -279,9 +295,13 @@ internal abstract class JvmValueClassAbstractLowering(
         private fun visitStatementContainer(container: IrStatementContainer) = container.statements.any { it.accept(this, null) }
 
         override fun visitContainerExpression(expression: IrContainerExpression, data: Nothing?): Boolean =
-            visitStatementContainer(expression)
+            visitStatementContainer(expression) || super.visitContainerExpression(expression, data)
 
         override fun visitBlockBody(body: IrBlockBody, data: Nothing?): Boolean = visitStatementContainer(body)
+        override fun visitExpression(expression: IrExpression, data: Nothing?): Boolean {
+            if (expression.type.needsHandling) return true
+            return super.visitExpression(expression, data)
+        }
     }
 
     internal fun needsToVisitClassNew(declaration: IrClass): Boolean = declaration.accept(NeedsToVisit(), null)
