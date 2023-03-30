@@ -118,19 +118,19 @@ internal class SymbolLightFieldForProperty private constructor(
         }
 
         PsiModifier.VOLATILE -> withPropertySymbol { propertySymbol ->
-            val hasAnnotation = propertySymbol.hasAnnotation(
+            val hasAnnotation = propertySymbol.backingFieldSymbol?.hasAnnotation(
                 VOLATILE_ANNOTATION_CLASS_ID,
                 AnnotationUseSiteTarget.FIELD.toOptionalFilter(),
-            )
+            ) == true
 
             mapOf(modifier to hasAnnotation)
         }
 
         PsiModifier.TRANSIENT -> withPropertySymbol { propertySymbol ->
-            val hasAnnotation = propertySymbol.hasAnnotation(
+            val hasAnnotation = propertySymbol.backingFieldSymbol?.hasAnnotation(
                 TRANSIENT_ANNOTATION_CLASS_ID,
                 AnnotationUseSiteTarget.FIELD.toOptionalFilter(),
-            )
+            ) == true
 
             mapOf(modifier to hasAnnotation)
         }
@@ -148,7 +148,9 @@ internal class SymbolLightFieldForProperty private constructor(
             annotationsBox = GranularAnnotationsBox(
                 annotationsProvider = SymbolAnnotationsProvider(
                     ktModule = ktModule,
-                    annotatedSymbolPointer = propertySymbolPointer,
+                    annotatedSymbolPointer = withPropertySymbol { propertySymbol ->
+                        propertySymbol.backingFieldSymbol?.createPointer() ?: propertySymbolPointer
+                    },
                     annotationUseSiteTargetFilter = AnnotationUseSiteTarget.FIELD.toOptionalFilter(),
                 ),
                 additionalAnnotationsProvider = NullabilityAnnotationsProvider {

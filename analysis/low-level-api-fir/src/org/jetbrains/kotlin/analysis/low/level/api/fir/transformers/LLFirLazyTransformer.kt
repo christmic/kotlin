@@ -22,6 +22,7 @@ internal interface LLFirLazyTransformer {
         if (target !is FirDeclaration) return
         checkFunctionParametersAreResolved(target)
         checkPropertyAccessorsAreResolved(target)
+        checkBackingFieldIsResolved(target)
         checkClassMembersAreResolved(target)
     }
 
@@ -38,6 +39,12 @@ internal interface LLFirLazyTransformer {
         if (declaration is FirProperty) {
             declaration.getter?.let { checkIsResolved(it) }
             declaration.setter?.let { checkIsResolved(it) }
+        }
+    }
+
+    fun checkBackingFieldIsResolved(declaration: FirDeclaration) {
+        if (declaration is FirProperty) {
+            declaration.backingField?.let { checkIsResolved(it) }
         }
     }
 
@@ -96,6 +103,7 @@ internal interface LLFirLazyTransformer {
                 is FirProperty -> {
                     element.getter?.let { updatePhaseForNonLocals(it, newPhase) }
                     element.setter?.let { updatePhaseForNonLocals(it, newPhase) }
+                    element.backingField?.let { updatePhaseForNonLocals(it, newPhase) }
                 }
                 is FirClass -> {
                     element.declarations.forEach {
