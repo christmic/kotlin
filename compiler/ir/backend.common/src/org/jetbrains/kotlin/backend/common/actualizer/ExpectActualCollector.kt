@@ -126,12 +126,7 @@ private class ClassLinksCollector(
         val actualClassSymbol = actualClasses[generateIrElementFullNameFromExpect(declaration, expectActualTypeAliasMap)]
         if (actualClassSymbol != null) {
             expectActualMap[declaration.symbol] = actualClassSymbol
-            val actualClass = actualClassSymbol.owner
-            for (expectTypeParameter in declaration.typeParameters) {
-                actualClass.typeParameters.firstOrNull { it.name == expectTypeParameter.name }?.let { actualTypeParameter ->
-                    expectActualMap[expectTypeParameter.symbol] = actualTypeParameter.symbol
-                }
-            }
+            expectActualMap.appendTypeParametersMap(declaration, actualClassSymbol.owner)
         } else if (!declaration.containsOptionalExpectation()) {
             diagnosticsReporter.reportMissingActual(declaration)
         }
@@ -170,6 +165,8 @@ private class MemberLinksCollector(
                 val actualProperty = actualMember as IrProperty
                 declaration.getter?.symbol?.let { expectActualMap[it] = actualProperty.getter!!.symbol }
                 declaration.setter?.symbol?.let { expectActualMap[it] = actualProperty.setter!!.symbol }
+            } else if (declaration is IrFunction) {
+                expectActualMap.appendTypeParametersMap(declaration, actualMember as IrFunction)
             }
         } else if (!declaration.parent.containsOptionalExpectation() && !(declaration is IrConstructor && declaration.isPrimary)) {
             diagnosticsReporter.reportMissingActual(declaration)
@@ -178,5 +175,16 @@ private class MemberLinksCollector(
 
     override fun visitElement(element: IrElement) {
         element.acceptChildrenVoid(this)
+    }
+}
+
+private fun MutableMap<IrSymbol, IrSymbol>.appendTypeParametersMap(
+    expectTypeParametersContainer: IrTypeParametersContainer,
+    actualTypeParametersContainer: IrTypeParametersContainer
+) {
+    for (expectTypeParameter in expectTypeParametersContainer.typeParameters) {
+        actualTypeParametersContainer.typeParameters.firstOrNull { it.name == expectTypeParameter.name }?.let { actualTypeParameter ->
+            this[expectTypeParameter.symbol] = actualTypeParameter.symbol
+        }
     }
 }
