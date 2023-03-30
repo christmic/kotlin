@@ -47,8 +47,9 @@ class FirKotlinScopeProvider(
                     val delegateFields = klass.delegateFields
                     if (delegateFields.isEmpty())
                         it
-                    else
+                    else {
                         FirDelegatedMemberScope(useSiteSession, scopeSession, klass, it, delegateFields)
+                    }
                 }
 
             val scopes = lookupSuperTypes(
