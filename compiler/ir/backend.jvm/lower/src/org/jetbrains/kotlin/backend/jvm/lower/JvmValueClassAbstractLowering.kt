@@ -8,6 +8,7 @@ package org.jetbrains.kotlin.backend.jvm.lower
 import org.jetbrains.kotlin.backend.common.*
 import org.jetbrains.kotlin.backend.common.lower.createIrBuilder
 import org.jetbrains.kotlin.backend.jvm.*
+import org.jetbrains.kotlin.backend.jvm.ir.isValueClassType
 import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.IrStatement
 import org.jetbrains.kotlin.ir.builders.irReturn
@@ -15,6 +16,8 @@ import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.ir.transformStatement
 import org.jetbrains.kotlin.ir.types.IrType
+import org.jetbrains.kotlin.ir.types.isNothing
+import org.jetbrains.kotlin.ir.types.makeNotNull
 import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.ir.visitors.IrElementVisitor
 import org.jetbrains.kotlin.load.java.JvmAbi
@@ -243,88 +246,6 @@ internal abstract class JvmValueClassAbstractLowering(
     protected abstract fun createBridgeBody(source: IrSimpleFunction, target: IrSimpleFunction, original: IrFunction, inverted: Boolean)
 
 
-    // Functions for common lowering dispatching
-    private inner class NeedsToVisit : IrElementVisitor<Boolean, Nothing?> {
-        override fun visitElement(element: IrElement, data: Nothing?): Boolean = false
-
-        private fun List<IrTypeParameter>.handleTypeParameters() = any { it.superTypes.any { it.needsHandling } }
-
-        override fun visitClass(declaration: IrClass, data: Nothing?): Boolean =
-            visitClassHeader(declaration) || declaration.declarations.any { it.accept(this, null) }
-
-        private fun visitClassHeader(declaration: IrClass): Boolean =
-            declaration.isSpecificLoweringLogicApplicable() || declaration.typeParameters.handleTypeParameters() ||
-                    declaration.getAllSuperclasses().any { it.typeParameters.handleTypeParameters() }
-
-        override fun visitFunction(declaration: IrFunction, data: Nothing?): Boolean =
-            replacements.checkIfFunctionMayBeApplicable(declaration) || declaration.typeParameters.handleTypeParameters()
-
-        override fun visitFunctionReference(expression: IrFunctionReference, data: Nothing?): Boolean =
-            visitFunction(expression.symbol.owner, data) || super.visitFunctionReference(expression, data)
-
-        override fun visitFunctionAccess(expression: IrFunctionAccessExpression, data: Nothing?): Boolean =
-            visitFunction(expression.symbol.owner, data) || super.visitFunctionAccess(expression, data)
-
-        override fun visitField(declaration: IrField, data: Nothing?): Boolean = declaration.type.needsHandling
-        override fun visitFieldAccess(expression: IrFieldAccessExpression, data: Nothing?): Boolean =
-            visitField(expression.symbol.owner, data) || super.visitFieldAccess(expression, data)
-
-        override fun visitVariable(declaration: IrVariable, data: Nothing?): Boolean = visitValueDeclaration(declaration)
-
-        private fun visitValueDeclaration(declaration: IrValueDeclaration) = declaration.type.needsHandling
-        override fun visitValueParameter(declaration: IrValueParameter, data: Nothing?): Boolean = visitValueDeclaration(declaration)
-        override fun visitValueAccess(expression: IrValueAccessExpression, data: Nothing?): Boolean =
-            visitValueDeclaration(expression.symbol.owner) || super.visitValueAccess(expression, data)
-
-        override fun visitStringConcatenation(expression: IrStringConcatenation, data: Nothing?): Boolean =
-            expression.arguments.any { it.type.needsHandling } || super.visitStringConcatenation(expression, data)
-
-
-        override fun visitCall(expression: IrCall, data: Nothing?): Boolean {
-            fun argumentsNeedHandling() =
-                (0 until expression.valueArgumentsCount).any { expression.getValueArgument(it)?.type?.needsHandling == true }
-            if (expression.symbol == context.irBuiltIns.eqeqSymbol && argumentsNeedHandling()) {
-                return true
-            }
-            return super.visitCall(expression, data)
-        }
-
-        override fun visitAnonymousInitializer(declaration: IrAnonymousInitializer, data: Nothing?): Boolean =
-            (declaration.parent as? IrClass)?.isSpecificLoweringLogicApplicable() == true
-
-        private fun visitStatementContainer(container: IrStatementContainer) = container.statements.any { it.accept(this, null) }
-
-        override fun visitContainerExpression(expression: IrContainerExpression, data: Nothing?): Boolean =
-            visitStatementContainer(expression) || super.visitContainerExpression(expression, data)
-
-        override fun visitBlockBody(body: IrBlockBody, data: Nothing?): Boolean = visitStatementContainer(body)
-        override fun visitExpression(expression: IrExpression, data: Nothing?): Boolean {
-            if (expression.type.needsHandling) return true
-            return super.visitExpression(expression, data)
-        }
-    }
-
-    internal fun needsToVisitClassNew(declaration: IrClass): Boolean = declaration.accept(NeedsToVisit(), null)
-
-    internal fun needsToVisitFunctionReference(expression: IrFunctionReference): Boolean = expression.accept(NeedsToVisit(), null)
-
-    internal fun needsToVisitFunctionAccess(expression: IrFunctionAccessExpression): Boolean = expression.accept(NeedsToVisit(), null)
-
-    internal fun needsToVisitCall(expression: IrCall): Boolean = expression.accept(NeedsToVisit(), null)
-
-    internal fun needsToVisitStringConcatenation(expression: IrStringConcatenation): Boolean = expression.accept(NeedsToVisit(), null)
-
-    internal fun needsToVisitGetField(expression: IrGetField): Boolean = expression.accept(NeedsToVisit(), null)
-
-    internal fun needsToVisitSetField(expression: IrSetField): Boolean = expression.accept(NeedsToVisit(), null)
-
-    internal fun needsToVisitGetValue(expression: IrGetValue): Boolean = expression.accept(NeedsToVisit(), null)
-
-    internal fun needsToVisitSetValue(expression: IrSetValue): Boolean = expression.accept(NeedsToVisit(), null)
-
-    internal fun needsToVisitVariable(declaration: IrVariable): Boolean = declaration.accept(NeedsToVisit(), null)
-
-    internal fun needsToVisitReturn(expression: IrReturn): Boolean = expression.accept(NeedsToVisit(), null)
     internal abstract fun visitClassNewDeclarationsWhenParallel(declaration: IrDeclaration)
 
     // forbid other overrides without modifying dispatcher file JvmValueClassLoweringDispatcher.kt
@@ -400,6 +321,4 @@ internal abstract class JvmValueClassAbstractLowering(
     final override fun visitErrorExpression(expression: IrErrorExpression) = super.visitErrorExpression(expression)
     final override fun visitErrorCallExpression(expression: IrErrorCallExpression) = super.visitErrorCallExpression(expression)
 
-
-    abstract val IrType.needsHandling: Boolean
 }

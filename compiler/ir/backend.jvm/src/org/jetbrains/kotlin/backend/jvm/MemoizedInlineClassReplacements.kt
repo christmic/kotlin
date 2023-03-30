@@ -86,17 +86,6 @@ class MemoizedInlineClassReplacements(
             }
         }
 
-    override fun checkIfFunctionMayBeApplicable(function: IrFunction): Boolean {
-        fun IrType?.isOk() = this != null && isInlineClassType()
-        return function.parent.let { (it is IrClass && it.isSingleFieldValueClass) } ||
-                function.dispatchReceiverParameter?.type.isOk() ||
-                function.extensionReceiverParameter?.type.isOk() ||
-                function.valueParameters.any { it.type.isOk() } ||
-                function.returnType.let { t ->
-                    t.isOk() || t.makeNotNull().isNothing() && function is IrSimpleFunction && function.allOverridden().any { it.returnType.isOk() }
-                }
-    }
-
     /**
      * Get the box function for an inline class. Concretely, this is a synthetic
      * static function named "box-impl" which takes an unboxed value and returns

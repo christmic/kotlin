@@ -52092,6 +52092,12 @@ public class FirPsiBlackBoxCodegenTestGenerated extends AbstractFirPsiBlackBoxCo
         }
 
         @Test
+        @TestMetadata("nestedLoweringStart.kt")
+        public void testNestedLoweringStart() throws Exception {
+            runTest("compiler/testData/codegen/box/valueClasses/nestedLoweringStart.kt");
+        }
+
+        @Test
         @TestMetadata("overrides.kt")
         public void testOverrides() throws Exception {
             runTest("compiler/testData/codegen/box/valueClasses/overrides.kt");

@@ -279,17 +279,6 @@ class MemoizedMultiFieldValueClassReplacements(
             }
         }
 
-    override fun checkIfFunctionMayBeApplicable(function: IrFunction): Boolean {
-        fun IrType?.isOk() = this != null && needsMfvcFlattening()
-        return function.parent.let { it is IrClass && it.isMultiFieldValueClass } ||
-                function.dispatchReceiverParameter?.type.isOk() ||
-                function.extensionReceiverParameter?.type.isOk() ||
-                function.valueParameters.any { it.type.isOk() } ||
-                function.returnType.let { t ->
-                    t.isOk() || t.makeNotNull().isNothing() && function is IrSimpleFunction && function.allOverridden().any { it.returnType.isOk() }
-                }
-    }
-
     private val getReplacementForRegularClassConstructorImpl: (IrConstructor) -> IrConstructor? =
         storageManager.createMemoizedFunctionWithNullableValues { constructor ->
             when {
