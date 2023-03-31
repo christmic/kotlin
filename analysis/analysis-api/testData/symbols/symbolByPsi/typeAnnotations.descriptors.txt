@@ -141,7 +141,7 @@ KtConstructorSymbol:
       contextReceivers: []
       generatedPrimaryConstructorProperty: KtKotlinPropertySymbol:
         annotationsList: []
-        backingFieldSymbol: null
+        backingFieldSymbol: KtBackingFieldSymbol(<local>/field)
         callableIdIfNonLocal: /Anno5.s
         contextReceivers: []
         getter: KtPropertyGetterSymbol:

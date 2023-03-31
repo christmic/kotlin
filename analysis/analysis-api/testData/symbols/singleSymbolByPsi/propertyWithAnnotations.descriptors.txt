@@ -5,7 +5,7 @@ KtKotlinPropertySymbol:
   ]
   backingFieldSymbol: KtBackingFieldSymbol(<local>/field)
     annotationsList: [
-      PropertyAnnotation()
+      FieldAnnotation()
         psi: KtAnnotationEntry
     ]
   callableIdIfNonLocal: /prop
