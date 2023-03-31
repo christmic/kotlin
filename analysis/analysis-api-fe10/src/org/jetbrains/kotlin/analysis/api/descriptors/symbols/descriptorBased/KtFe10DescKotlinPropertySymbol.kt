@@ -20,6 +20,7 @@ import org.jetbrains.kotlin.analysis.api.symbols.pointers.KtPsiBasedSymbolPointe
 import org.jetbrains.kotlin.analysis.api.symbols.pointers.KtSymbolPointer
 import org.jetbrains.kotlin.analysis.api.types.KtType
 import org.jetbrains.kotlin.descriptors.ConstructorDescriptor
+import org.jetbrains.kotlin.descriptors.FunctionDescriptor
 import org.jetbrains.kotlin.descriptors.impl.PropertyDescriptorImpl
 import org.jetbrains.kotlin.name.CallableId
 import org.jetbrains.kotlin.name.Name
@@ -88,7 +89,8 @@ internal class KtFe10DescKotlinPropertySymbol(
         }
 
     override val backingFieldSymbol: KtBackingFieldSymbol?
-        get() = null
+        get() = if (descriptor.containingDeclaration is FunctionDescriptor) null
+        else KtFe10DescDefaultBackingFieldSymbol(descriptor.backingField, this, analysisContext)
 
     override val returnType: KtType
         get() = withValidityAssertion { descriptor.type.toKtType(analysisContext) }

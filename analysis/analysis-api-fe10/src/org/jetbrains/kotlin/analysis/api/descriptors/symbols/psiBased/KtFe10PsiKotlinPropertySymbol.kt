@@ -7,7 +7,6 @@ package org.jetbrains.kotlin.analysis.api.descriptors.symbols.psiBased
 
 import org.jetbrains.kotlin.analysis.api.KtAnalysisSession
 import org.jetbrains.kotlin.analysis.api.KtInitializerValue
-import org.jetbrains.kotlin.analysis.api.annotations.KtAnnotationsList
 import org.jetbrains.kotlin.analysis.api.base.KtContextReceiver
 import org.jetbrains.kotlin.analysis.api.descriptors.Fe10AnalysisContext
 import org.jetbrains.kotlin.analysis.api.descriptors.Fe10AnalysisFacade.AnalysisMode
@@ -17,7 +16,6 @@ import org.jetbrains.kotlin.analysis.api.descriptors.symbols.isEqualTo
 import org.jetbrains.kotlin.analysis.api.descriptors.symbols.pointers.KtFe10NeverRestoringSymbolPointer
 import org.jetbrains.kotlin.analysis.api.descriptors.symbols.psiBased.base.*
 import org.jetbrains.kotlin.analysis.api.descriptors.utils.cached
-import org.jetbrains.kotlin.analysis.api.lifetime.KtLifetimeToken
 import org.jetbrains.kotlin.analysis.api.lifetime.withValidityAssertion
 import org.jetbrains.kotlin.analysis.api.symbols.*
 import org.jetbrains.kotlin.analysis.api.symbols.markers.KtSymbolKind
@@ -73,22 +71,7 @@ internal class KtFe10PsiKotlinPropertySymbol(
         }
 
     override val backingFieldSymbol: KtBackingFieldSymbol?
-        get() = if (psi.isLocal) null else object : KtBackingFieldSymbol() {
-            override val owningProperty: KtKotlinPropertySymbol
-                get() = this@KtFe10PsiKotlinPropertySymbol
-
-            context(KtAnalysisSession)
-            override fun createPointer(): KtSymbolPointer<KtBackingFieldSymbol> {
-                return KtFe10NeverRestoringSymbolPointer()
-            }
-
-            override val returnType: KtType
-                get() = owningProperty.returnType
-            override val token: KtLifetimeToken
-                get() = owningProperty.token
-            override val annotationsList: KtAnnotationsList
-                get() = owningProperty.annotationsList
-        }
+        get() = if (psi.isLocal) null else KtFe10PsiDefaultBackingFieldSymbol(propertyPsi = psi, owningProperty = this, analysisContext)
 
     override val hasBackingField: Boolean
         get() = withValidityAssertion {
@@ -163,3 +146,4 @@ internal class KtFe10PsiKotlinPropertySymbol(
     override fun equals(other: Any?): Boolean = isEqualTo(other)
     override fun hashCode(): Int = calculateHashCode()
 }
+

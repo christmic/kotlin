@@ -138,10 +138,6 @@ KtKotlinPropertySymbol:
       psi: KtAnnotationEntry
   ]
   backingFieldSymbol: KtBackingFieldSymbol(<local>/field)
-    annotationsList: [
-      kotlin/jvm/JvmStatic()
-        psi: KtAnnotationEntry
-    ]
   callableIdIfNonLocal: /MyClass.Companion.staticProperty
   contextReceivers: []
   getter: KtPropertyGetterSymbol:
@@ -209,6 +205,10 @@ KtKotlinPropertySymbol:
 KtKotlinPropertySymbol:
   annotationsList: []
   backingFieldSymbol: KtBackingFieldSymbol(<local>/field)
+    annotationsList: [
+      kotlin/jvm/JvmField()
+        psi: KtAnnotationEntry
+    ]
   callableIdIfNonLocal: /MyClass.Companion.fieldProperty
   contextReceivers: []
   getter: KtPropertyGetterSymbol:
@@ -414,10 +414,6 @@ KtKotlinPropertySymbol:
       psi: KtAnnotationEntry
   ]
   backingFieldSymbol: KtBackingFieldSymbol(<local>/field)
-    annotationsList: [
-      kotlin/jvm/JvmStatic()
-        psi: KtAnnotationEntry
-    ]
   callableIdIfNonLocal: /MyClass.Companion.staticVariable
   contextReceivers: []
   getter: KtPropertyGetterSymbol:
@@ -553,6 +549,10 @@ KtKotlinPropertySymbol:
 KtKotlinPropertySymbol:
   annotationsList: []
   backingFieldSymbol: KtBackingFieldSymbol(<local>/field)
+    annotationsList: [
+      kotlin/jvm/JvmField()
+        psi: KtAnnotationEntry
+    ]
   callableIdIfNonLocal: /MyClass.Companion.fieldVariable
   contextReceivers: []
   getter: KtPropertyGetterSymbol:

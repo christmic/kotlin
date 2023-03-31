@@ -21,7 +21,7 @@ KtConstructorSymbol:
       contextReceivers: []
       generatedPrimaryConstructorProperty: KtKotlinPropertySymbol:
         annotationsList: []
-        backingFieldSymbol: null
+        backingFieldSymbol: KtBackingFieldSymbol(<local>/field)
         callableIdIfNonLocal: /MyColor.x
         contextReceivers: []
         getter: KtPropertyGetterSymbol:
@@ -108,7 +108,7 @@ KtConstructorSymbol:
       contextReceivers: []
       generatedPrimaryConstructorProperty: KtKotlinPropertySymbol:
         annotationsList: []
-        backingFieldSymbol: null
+        backingFieldSymbol: KtBackingFieldSymbol(<local>/field)
         callableIdIfNonLocal: /MyColor.y
         contextReceivers: []
         getter: KtPropertyGetterSymbol:
@@ -195,7 +195,7 @@ KtConstructorSymbol:
       contextReceivers: []
       generatedPrimaryConstructorProperty: KtKotlinPropertySymbol:
         annotationsList: []
-        backingFieldSymbol: null
+        backingFieldSymbol: KtBackingFieldSymbol(<local>/field)
         callableIdIfNonLocal: /MyColor.z
         contextReceivers: []
         getter: KtPropertyGetterSymbol:
