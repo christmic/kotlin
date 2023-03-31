@@ -27445,6 +27445,11 @@ public class LightAnalysisModeTestGenerated extends AbstractLightAnalysisModeTes
                 public void testAnnotations() throws Exception {
                     runTest("compiler/testData/codegen/box/multiplatform/k2/defaultArguments/annotations.kt");
                 }
+
+                @TestMetadata("expectPropertyAsDefaultArgument.kt")
+                public void testExpectPropertyAsDefaultArgument() throws Exception {
+                    runTest("compiler/testData/codegen/box/multiplatform/k2/defaultArguments/expectPropertyAsDefaultArgument.kt");
+                }
             }
         }
 

@@ -253,27 +253,6 @@ fun ParameterDescriptor.copyAsValueParameter(newOwner: CallableDescriptor, index
     else -> throw Error("Unexpected parameter descriptor: $this")
 }
 
-fun IrExpressionBody.copyAndActualizeDefaultValue(
-    actualFunction: IrFunction,
-    expectActualTypeParametersMap: Map<IrTypeParameter, IrTypeParameter>,
-    classActualizer: (IrClass) -> IrClass,
-    functionActualizer: (IrFunction) -> IrFunction
-): IrExpressionBody {
-    return this
-        .deepCopyWithSymbols(actualFunction) { symbolRemapper, _ ->
-            DeepCopyIrTreeWithSymbols(symbolRemapper, IrTypeParameterRemapper(expectActualTypeParametersMap))
-        }
-        .transform(object : IrElementTransformerVoid() {
-            override fun visitGetValue(expression: IrGetValue): IrExpression {
-                expression.transformChildrenVoid()
-                return expression.actualizeForDefaultValue(
-                    classActualizer = { classActualizer(it) },
-                    functionActualizer = { functionActualizer(it) }
-                )
-            }
-        }, data = null)
-}
-
 fun IrGetValue.actualizeForDefaultValue(classActualizer: (IrClass) -> IrClass, functionActualizer: (IrFunction) -> IrFunction): IrGetValue {
     val symbol = symbol
     if (symbol !is IrValueParameterSymbol) {
