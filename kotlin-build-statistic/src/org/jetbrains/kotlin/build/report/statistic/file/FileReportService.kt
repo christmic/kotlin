@@ -6,12 +6,12 @@
 package org.jetbrains.kotlin.build.report.statistic.file
 
 import org.jetbrains.kotlin.build.report.metrics.*
-import org.jetbrains.kotlin.build.report.statistic.LoggerAdapter
 import org.jetbrains.kotlin.build.report.statistic.asString
 import org.jetbrains.kotlin.build.report.statistic.formatSize
 import org.jetbrains.kotlin.build.report.statistic.formatTime
 import org.jetbrains.kotlin.gradle.plugin.stat.CompileStatisticsData
 import org.jetbrains.kotlin.gradle.plugin.stat.GradleBuildStartParameters
+import org.jetbrains.kotlin.util.Logger
 import java.io.File
 import java.io.Serializable
 import java.text.SimpleDateFormat
@@ -20,7 +20,7 @@ import java.util.*
 class FileReportService(
     private val outputFile: File,
     private val printMetrics: Boolean,
-    private val logger: LoggerAdapter
+    private val logger: Logger
 ) : Serializable {
     companion object {
         private val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").also { it.timeZone = TimeZone.getTimeZone("UTC")}
@@ -31,7 +31,7 @@ class FileReportService(
             buildData: List<CompileStatisticsData>,
             startParameters: GradleBuildStartParameters,
             failureMessages: List<String>,
-            logger: LoggerAdapter
+            logger: Logger
         ) {
             val ts = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(Calendar.getInstance().time)
             val reportFile = buildReportDir.resolve("$projectName-build-$ts.txt")

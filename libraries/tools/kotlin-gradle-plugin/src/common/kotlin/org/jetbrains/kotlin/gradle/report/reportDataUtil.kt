@@ -40,7 +40,7 @@ internal fun prepareData(
     kotlinVersion: String,
     buildOperationRecord: BuildOperationRecord,
     onlyKotlinTask: Boolean = true,
-    additionalTags: List<StatTag> = emptyList(),
+    additionalTags: Set<StatTag> = emptySet(),
     metricsToShow: Set<String>? = null
 ): CompileStatisticsData? {
     val result = event.result
@@ -60,10 +60,10 @@ internal fun prepareData(
     kotlinVersion: String,
     buildOperationRecord: BuildOperationRecord,
     onlyKotlinTask: Boolean = true,
-    additionalTags: List<StatTag> = emptyList(),
+    additionalTags: Set<StatTag> = emptySet(),
     metricsToShow: Set<String>? = null
 ): CompileStatisticsData? {
-    if (onlyKotlinTask && !(taskPath.contains("Kotlin") && buildOperationRecord is TaskRecord)) {
+    if (onlyKotlinTask && !(buildOperationRecord is TaskRecord && buildOperationRecord.isFromKotlinPlugin)) {
         return null
     }
     val buildMetrics = buildOperationRecord.buildMetrics
@@ -163,9 +163,9 @@ private fun collectBuildMetrics(
 
 private fun collectTags(
     buildOperation: BuildOperationRecord?,
-    additionalTags: List<StatTag>
-): List<StatTag> {
-    val tags = ArrayList(additionalTags)
+    additionalTags: Set<StatTag>
+): Set<StatTag> {
+    val tags = HashSet(additionalTags)
 
     val debugConfiguration = "-agentlib:"
     if (ManagementFactory.getRuntimeMXBean().inputArguments.firstOrNull { it.startsWith(debugConfiguration) } != null) {

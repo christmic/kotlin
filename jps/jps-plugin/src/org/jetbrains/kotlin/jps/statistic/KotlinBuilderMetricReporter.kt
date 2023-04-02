@@ -7,7 +7,9 @@ package org.jetbrains.kotlin.jps.statistic
 
 import com.intellij.openapi.diagnostic.Logger
 import org.jetbrains.jps.incremental.CompileContext
-import org.jetbrains.kotlin.build.report.metrics.BuildTime
+import org.jetbrains.kotlin.build.report.FileReportSettings
+import org.jetbrains.kotlin.build.report.HttpReportSettings
+import org.jetbrains.kotlin.build.report.metrics.*
 import org.jetbrains.kotlin.build.report.statistic.HttpReportServiceImpl
 import org.jetbrains.kotlin.build.report.statistic.file.FileReportService
 import org.jetbrains.kotlin.gradle.plugin.stat.BuildDataType
@@ -17,21 +19,12 @@ import java.io.Serializable
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-
-
-
-
-
-interface KotlinBuilderMetric {
-    fun report(metric: BuildTime, value: Long)
-    fun start(metric: BuildTime)
-    fun finish(metric: BuildTime)
-
+interface JpsBuilderMetricReporter : BuildMetricsReporter {
     fun flush(context: CompileContext): CompileStatisticsData
 }
 
 //single thread execution
-class KotlinBuilderMetricImpl : KotlinBuilderMetric {
+class JpsBuilderMetricReporterImpl : JpsBuilderMetricReporter {
     companion object {
         private val log = Logger.getInstance("#org.jetbrains.kotlin.jps.statistic.KotlinBuilderMetricImpl")
     }
@@ -40,30 +33,31 @@ class KotlinBuilderMetricImpl : KotlinBuilderMetric {
     private val buildMetricsInProcess = EnumMap<BuildTime, Long>(BuildTime::class.java)
     private val uuid = UUID.randomUUID()
     private val startTime = System.currentTimeMillis()
-    override fun report(metric: BuildTime, value: Long) {
-        buildTimes[metric] = value
-    }
 
-    override fun start(metric: BuildTime) {
-        if (buildMetricsInProcess[metric] != null) {
-            log.error("$metric is already in process")
+    override fun startMeasure(time: BuildTime) {
+        if (buildMetricsInProcess[time] != null) {
+            log.error("$time is already in process")
         } else {
-            buildMetricsInProcess[metric] = System.nanoTime()
+            buildMetricsInProcess[time] = System.nanoTime()
         }
     }
 
-    override fun finish(metric: BuildTime) {
-        val value = buildMetricsInProcess.remove(metric)
+    override fun endMeasure(time: BuildTime) {
+        val value = buildMetricsInProcess.remove(time)
         if (value == null) {
-            log.error("$metric hasn't started")
+            log.error("$time hasn't started")
         } else {
-            buildTimes[metric] = TimeUnit.NANOSECONDS.toMillis(value)
+            buildTimes[time] = TimeUnit.NANOSECONDS.toMillis(value)
         }
+    }
+
+    override fun addTimeMetricNs(time: BuildTime, durationNs: Long) {
+        buildTimes[time] = durationNs
     }
 
     override fun flush(context: CompileContext/*, listener: BuildListener*/): CompileStatisticsData {
         if (buildMetricsInProcess.isNotEmpty()) {
-            log.error("Finish metric calcultaion, but ${buildMetricsInProcess.keys} metrics are in progress")
+            log.error("Finish metric calculation, but ${buildMetricsInProcess.keys} metrics are in progress")
         }
         return CompileStatisticsData(
             version = 99, //TODO
@@ -93,34 +87,37 @@ class KotlinBuilderMetricImpl : KotlinBuilderMetric {
         )
 
     }
-}
 
-
-data class FileReportSettings(
-    val buildReportDir: File,
-) : Serializable {
-    companion object {
-        const val serialVersionUID: Long = 0
-        fun init(): FileReportSettings? {
-            return System.getProperty("kotlin.build.report.file.output_dir")?.let { FileReportSettings(File(it)) }
-        }
+    override fun addMetric(metric: BuildPerformanceMetric, value: Long) {
+        TODO("Not yet implemented")
     }
-}
 
-data class HttpReportSettings(
-    val url: String,
-    val password: String?,
-    val user: String?,
-) : Serializable {
-    companion object {
-        const val serialVersionUID: Long = 0
+    override fun addTimeMetric(metric: BuildPerformanceMetric) {
+        TODO("Not yet implemented")
+    }
 
-        fun init(): HttpReportSettings? {
-            val httpReportUrl = System.getProperty("kotlin.build.report.http.url") ?: return null
-            val httpReportUser = System.getProperty("kotlin.build.report.http.user")
-            val httpReportPassword = System.getProperty("kotlin.build.report.http.password")
-            return HttpReportSettings(httpReportUrl, httpReportUser, httpReportPassword)
-        }
+    override fun addGcMetric(metric: String, value: GcMetric) {
+        TODO("Not yet implemented")
+    }
+
+    override fun startGcMetric(name: String, value: GcMetric) {
+        TODO("Not yet implemented")
+    }
+
+    override fun endGcMetric(name: String, value: GcMetric) {
+        TODO("Not yet implemented")
+    }
+
+    override fun addAttribute(attribute: BuildAttribute) {
+        TODO("Not yet implemented")
+    }
+
+    override fun getMetrics(): BuildMetrics {
+        TODO("Not yet implemented")
+    }
+
+    override fun addMetrics(metrics: BuildMetrics) {
+        TODO("Not yet implemented")
     }
 }
 
@@ -129,9 +126,27 @@ class KotlinBuilderReportService(
     private val fileReportSettings: FileReportSettings?,
     private val httpReportSettings: HttpReportSettings?
 ) {
-    constructor() : this(FileReportSettings.init(), HttpReportSettings.init())
+    constructor() : this(
+        initFileReportSettings(),
+        initHttpReportSettings(),
+    )
 
-    private val contextMetrics = HashMap<CompileContext, KotlinBuilderMetric>()
+    companion object {
+        private fun initFileReportSettings(): FileReportSettings? {
+            return System.getProperty("kotlin.build.report.file.output_dir")?.let { FileReportSettings(File(it)) }
+        }
+
+        private fun initHttpReportSettings(): HttpReportSettings? {
+            val httpReportUrl = System.getProperty("kotlin.build.report.http.url") ?: return null
+            val httpReportUser = System.getProperty("kotlin.build.report.http.user")
+            val httpReportPassword = System.getProperty("kotlin.build.report.http.password")
+            val includeGitBranch = System.getProperty("kotlin.build.report.http.git_branch", "false").toBoolean()
+            val verboseEnvironment = System.getProperty("kotlin.build.report.http.environment.verbose", "false").toBoolean()
+            return HttpReportSettings(httpReportUrl, httpReportUser, httpReportPassword, verboseEnvironment, includeGitBranch)
+        }
+    }
+
+    private val contextMetrics = HashMap<CompileContext, JpsBuilderMetricReporter>()
     private val log = Logger.getInstance("#org.jetbrains.kotlin.jps.statistic.KotlinBuilderReportService")
     private val loggerAdapter = JpsLoggerAdapter(log)
     private val httpService = httpReportSettings?.let { HttpReportServiceImpl(it.url, it.user, it.password) }
@@ -139,7 +154,7 @@ class KotlinBuilderReportService(
         if (contextMetrics[context] != null) {
             log.error("Service already initialized for context")
         }
-        contextMetrics[context] = KotlinBuilderMetricImpl()
+        contextMetrics[context] = JpsBuilderMetricReporterImpl()
     }
 
     fun buildFinished(context: CompileContext) {
@@ -159,7 +174,7 @@ class KotlinBuilderReportService(
             log.error("Service hasn't initialized for context")
             return
         }
-        metrics.report(metric, value)
+        metrics.addTimeMetricNs(metric, value)
     }
 }
 

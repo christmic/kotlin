@@ -79,8 +79,7 @@ class BuildReportsService {
                         parameters.kotlinVersion,
                         it,
                         onlyKotlinTask = false,
-                        //TODO
-                        parameters.additionalTags.toList()
+                        parameters.additionalTags
                     )
                 },
                 parameters.startParameters,
@@ -158,7 +157,7 @@ class BuildReportsService {
                     parameters.kotlinVersion,
                     buildOperationRecord,
                     onlyKotlinTask = true,
-                    parameters.additionalTags.toList()
+                    parameters.additionalTags
                 )
             data?.also {
                 executorService.submit {

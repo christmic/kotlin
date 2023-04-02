@@ -34,7 +34,7 @@ class ReportDataTest {
             kotlinVersion = "version",
             onlyKotlinTask = true,
             buildOperationRecord = buildOperationRecord,
-            additionalTags = listOf(StatTag.KOTLIN_DEBUG)
+            additionalTags = setOf(StatTag.KOTLIN_DEBUG)
         )
 
         assertNotNull(statisticData)
@@ -84,7 +84,7 @@ class ReportDataTest {
             kotlinVersion = "version",
             buildOperationRecord = buildOperationRecord,
             onlyKotlinTask = true,
-            additionalTags = listOf(StatTag.KOTLIN_DEBUG),
+            additionalTags = setOf(StatTag.KOTLIN_DEBUG),
             metricsToShow = setOf(
                 BuildPerformanceMetric.BUNDLE_SIZE.name,// from TaskExecutionResult
                 BuildTime.GRADLE_TASK_ACTION.name,// from buildOperationRecord
@@ -131,7 +131,7 @@ class ReportDataTest {
             kotlinVersion = "version",
             buildOperationRecord = buildOperationRecord,
             onlyKotlinTask = true,
-            additionalTags = listOf(StatTag.KOTLIN_DEBUG),
+            additionalTags = setOf(StatTag.KOTLIN_DEBUG),
         )
         assertNotNull(statisticData)
         assertEquals(startTaskAction - startGradleTask, statisticData.buildTimesMetrics[BuildTime.GRADLE_TASK_PREPARATION])

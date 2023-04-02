@@ -6,23 +6,24 @@
 package org.jetbrains.kotlin.jps.statistic
 
 import com.intellij.openapi.diagnostic.Logger
-import org.jetbrains.kotlin.build.report.statistic.LoggerAdapter
 
-class JpsLoggerAdapter(private val log: Logger) : LoggerAdapter {
-    override fun debug(message: String) {
-        log.debug(message)
-    }
+class JpsLoggerAdapter(private val log: Logger) : org.jetbrains.kotlin.util.Logger {
 
-    override fun info(message: String) {
+    override fun log(message: String) {
         log.info(message)
     }
 
-    override fun warn(message: String) {
+    override fun warning(message: String) {
         log.warn(message)
     }
 
-    override fun error(message: String, exception: Throwable?) {
-        log.error(message, exception)
+    override fun fatal(message: String): Nothing {
+        log.error(message)
+        kotlin.error(message)
+    }
+
+    override fun error(message: String, throwable: Throwable?) {
+        log.error(message, throwable)
     }
 
     override fun lifecycle(message: String) {

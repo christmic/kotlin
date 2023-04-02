@@ -6,23 +6,23 @@
 package org.jetbrains.kotlin.gradle.report
 
 import org.gradle.api.logging.Logger
-import org.jetbrains.kotlin.build.report.statistic.LoggerAdapter
 
-class GradleLoggerAdapter(private val log: Logger) : LoggerAdapter {
-    override fun debug(message: String) {
-        log.debug(message)
-    }
-
-    override fun info(message: String) {
+class GradleLoggerAdapter(private val log: Logger) : org.jetbrains.kotlin.util.Logger {
+    override fun log(message: String) {
         log.info(message)
     }
 
-    override fun warn(message: String) {
+    override fun warning(message: String) {
         log.warn(message)
     }
 
-    override fun error(message: String, exception: Throwable?) {
-        exception?.let { log.error(message, exception) } ?: log.error(message)
+    override fun fatal(message: String): Nothing {
+        log.error(message)
+        kotlin.error(message)
+    }
+
+    override fun error(message: String, throwable: Throwable?) {
+        throwable?.let { log.error(message, throwable) } ?: log.error(message)
     }
 
     override fun lifecycle(message: String) {
