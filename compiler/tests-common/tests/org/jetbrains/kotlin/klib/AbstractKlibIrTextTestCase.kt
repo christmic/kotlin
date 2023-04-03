@@ -231,6 +231,7 @@ abstract class AbstractKlibIrTextTestCase : CodegenTestCase() {
         irLinker.init(null, emptyList())
         ExternalDependenciesGenerator(symbolTable, listOf(irLinker)).generateUnboundSymbolsAsDependencies()
         irLinker.postProcess()
+        irLinker.clear()
         return testModule
     }
 

@@ -71,6 +71,7 @@ internal data class LoadedJsIr(
         ExternalDependenciesGenerator(linker.symbolTable, listOf(linker)).generateUnboundSymbolsAsDependencies()
         linker.postProcess()
         linker.checkNoUnboundSymbols(linker.symbolTable, "at the end of IR linkage process")
+        linker.clear()
     }
 }
 
