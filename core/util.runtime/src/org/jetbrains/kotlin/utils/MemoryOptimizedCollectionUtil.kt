@@ -3,10 +3,8 @@
  * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
  */
 
-package org.jetbrains.kotlin.ir.util
+package org.jetbrains.kotlin.utils
 
-import org.jetbrains.kotlin.util.collectionUtils.filterIsInstanceAnd
-import org.jetbrains.kotlin.utils.SmartList
 import kotlin.math.min
 
 /**
@@ -125,9 +123,9 @@ fun <T> Sequence<T>.atMostOne(): T? {
 }
 
 /**
- * The variant of [Iterable.filterIsInstanceAnd] extension function but to find the first element
+ * The variant of [org.jetbrains.kotlin.util.collectionUtils.filterIsInstanceAnd] extension function but to find the first element
  * which is an instance of type [T] and satisfies [predicate] condition
- * @see Iterable.filterIsInstanceAnd
+ * @see org.jetbrains.kotlin.util.collectionUtils.filterIsInstanceAnd
  */
 inline fun <reified T> Iterable<*>.findIsInstanceAnd(predicate: (T) -> Boolean): T? {
     for (element in this) if (element is T && predicate(element)) return element

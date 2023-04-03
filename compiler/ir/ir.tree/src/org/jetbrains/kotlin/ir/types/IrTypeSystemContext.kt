@@ -32,6 +32,9 @@ import org.jetbrains.kotlin.ir.types.makeNotNull as irMakeNotNull
 import org.jetbrains.kotlin.ir.types.makeNullable as irMakeNullable
 import org.jetbrains.kotlin.ir.types.isMarkedNullable as irIsMarkedNullable
 import org.jetbrains.kotlin.types.model.*
+import org.jetbrains.kotlin.utils.memoryOptimizedFilterIsInstance
+import org.jetbrains.kotlin.utils.memoryOptimizedMap
+import org.jetbrains.kotlin.utils.smartCompact
 import org.jetbrains.kotlin.ir.types.isPrimitiveType as irTypePredicates_isPrimitiveType
 
 interface IrTypeSystemContext : TypeSystemContext, TypeSystemCommonSuperTypesContext, TypeSystemCommonBackendContext {

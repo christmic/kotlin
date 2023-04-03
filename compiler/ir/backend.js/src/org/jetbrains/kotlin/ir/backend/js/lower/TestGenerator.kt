@@ -27,7 +27,9 @@ import org.jetbrains.kotlin.ir.types.impl.IrSimpleTypeImpl
 import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
-import org.jetbrains.kotlin.util.collectionUtils.filterIsInstanceAnd
+import org.jetbrains.kotlin.utils.filterIsInstanceAnd
+import org.jetbrains.kotlin.utils.findIsInstanceAnd
+import org.jetbrains.kotlin.utils.memoryOptimizedMap
 
 fun generateJsTests(context: JsIrBackendContext, moduleFragment: IrModuleFragment) {
     val generator = TestGenerator(context, false)

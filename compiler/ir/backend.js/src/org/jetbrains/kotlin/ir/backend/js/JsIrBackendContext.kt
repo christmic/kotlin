@@ -49,9 +49,9 @@ import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.resolve.scopes.MemberScope
 import org.jetbrains.kotlin.types.Variance
 import org.jetbrains.kotlin.types.isNullable
-import org.jetbrains.kotlin.util.collectionUtils.filterIsInstanceMapNotNull
 import org.jetbrains.kotlin.utils.addToStdlib.cast
 import org.jetbrains.kotlin.utils.addToStdlib.safeAs
+import org.jetbrains.kotlin.utils.filterIsInstanceMapNotNull
 import java.util.WeakHashMap
 
 @OptIn(ObsoleteDescriptorBasedAPI::class)

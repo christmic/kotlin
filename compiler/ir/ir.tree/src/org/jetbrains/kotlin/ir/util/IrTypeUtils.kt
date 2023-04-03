@@ -21,6 +21,7 @@ import org.jetbrains.kotlin.ir.types.impl.makeTypeProjection
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.utils.DFS
+import org.jetbrains.kotlin.utils.memoryOptimizedMap
 
 val kotlinPackageFqn = FqName.fromSegments(listOf("kotlin"))
 private val kotlinReflectionPackageFqn = kotlinPackageFqn.child(Name.identifier("reflect"))

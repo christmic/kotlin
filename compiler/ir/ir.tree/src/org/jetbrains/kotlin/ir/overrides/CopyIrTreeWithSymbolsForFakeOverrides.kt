@@ -17,6 +17,7 @@ import org.jetbrains.kotlin.ir.types.impl.buildSimpleType
 import org.jetbrains.kotlin.ir.types.impl.makeTypeProjection
 import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.ir.visitors.acceptVoid
+import org.jetbrains.kotlin.utils.memoryOptimizedMap
 
 // This is basically modelled after the inliner copier.
 class CopyIrTreeWithSymbolsForFakeOverrides(

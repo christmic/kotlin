@@ -20,6 +20,10 @@ import org.jetbrains.kotlin.ir.types.impl.*
 import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.types.*
+import org.jetbrains.kotlin.utils.memoryOptimizedFilterNot
+import org.jetbrains.kotlin.utils.memoryOptimizedMap
+import org.jetbrains.kotlin.utils.memoryOptimizedMapIndexed
+import org.jetbrains.kotlin.utils.memoryOptimizedPlus
 
 private fun IrType.withNullability(newNullability: Boolean): IrType =
     when (this) {

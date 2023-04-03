@@ -20,6 +20,7 @@ import org.jetbrains.kotlin.ir.types.impl.buildSimpleType
 import org.jetbrains.kotlin.ir.types.impl.makeTypeProjection
 import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.ir.visitors.acceptVoid
+import org.jetbrains.kotlin.utils.memoryOptimizedMap
 
 internal class DeepCopyIrTreeWithSymbolsForInliner(
     val typeArguments: Map<IrTypeParameterSymbol, IrType?>?,

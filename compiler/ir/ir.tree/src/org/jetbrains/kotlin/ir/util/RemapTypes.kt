@@ -11,6 +11,7 @@ import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.ir.visitors.IrElementVisitorVoid
 import org.jetbrains.kotlin.ir.visitors.acceptChildrenVoid
 import org.jetbrains.kotlin.ir.visitors.acceptVoid
+import org.jetbrains.kotlin.utils.memoryOptimizedMap
 
 // Modify IrElement in place, applying typeRemapper to all the IrType fields.
 fun IrElement.remapTypes(typeRemapper: TypeRemapper) {

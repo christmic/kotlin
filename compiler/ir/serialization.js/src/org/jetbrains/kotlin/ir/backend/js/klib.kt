@@ -73,6 +73,7 @@ import org.jetbrains.kotlin.util.DummyLogger
 import org.jetbrains.kotlin.util.Logger
 import org.jetbrains.kotlin.utils.DFS
 import org.jetbrains.kotlin.utils.addToStdlib.ifTrue
+import org.jetbrains.kotlin.utils.memoryOptimizedFilter
 import java.io.File
 
 val KotlinLibrary.moduleName: String

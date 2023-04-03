@@ -20,6 +20,8 @@ import org.jetbrains.kotlin.library.KLIB_PROPERTY_DEPENDS
 import org.jetbrains.kotlin.library.KotlinLibrary
 import org.jetbrains.kotlin.library.metadata.resolver.TopologicalLibraryOrder
 import org.jetbrains.kotlin.name.FqName
+import org.jetbrains.kotlin.utils.memoryOptimizedFilter
+import org.jetbrains.kotlin.utils.memoryOptimizedMap
 import org.jetbrains.kotlin.utils.newHashMapWithExpectedSize
 import org.jetbrains.kotlin.utils.newHashSetWithExpectedSize
 import java.io.File

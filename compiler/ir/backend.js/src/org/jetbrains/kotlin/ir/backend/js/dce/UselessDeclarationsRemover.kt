@@ -21,6 +21,8 @@ import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.ir.visitors.acceptChildrenVoid
 import org.jetbrains.kotlin.ir.visitors.acceptVoid
 import org.jetbrains.kotlin.js.config.RuntimeDiagnostic
+import org.jetbrains.kotlin.utils.memoryOptimizedFilter
+import org.jetbrains.kotlin.utils.memoryOptimizedMap
 
 class UselessDeclarationsRemover(
     private val removeUnusedAssociatedObjects: Boolean,

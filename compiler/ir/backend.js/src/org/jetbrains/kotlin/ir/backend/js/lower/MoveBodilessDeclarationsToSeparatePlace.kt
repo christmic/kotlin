@@ -16,6 +16,7 @@ import org.jetbrains.kotlin.ir.symbols.impl.IrFileSymbolImpl
 import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.isChildOf
+import org.jetbrains.kotlin.utils.memoryOptimizedPlus
 
 private val BODILESS_BUILTIN_CLASSES = listOf(
     "kotlin.String",

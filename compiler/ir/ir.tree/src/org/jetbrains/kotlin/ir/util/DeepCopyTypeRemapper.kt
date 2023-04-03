@@ -11,6 +11,7 @@ import org.jetbrains.kotlin.ir.types.*
 import org.jetbrains.kotlin.ir.types.impl.IrSimpleTypeImpl
 import org.jetbrains.kotlin.ir.types.impl.IrTypeAbbreviationImpl
 import org.jetbrains.kotlin.ir.types.impl.makeTypeProjection
+import org.jetbrains.kotlin.utils.memoryOptimizedMap
 
 class DeepCopyTypeRemapper(
     private val symbolRemapper: SymbolRemapper

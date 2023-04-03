@@ -24,6 +24,7 @@ import org.jetbrains.kotlin.types.TypeConstructorSubstitution
 import org.jetbrains.kotlin.types.error.ErrorClassDescriptor
 import org.jetbrains.kotlin.types.isError
 import org.jetbrains.kotlin.types.typeUtil.builtIns
+import org.jetbrains.kotlin.utils.memoryOptimizedMapNotNull
 
 abstract class ConstantValueGenerator(
     private val moduleDescriptor: ModuleDescriptor,

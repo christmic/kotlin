@@ -22,6 +22,7 @@ import org.jetbrains.kotlin.ir.symbols.IrTypeParameterSymbol
 import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.ir.types.classifierOrNull
 import org.jetbrains.kotlin.ir.util.*
+import org.jetbrains.kotlin.utils.memoryOptimizedPlus
 
 /**
  * Constructs bridges for inherited generic functions

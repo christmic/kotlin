@@ -17,6 +17,7 @@ import org.jetbrains.kotlin.ir.expressions.impl.IrErrorExpressionImpl
 import org.jetbrains.kotlin.ir.symbols.IrSimpleFunctionSymbol
 import org.jetbrains.kotlin.ir.types.makeNullable
 import org.jetbrains.kotlin.ir.util.*
+import org.jetbrains.kotlin.utils.*
 import org.jetbrains.kotlin.name.Name
 
 abstract class DefaultArgumentFunctionFactory(open val context: CommonBackendContext) {

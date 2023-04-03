@@ -20,6 +20,7 @@ import org.jetbrains.kotlin.ir.types.classOrNull
 import org.jetbrains.kotlin.ir.types.getClass
 import org.jetbrains.kotlin.ir.types.isArray
 import org.jetbrains.kotlin.ir.util.*
+import org.jetbrains.kotlin.utils.memoryOptimizedMapNotNull
 
 class MethodsFromAnyGeneratorForLowerings(val context: BackendContext, val irClass: IrClass, val origin: IrDeclarationOrigin) {
     private fun IrClass.addSyntheticFunction(name: String, returnType: IrType) =

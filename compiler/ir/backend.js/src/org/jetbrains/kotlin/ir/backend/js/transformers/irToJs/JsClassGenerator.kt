@@ -22,6 +22,8 @@ import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.js.backend.ast.*
 import org.jetbrains.kotlin.js.common.isValidES5Identifier
 import org.jetbrains.kotlin.utils.addIfNotNull
+import org.jetbrains.kotlin.utils.memoryOptimizedMap
+import org.jetbrains.kotlin.utils.memoryOptimizedMapNotNull
 
 class JsClassGenerator(private val irClass: IrClass, val context: JsGenerationContext) {
     private val className = context.getNameForClass(irClass)

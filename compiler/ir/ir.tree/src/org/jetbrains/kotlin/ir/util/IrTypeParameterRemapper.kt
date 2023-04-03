@@ -12,6 +12,7 @@ import org.jetbrains.kotlin.ir.types.*
 import org.jetbrains.kotlin.ir.types.impl.IrSimpleTypeImpl
 import org.jetbrains.kotlin.ir.types.impl.IrTypeAbbreviationImpl
 import org.jetbrains.kotlin.ir.types.impl.makeTypeProjection
+import org.jetbrains.kotlin.utils.memoryOptimizedMap
 
 /**
  * After moving an [org.jetbrains.kotlin.ir.IrElement], some type parameter references within it may become out of scope.
