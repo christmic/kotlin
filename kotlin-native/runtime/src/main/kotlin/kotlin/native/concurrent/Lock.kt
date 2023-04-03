@@ -6,6 +6,7 @@
 package kotlin.native.concurrent
 
 import kotlin.native.internal.Frozen
+import kotlin.concurrent.AtomicInt
 
 @ThreadLocal
 @OptIn(FreezingIsDeprecated::class)

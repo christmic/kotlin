@@ -8,6 +8,10 @@ package runtime.atomics.atomic_stress
 
 import kotlin.test.*
 import kotlin.native.concurrent.*
+import kotlin.concurrent.*
+import kotlin.concurrent.AtomicInt
+import kotlin.concurrent.AtomicLong
+import kotlin.concurrent.AtomicReference
 import kotlin.native.internal.NativePtr
 
 fun testAtomicIntStress(workers: Array<Worker>) {

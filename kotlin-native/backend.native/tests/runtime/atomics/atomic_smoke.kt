@@ -8,6 +8,10 @@ package runtime.atomics.atomic_smoke
 
 import kotlin.test.*
 import kotlin.native.concurrent.*
+import kotlin.concurrent.AtomicInt
+import kotlin.concurrent.AtomicLong
+import kotlin.concurrent.AtomicReference
+import kotlin.concurrent.AtomicNativePtr
 import kotlin.native.internal.NativePtr
 
 @Test

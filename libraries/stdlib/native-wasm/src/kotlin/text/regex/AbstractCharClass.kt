@@ -24,7 +24,7 @@
 package kotlin.text.regex
 
 import kotlin.collections.associate
-import kotlin.native.concurrent.AtomicReference
+import kotlin.concurrent.AtomicReference
 import kotlin.native.concurrent.freeze
 import kotlin.native.BitSet
 import kotlin.native.FreezingIsDeprecated

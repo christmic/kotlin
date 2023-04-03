@@ -7,8 +7,8 @@ package kotlin.native.internal
 
 import kotlin.internal.getProgressionLastElement
 import kotlin.reflect.KClass
-import kotlin.native.concurrent.FreezableAtomicReference
 import kotlin.native.concurrent.freeze
+import kotlin.concurrent.*
 
 @ExportForCppRuntime
 fun ThrowNullPointerException(): Nothing {
@@ -146,11 +146,11 @@ internal fun ReportUnhandledException(throwable: Throwable) {
 // to throw an exception during it's initialization before this hook would've been initialized.
 @OptIn(FreezingIsDeprecated::class)
 internal object UnhandledExceptionHookHolder {
-    internal val hook: FreezableAtomicReference<ReportUnhandledExceptionHook?> =
+    internal val hook: AtomicReference<ReportUnhandledExceptionHook?> =
         if (Platform.memoryModel == MemoryModel.EXPERIMENTAL) {
-            FreezableAtomicReference<ReportUnhandledExceptionHook?>(null)
+            AtomicReference<ReportUnhandledExceptionHook?>(null)
         } else {
-            FreezableAtomicReference<ReportUnhandledExceptionHook?>(null).freeze()
+            AtomicReference<ReportUnhandledExceptionHook?>(null).freeze()
         }
 }
 

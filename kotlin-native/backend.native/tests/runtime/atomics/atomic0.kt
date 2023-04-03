@@ -9,6 +9,9 @@ package runtime.atomics.atomic0
 import kotlin.test.*
 
 import kotlin.native.concurrent.*
+import kotlin.concurrent.AtomicInt
+import kotlin.concurrent.AtomicLong
+import kotlin.concurrent.AtomicReference
 
 fun test1(workers: Array<Worker>) {
     val atomic = AtomicInt(15)
@@ -132,9 +135,8 @@ fun test6() {
     assertEquals(239L, long.value)
 }
 
-
 fun test7() {
-    val ref = FreezableAtomicReference(Array(1) { "hey" })
+    val ref = AtomicReference(Array(1) { "hey" })
     ref.value[0] = "ho"
     assertEquals(ref.value[0], "ho")
     ref.value = Array(1) { "po" }
