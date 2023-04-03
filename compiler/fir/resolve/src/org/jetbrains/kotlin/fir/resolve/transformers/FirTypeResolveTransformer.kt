@@ -448,7 +448,7 @@ open class FirTypeResolveTransformer(
      */
     private fun FirVariable.moveOrDeleteIrrelevantAnnotations() {
         if (annotations.isEmpty()) return
-        val backingFieldAnnotations by lazy { backingField?.annotations?.toMutableList() ?: mutableListOf() }
+        val backingFieldAnnotations by lazy(LazyThreadSafetyMode.NONE) { backingField?.annotations?.toMutableList() ?: mutableListOf() }
         var replaceBackingFieldAnnotations = false
         replaceAnnotations(annotations.filter { annotation ->
             when (annotation.useSiteTarget) {
