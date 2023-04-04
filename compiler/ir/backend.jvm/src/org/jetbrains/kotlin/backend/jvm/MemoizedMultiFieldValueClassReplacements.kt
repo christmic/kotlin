@@ -100,7 +100,7 @@ class MemoizedMultiFieldValueClassReplacements(
         }
         name =
             if (function.isLocal && (function !is IrSimpleFunction || function.overriddenSymbols.isEmpty())) function.name
-            else InlineClassAbi.mangledNameFor(function, mangleReturnTypes = false, useOldMangleRules = false)
+            else InlineClassAbi.mangledNameFor(context, function, mangleReturnTypes = false, useOldMangleRules = false)
     }
 
     private fun makeAndAddGroupedValueParametersFrom(

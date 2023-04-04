@@ -58,13 +58,16 @@ object InlineClassAbi {
      * Returns a mangled name for a function taking inline class arguments
      * to avoid clashes between overloaded methods.
      */
-    fun mangledNameFor(irFunction: IrFunction, mangleReturnTypes: Boolean, useOldMangleRules: Boolean): Name {
+    fun mangledNameFor(context: JvmBackendContext, irFunction: IrFunction, mangleReturnTypes: Boolean, useOldMangleRules: Boolean): Name {
         if (irFunction is IrConstructor) {
             // Note that we might drop this convention and use standard mangling for constructors too, see KT-37186.
             assert(irFunction.constructedClass.isValue) {
                 "Should not mangle names of non-inline class constructors: ${irFunction.render()}"
             }
             return Name.identifier("constructor-impl")
+        }
+        if (irFunction in context.multiFieldValueClassReplacements.bindingNewFunctionToParameterTemplateStructure) {
+            return irFunction.name
         }
 
         val suffix = hashSuffix(irFunction, mangleReturnTypes, useOldMangleRules)

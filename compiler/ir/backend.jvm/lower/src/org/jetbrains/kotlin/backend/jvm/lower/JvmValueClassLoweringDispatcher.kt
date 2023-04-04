@@ -186,10 +186,6 @@ private class NeedsToVisit(private val context: JvmBackendContext) : IrElementVi
         super.visitCall(expression)
     }
 
-    override fun visitAnonymousInitializer(declaration: IrAnonymousInitializer) {
-        result = result || (declaration.parent as? IrClass)?.needsHandling == true || super.visitAnonymousInitializer(declaration).result
-    }
-
     override fun visitExpression(expression: IrExpression) {
         result = result || expression.type.needsHandling || super.visitExpression(expression).result
     }
