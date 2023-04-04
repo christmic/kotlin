@@ -33,10 +33,7 @@ import org.jetbrains.kotlin.fir.serialization.constant.EnumValue
 import org.jetbrains.kotlin.fir.serialization.constant.IntValue
 import org.jetbrains.kotlin.fir.serialization.constant.StringValue
 import org.jetbrains.kotlin.fir.serialization.constant.toConstantValue
-import org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol
-import org.jetbrains.kotlin.fir.symbols.impl.FirClassifierSymbol
-import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
-import org.jetbrains.kotlin.fir.symbols.impl.FirTypeAliasSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.*
 import org.jetbrains.kotlin.fir.types.*
 import org.jetbrains.kotlin.fir.types.builder.buildResolvedTypeRef
 import org.jetbrains.kotlin.fir.types.impl.ConeClassLikeTypeImpl
@@ -181,16 +178,7 @@ class FirElementSerializer private constructor(
             }
         }
 
-        fun FirClass.nestedClassifiers(): List<FirClassifierSymbol<*>> {
-            val scope =
-                defaultType().scope(session, scopeSession, FakeOverrideTypeCalculator.DoNothing, requiredPhase = null) ?: return emptyList()
-            return buildList {
-                scope.getClassifierNames().mapNotNullTo(this) { scope.getSingleClassifier(it) }
-                addAll(providedDeclarationsService.getProvidedNestedClassifiers(classSymbol, scopeSession))
-            }
-        }
-
-        val nestedClassifiers = klass.nestedClassifiers()
+        val nestedClassifiers = computeNestedClassifiersForClass(classSymbol)
         for (nestedClassifier in nestedClassifiers) {
             if (nestedClassifier is FirTypeAliasSymbol) {
                 typeAliasProto(nestedClassifier.fir)?.let { builder.addTypeAlias(it) }
@@ -262,6 +250,20 @@ class FirElementSerializer private constructor(
         versionRequirementTable.serialize()?.let { builder.versionRequirementTable = it }
 
         return builder
+    }
+
+    fun computeNestedClassifiersForClass(classSymbol: FirClassSymbol<*>): List<FirClassifierSymbol<*>> {
+        val scope = classSymbol.defaultType()
+            .scope(session, scopeSession, FakeOverrideTypeCalculator.DoNothing, requiredPhase = null)
+            ?: return emptyList()
+        return buildList {
+            scope.getClassifierNames().mapNotNullTo(this) { scope.getSingleClassifier(it) }
+            addAll(providedDeclarationsService.getProvidedNestedClassifiers(classSymbol, scopeSession))
+        }.filter {
+            // Here we want to filter out nested classes which came from supertypes
+            val nestedClassId = (it as? FirClassLikeSymbol<*>)?.classId ?: return@filter true
+            nestedClassId.outerClassId == classSymbol.classId
+        }
     }
 
     private fun FirClass.memberDeclarations(): List<FirCallableDeclaration> {
