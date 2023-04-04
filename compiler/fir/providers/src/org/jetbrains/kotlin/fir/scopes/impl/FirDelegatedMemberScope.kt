@@ -50,10 +50,12 @@ class FirDelegatedMemberScope(
         result.forEach(processor)
     }
 
-    private fun buildScope(delegateField: FirField): FirTypeScope? {
-        return delegateField.returnTypeRef.coneType
-            .scope(session, scopeSession, FakeOverrideTypeCalculator.DoNothing, requiredPhase = null)
-    }
+    private fun buildScope(delegateField: FirField): FirTypeScope? = delegateField.symbol.resolvedReturnType.scope(
+        session,
+        scopeSession,
+        FakeOverrideTypeCalculator.DoNothing,
+        requiredPhase = null,
+    )
 
     private fun collectFunctionsFromSpecificField(
         delegateField: FirField,
@@ -136,18 +138,21 @@ class FirDelegatedMemberScope(
                 return@processor
             }
 
+            if (propertySymbol.modality == Modality.FINAL || propertySymbol.visibility == Visibilities.Private) {
+                return@processor
+            }
+
             val original = propertySymbol.fir
-
-            if (original.modality == Modality.FINAL || original.visibility == Visibilities.Private) {
-                return@processor
+            var isOverriddenProperty = false
+            declaredMemberScope.processPropertiesByName(name) {
+                if (it is FirPropertySymbol && overrideChecker.isOverriddenProperty(it.fir, original)) {
+                    isOverriddenProperty = true
+                }
             }
 
-            if (declaredMemberScope.getProperties(name)
-                    .any { it is FirPropertySymbol && overrideChecker.isOverriddenProperty(it.fir, original) }
-            ) {
+            if (isOverriddenProperty) {
                 return@processor
             }
-
 
             result.firstOrNull {
                 overrideChecker.isOverriddenProperty(it.fir, original)
