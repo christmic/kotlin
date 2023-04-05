@@ -144,7 +144,7 @@ class TypeClsStubBuilder(private val c: ClsStubBuilderContext) {
         }
     }
 
-    private fun createKotlinTypeBean(
+    fun createKotlinTypeBean(
         type: Type?
     ): KotlinFlexibleAwareTypeBean? {
         if (type == null) return null

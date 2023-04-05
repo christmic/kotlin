@@ -60,7 +60,7 @@ public class KtUserTypeElementType extends KtStubElementType<KotlinUserTypeStub,
         }
     }
 
-    private static void serializeType(@NotNull StubOutputStream dataStream, @Nullable KotlinFlexibleAwareTypeBean type) throws IOException {
+    public static void serializeType(@NotNull StubOutputStream dataStream, @Nullable KotlinFlexibleAwareTypeBean type) throws IOException {
         dataStream.writeInt(KotlinTypeBeanType.fromBean(type).ordinal());
         if (type instanceof KotlinClassTypeBean) {
             StubUtils.serializeClassId(dataStream, ((KotlinClassTypeBean) type).getClassId());
@@ -93,7 +93,7 @@ public class KtUserTypeElementType extends KtStubElementType<KotlinUserTypeStub,
     }
 
     @Nullable
-    private static KotlinFlexibleAwareTypeBean deserializeType(@NotNull StubInputStream dataStream) throws IOException {
+    public static KotlinFlexibleAwareTypeBean deserializeType(@NotNull StubInputStream dataStream) throws IOException {
         KotlinTypeBeanType hasFlexibleType = KotlinTypeBeanType.values()[dataStream.readInt()];
         switch (hasFlexibleType) {
             case CLASS: {
