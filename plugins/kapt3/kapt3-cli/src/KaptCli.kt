@@ -56,6 +56,7 @@ internal fun transformArgs(args: List<String>, messageCollector: MessageCollecto
 }
 
 private const val KAPT_COMPILER_PLUGIN_JAR_NAME = "kotlin-annotation-processing.jar"
+private const val FALLBACK_VERSION = "1.9"
 
 private fun transformKaptToolArgs(args: List<String>, messageCollector: MessageCollector, isTest: Boolean): List<String> {
     val transformed = mutableListOf<String>()
@@ -125,6 +126,26 @@ private fun transformKaptToolArgs(args: List<String>, messageCollector: MessageC
 
     if (kaptVerboseModePassed) {
         messageCollector.report(CompilerMessageSeverity.INFO, "Options passed to kotlinc: " + transformed.joinToString(" "))
+    }
+
+    var fallbackModeArgsPos = -1
+    val useK2ArgPos = transformed.indexOf("-Xuse-k2")
+    if (useK2ArgPos >= 0) {
+        fallbackModeArgsPos = useK2ArgPos
+        transformed.removeAt(useK2ArgPos)
+    }
+    val languageVersionArgPos = transformed.indexOf("-language-version")
+    if (languageVersionArgPos >= 0 && languageVersionArgPos < transformed.size - 1) {
+        val languageVersion = transformed[languageVersionArgPos + 1]
+        if (languageVersion.startsWith('2')) {
+            fallbackModeArgsPos = languageVersionArgPos
+            transformed.removeAt(languageVersionArgPos)
+            transformed.removeAt(languageVersionArgPos)
+        }
+    }
+    if (fallbackModeArgsPos >= 0) {
+        System.err.println("WARNING: Kapt currently doesn't support language version 2.0+. Running with $FALLBACK_VERSION.")
+        transformed.addAll(0, listOf("-language-version", FALLBACK_VERSION, "-Xskip-metadata-version-check", "-Xallow-unstable-dependencies"))
     }
 
     return transformed

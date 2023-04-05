@@ -48,6 +48,7 @@ abstract class AbstractKaptToolIntegrationTest {
                 when (section.name) {
                     "mkdir" -> section.args.forEach { File(tmpdir, it).mkdirs() }
                     "copy" -> copyFile(originalTestFile.parentFile, section.args)
+                    "jar" -> runJar(section.args)
                     "kotlinc" -> runKotlinDistBinary("kotlinc", section.args)
                     "kapt" -> runKotlinDistBinary("kapt", section.args)
                     "javac" -> runJavac(section.args)
@@ -80,6 +81,12 @@ abstract class AbstractKaptToolIntegrationTest {
 
     private fun runJavac(args: List<String>) {
         val executableName = if (SystemInfo.isWindows) "javac.exe" else "javac"
+        val executablePath = File(getJdk8Home(), "bin/" + executableName).absolutePath
+        runProcess(executablePath, args)
+    }
+
+    private fun runJar(args: List<String>) {
+        val executableName = if (SystemInfo.isWindows) "jar.exe" else "jar"
         val executablePath = File(getJdk8Home(), "bin/" + executableName).absolutePath
         runProcess(executablePath, args)
     }
