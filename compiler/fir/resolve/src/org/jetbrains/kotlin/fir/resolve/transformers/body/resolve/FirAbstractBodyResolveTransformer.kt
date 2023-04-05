@@ -9,6 +9,9 @@ import org.jetbrains.kotlin.fir.FirCallResolver
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.PrivateForInline
 import org.jetbrains.kotlin.fir.declarations.*
+import org.jetbrains.kotlin.fir.expressions.FirLazyBlock
+import org.jetbrains.kotlin.fir.expressions.FirLazyExpression
+import org.jetbrains.kotlin.fir.expressions.FirStatement
 import org.jetbrains.kotlin.fir.resolve.*
 import org.jetbrains.kotlin.fir.resolve.calls.ResolutionContext
 import org.jetbrains.kotlin.fir.resolve.calls.ResolutionStageRunner
@@ -48,6 +51,14 @@ abstract class FirAbstractBodyResolveTransformer(phase: FirResolvePhase) : FirAb
                 implicitTypeOnly = true
             }
         }
+    }
+
+    override fun transformLazyExpression(lazyExpression: FirLazyExpression, data: ResolutionMode): FirStatement {
+        error("FirLazyExpression should be calculated before accessing")
+    }
+
+    override fun transformLazyBlock(lazyBlock: FirLazyBlock, data: ResolutionMode): FirStatement {
+        error("FirLazyBlock should be calculated before accessing")
     }
 
     protected inline val localScopes: List<FirLocalScope> get() = components.localScopes
