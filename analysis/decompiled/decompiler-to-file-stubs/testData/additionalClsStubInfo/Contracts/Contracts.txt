@@ -1,0 +1,19 @@
+PsiJetFileStubImpl[package=test]
+KotlinStub$PACKAGE_DIRECTIVE
+  KotlinStub$REFERENCE_EXPRESSION[referencedName=test]
+KotlinStub$IMPORT_LIST
+KotlinStub$FUN[fqName=test.myRequire, hasBlockBody=true, hasBody=true, hasTypeParameterListBeforeFunctionName=false, isExtension=false, isTopLevel=true, mayHaveContract=true, name=myRequire]
+  effect: RETURNS_CONSTANT; KotlinContractExpression(isNegated=false, isInNullPredicate=false, valueParameter=0, type=null, constantValue=null, andArgs=null, orArgs=null); no invocation kind; args: []
+  KotlinStub$MODIFIER_LIST[public]
+  KotlinStub$VALUE_PARAMETER_LIST
+    KotlinStub$VALUE_PARAMETER[fqName=null, hasDefaultValue=false, hasValOrVar=false, isMutable=false, name=x]
+      KotlinStub$TYPE_REFERENCE
+        KotlinStub$USER_TYPE
+          KotlinStub$USER_TYPE
+            KotlinStub$REFERENCE_EXPRESSION[referencedName=kotlin]
+          KotlinStub$REFERENCE_EXPRESSION[referencedName=Boolean]
+  KotlinStub$TYPE_REFERENCE
+    KotlinStub$USER_TYPE
+      KotlinStub$USER_TYPE
+        KotlinStub$REFERENCE_EXPRESSION[referencedName=kotlin]
+      KotlinStub$REFERENCE_EXPRESSION[referencedName=Unit]

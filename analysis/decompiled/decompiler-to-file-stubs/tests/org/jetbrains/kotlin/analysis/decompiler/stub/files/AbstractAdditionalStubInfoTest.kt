@@ -25,11 +25,25 @@ abstract class AbstractAdditionalStubInfoTest : AbstractDecompiledClassTest() {
 
     private fun extractAdditionInfo(stub: StubElement<*>, builder: StringBuilder, level: Int) {
         builder.append(stub.toString())
-        if (stub is KotlinUserTypeStubImpl) {
-            val upperBound = stub.upperBound
-            if (upperBound != null) {
-                builder.append("    ft: ")
-                appendFlexibleTypeInfo(builder, upperBound)
+        when (stub) {
+            is KotlinUserTypeStubImpl -> {
+                val upperBound = stub.upperBound
+                if (upperBound != null) {
+                    builder.append("    ft: ")
+                    appendFlexibleTypeInfo(builder, upperBound)
+                }
+            }
+            is KotlinFunctionStubImpl -> {
+                val contract = stub.contract
+                if (contract != null) {
+                    builder.append("\n" + "  ".repeat(level))
+                        .append(
+                            contract.joinToString("\n" + "  ".repeat(level), "effect: ") { effect ->
+                                effect.effectType.name + "; " + effect.conclusion.toString() + "; " +
+                                        (effect.invocationKind?.name ?: "no invocation kind") + "; " +
+                                        effect.arguments?.joinToString(", ", "args: [", "]")
+                            })
+                }
             }
         }
         for (child in stub.childrenStubs) {
