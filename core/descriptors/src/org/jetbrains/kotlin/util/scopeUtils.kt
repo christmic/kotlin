@@ -21,6 +21,7 @@ import org.jetbrains.kotlin.descriptors.ClassifierDescriptorWithTypeParameters
 import org.jetbrains.kotlin.resolve.scopes.MemberScope
 import org.jetbrains.kotlin.utils.SmartList
 import org.jetbrains.kotlin.utils.concat
+import org.jetbrains.kotlin.utils.filterIsInstanceAndTo
 
 inline fun <Scope, T> getFromAllScopes(scopes: Array<Scope>, callback: (Scope) -> Collection<T>): Collection<T> =
     when (scopes.size) {
@@ -82,4 +83,8 @@ inline fun <Scope, T : ClassifierDescriptor> getFirstClassifierDiscriminateHeade
         }
     }
     return result
+}
+
+inline fun <reified R> Iterable<*>.filterIsInstanceAnd(predicate: (R) -> Boolean): List<R> {
+    return filterIsInstanceAndTo(SmartList(), predicate)
 }
