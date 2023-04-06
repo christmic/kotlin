@@ -9,6 +9,9 @@ import org.jetbrains.kotlin.analysis.low.level.api.fir.api.targets.LLFirResolveT
 import org.jetbrains.kotlin.analysis.low.level.api.fir.api.throwUnexpectedFirElementError
 import org.jetbrains.kotlin.analysis.low.level.api.fir.file.builder.LLFirLockProvider
 import org.jetbrains.kotlin.analysis.low.level.api.fir.lazy.resolve.LLFirPhaseUpdater
+import org.jetbrains.kotlin.analysis.low.level.api.fir.util.checkBodyIsResolved
+import org.jetbrains.kotlin.analysis.low.level.api.fir.util.checkDefaultValueIsResolved
+import org.jetbrains.kotlin.analysis.low.level.api.fir.util.checkInitializerIsResolved
 import org.jetbrains.kotlin.analysis.low.level.api.fir.util.checkPhase
 import org.jetbrains.kotlin.analysis.low.level.api.fir.util.withFirEntry
 import org.jetbrains.kotlin.analysis.utils.errors.buildErrorWithAttachment
@@ -44,6 +47,12 @@ internal object LLFirBodyLazyResolver : LLFirLazyResolver(FirResolvePhase.BODY_R
 
     override fun checkIsResolved(target: FirElementWithResolveState) {
         target.checkPhase(resolverPhase)
+        when (target) {
+            is FirValueParameter -> checkDefaultValueIsResolved(target)
+            is FirVariable -> checkInitializerIsResolved(target)
+            is FirFunction -> checkBodyIsResolved(target)
+        }
+
         checkNestedDeclarationsAreResolved(target)
     }
 }
@@ -100,6 +109,7 @@ private class LLFirBodyTargetResolver(
         ) {
             withFirEntry("firClass", target)
         }
+
         val dataFlowAnalyzer = transformer.declarationsTransformer.dataFlowAnalyzer
         dataFlowAnalyzer.enterClass(target, buildGraph = true)
         val controlFlowGraph = dataFlowAnalyzer.exitClass()
