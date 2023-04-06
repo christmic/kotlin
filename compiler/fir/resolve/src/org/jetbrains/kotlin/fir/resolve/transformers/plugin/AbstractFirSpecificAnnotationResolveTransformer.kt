@@ -214,7 +214,6 @@ abstract class AbstractFirSpecificAnnotationResolveTransformer(
         }
     }
 
-    @OptIn(PrivateForInline::class)
     override fun transformAnnotationCall(annotationCall: FirAnnotationCall, data: Nothing?): FirStatement {
         val annotationTypeRef = annotationCall.annotationTypeRef
         if (annotationTypeRef !is FirUserTypeRef) return annotationCall
@@ -356,7 +355,6 @@ abstract class AbstractFirSpecificAnnotationResolveTransformer(
         }
     }
 
-
     inline fun <T> withFile(file: FirFile, f: () -> T): T {
         typeResolverTransformer.withFile(file) {
             argumentsTransformer.context.withFile(file, argumentsTransformer.components) {
@@ -412,9 +410,7 @@ abstract class AbstractFirSpecificAnnotationResolveTransformer(
         return transformDeclaration(constructor, data).also {
             transformChildren(constructor) {
                 constructor.transformValueParameters(this, data)
-
             }
-
         } as FirConstructor
     }
 
