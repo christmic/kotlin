@@ -3,12 +3,13 @@
  * that can be found in the LICENSE file.
  */
 
+@file:Suppress("DEPRECATION", "DEPRECATION_ERROR") // Char.toInt()
 package kotlin.native.internal
 
 import kotlin.internal.getProgressionLastElement
 import kotlin.reflect.KClass
 import kotlin.native.concurrent.freeze
-import kotlin.concurrent.*
+import kotlin.native.concurrent.FreezableAtomicReference
 
 @ExportForCppRuntime
 fun ThrowNullPointerException(): Nothing {
@@ -146,11 +147,11 @@ internal fun ReportUnhandledException(throwable: Throwable) {
 // to throw an exception during it's initialization before this hook would've been initialized.
 @OptIn(FreezingIsDeprecated::class)
 internal object UnhandledExceptionHookHolder {
-    internal val hook: AtomicReference<ReportUnhandledExceptionHook?> =
+    internal val hook: FreezableAtomicReference<ReportUnhandledExceptionHook?> =
         if (Platform.memoryModel == MemoryModel.EXPERIMENTAL) {
-            AtomicReference<ReportUnhandledExceptionHook?>(null)
+            FreezableAtomicReference<ReportUnhandledExceptionHook?>(null)
         } else {
-            AtomicReference<ReportUnhandledExceptionHook?>(null).freeze()
+            FreezableAtomicReference<ReportUnhandledExceptionHook?>(null).freeze()
         }
 }
 

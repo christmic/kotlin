@@ -3,6 +3,7 @@
  * that can be found in the LICENSE file.
  */
 
+@file:Suppress("DEPRECATION_ERROR")
 package kotlin.native.concurrent
 
 import kotlin.native.internal.Frozen
@@ -10,7 +11,7 @@ import kotlin.concurrent.AtomicReference
 
 @FreezingIsDeprecated
 internal class FreezeAwareLazyImpl<out T>(initializer: () -> T) : Lazy<T> {
-    private val value_ = AtomicReference<Any?>(UNINITIALIZED)
+    private val value_ = FreezableAtomicReference<Any?>(UNINITIALIZED)
     // This cannot be made atomic because of the legacy MM. See https://github.com/JetBrains/kotlin-native/pull/3944
     // So it must be protected by the lock below.
     private var initializer_: (() -> T)? = initializer
@@ -131,8 +132,8 @@ public fun <T> atomicLazy(initializer: () -> T): Lazy<T> = AtomicLazyImpl(initia
 @Suppress("UNCHECKED_CAST")
 @OptIn(FreezingIsDeprecated::class)
 internal class SynchronizedLazyImpl<out T>(initializer: () -> T) : Lazy<T> {
-    private var initializer = AtomicReference<(() -> T)?>(initializer)
-    private var valueRef = AtomicReference<Any?>(UNINITIALIZED)
+    private var initializer = FreezableAtomicReference<(() -> T)?>(initializer)
+    private var valueRef = FreezableAtomicReference<Any?>(UNINITIALIZED)
     private val lock = Lock()
 
     override val value: T
@@ -171,8 +172,8 @@ internal class SynchronizedLazyImpl<out T>(initializer: () -> T) : Lazy<T> {
 @Suppress("UNCHECKED_CAST")
 @OptIn(FreezingIsDeprecated::class)
 internal class SafePublicationLazyImpl<out T>(initializer: () -> T) : Lazy<T> {
-    private var initializer = AtomicReference<(() -> T)?>(initializer)
-    private var valueRef = AtomicReference<Any?>(UNINITIALIZED)
+    private var initializer = FreezableAtomicReference<(() -> T)?>(initializer)
+    private var valueRef = FreezableAtomicReference<Any?>(UNINITIALIZED)
 
     override val value: T
         get() {

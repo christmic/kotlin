@@ -7,8 +7,6 @@ package kotlin.coroutines
 
 import kotlin.*
 import kotlin.native.concurrent.*
-import kotlin.concurrent.*
-import kotlin.concurrent.AtomicReference
 import kotlin.coroutines.intrinsics.CoroutineSingletons.*
 import kotlin.coroutines.intrinsics.*
 import kotlin.coroutines.intrinsics.COROUTINE_SUSPENDED
@@ -27,7 +25,8 @@ internal actual constructor(
     public actual override val context: CoroutineContext
         get() = delegate.context
 
-    private var resultRef = AtomicReference<Any?>(initialResult)
+    @Suppress("DEPRECATION_ERROR")
+    private var resultRef = FreezableAtomicReference<Any?>(initialResult)
 
     public actual override fun resumeWith(result: Result<T>) {
         while (true) {

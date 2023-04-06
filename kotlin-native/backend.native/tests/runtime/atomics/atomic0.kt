@@ -135,8 +135,9 @@ fun test6() {
     assertEquals(239L, long.value)
 }
 
+@Suppress("DEPRECATION_ERROR")
 fun test7() {
-    val ref = AtomicReference(Array(1) { "hey" })
+    val ref = FreezableAtomicReference(Array(1) { "hey" })
     ref.value[0] = "ho"
     assertEquals(ref.value[0], "ho")
     ref.value = Array(1) { "po" }
