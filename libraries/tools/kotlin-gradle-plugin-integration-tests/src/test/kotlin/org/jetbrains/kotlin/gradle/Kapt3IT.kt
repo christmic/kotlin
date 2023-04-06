@@ -1082,7 +1082,6 @@ open class Kapt3IT : Kapt3BaseIT() {
                 |    compilerOptions {
                 |        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_1_8
                 |        freeCompilerArgs.addAll([
-                |        freeCompilerArgs.addAll([
                 |            "-P",
                 |            "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=true",
                 |            "-P",
