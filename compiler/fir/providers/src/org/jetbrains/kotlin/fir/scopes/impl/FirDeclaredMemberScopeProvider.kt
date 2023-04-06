@@ -113,7 +113,8 @@ class FirDeclaredMemberScopeProvider(val useSiteSession: FirSession) : FirSessio
 }
 
 fun FirSession.declaredMemberScope(klass: FirClass): FirContainingNamesAwareScope {
-    return declaredMemberScopeProvider
+    val session = klass.moduleData.session.takeIf { it.kind == FirSession.Kind.Source } ?: this
+    return session.declaredMemberScopeProvider
         .declaredMemberScope(klass, useLazyNestedClassifierScope = false, existingNames = null, symbolProvider = null)
 }
 
@@ -130,7 +131,8 @@ fun FirSession.declaredMemberScopeWithLazyNestedScope(
     existingNames: List<Name>,
     symbolProvider: FirSymbolProvider
 ): FirContainingNamesAwareScope {
-    return declaredMemberScopeProvider
+    val session = klass.moduleData.session.takeIf { it.kind == FirSession.Kind.Source } ?: this
+    return session.declaredMemberScopeProvider
         .declaredMemberScope(klass, useLazyNestedClassifierScope = true, existingNames = existingNames, symbolProvider = symbolProvider)
 }
 
