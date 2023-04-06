@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.analysis.low.level.api.fir.lazy.resolve
 
+import com.intellij.openapi.diagnostic.Logger
 import org.jetbrains.kotlin.fir.declarations.FirResolvePhase
 
 internal class LLFirLazyResolveContractChecker {
@@ -26,12 +27,26 @@ internal class LLFirLazyResolveContractChecker {
         val currentPhase = currentTransformerPhase.get() ?: return
 
         if (requestedPhase >= currentPhase) {
-            error(
+            logOrThrowException(
                 """`lazyResolveToPhase($requestedPhase)` cannot be called from a transformer with a phase $currentPhase.
                     `lazyResolveToPhase` can be called only from a transformer with a phase which is strictly greater than a requested phase;
                      i.e., `lazyResolveToPhase(A)` may be only called from a lazy transformer with a phase B, where A < B. This is a contract of lazy resolve""".trimIndent()
             )
         }
     }
+
+    private fun logOrThrowException(text: String) {
+        val exception = FirLazyResolveContractViolationException(text)
+        if (System.getProperty("kotlin.suppress.lazy.resolve.contract.violation") != null) {
+            LoggerHolder.LOG.warn(exception)
+        } else {
+            throw exception
+        }
+    }
+
+    private object LoggerHolder {
+        val LOG = Logger.getInstance(LLFirLazyResolveContractChecker::class.java)
+    }
 }
 
+private class FirLazyResolveContractViolationException(message: String) : IllegalStateException(message)
