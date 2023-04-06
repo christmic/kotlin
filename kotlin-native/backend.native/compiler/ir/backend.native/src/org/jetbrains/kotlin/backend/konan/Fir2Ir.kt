@@ -15,7 +15,9 @@ import org.jetbrains.kotlin.builtins.KotlinBuiltIns
 import org.jetbrains.kotlin.builtins.konan.KonanBuiltIns
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
 import org.jetbrains.kotlin.cli.common.fir.FirDiagnosticsCompilerResultsReporter
+import org.jetbrains.kotlin.config.CommonConfigurationKeys
 import org.jetbrains.kotlin.config.languageVersionSettings
+import org.jetbrains.kotlin.constant.EvaluatedConstTracker
 import org.jetbrains.kotlin.descriptors.deserialization.PlatformDependentTypeTransformer
 import org.jetbrains.kotlin.descriptors.impl.ModuleDescriptorImpl
 import org.jetbrains.kotlin.descriptors.konan.isNativeStdlib
@@ -73,7 +75,9 @@ internal fun PhaseContext.fir2Ir(
             fir2IrExtensions,
             Fir2IrConfiguration(
                     languageVersionSettings = configuration.languageVersionSettings,
-                    linkViaSignatures = false
+                    linkViaSignatures = false,
+                    evaluatedConstTracker = configuration
+                            .putIfAbsent(CommonConfigurationKeys.EVALUATED_CONST_TRACKER, EvaluatedConstTracker.create()),
             ),
             IrGenerationExtension.getInstances(config.project),
             signatureComposerCreator = null,
