@@ -111,10 +111,6 @@ public class AtomicInt(public @Volatile var value: Int) {
 @Deprecated(level = DeprecationLevel.ERROR, message = "Use kotlin.concurrent.AtomicLong instead.",
         replaceWith = ReplaceWith("kotlin.concurrent.AtomicLong"))
 public class AtomicLong(public @Volatile var value: Long = 0L)  {
-
-    @Deprecated(level = DeprecationLevel.ERROR, message = "Constructor with default parameter value is deprecated, pass an initial value")
-    constructor() : this(0L)
-
     /**
      * Atomically sets the value to the given [new value][newValue] and returns the old value.
      */
