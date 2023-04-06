@@ -1082,6 +1082,7 @@ open class Kapt3IT : Kapt3BaseIT() {
                 |    compilerOptions {
                 |        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_1_8
                 |        freeCompilerArgs.addAll([
+                |        freeCompilerArgs.addAll([
                 |            "-P",
                 |            "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=true",
                 |            "-P",
@@ -1118,6 +1119,38 @@ open class Kapt3IT : Kapt3BaseIT() {
                     "KaptGenerateStubs task compiler arguments contains $composeSuppressOption times option to suppress compose warning:" +
                             " ${compilerArguments.joinToString("\n")}"
                 }
+            }
+        }
+    }
+
+    @DisplayName("Kapt runs in fallback mode with useK2 = true")
+    @GradleTest
+    internal fun fallBackModeWithUseK2(gradleVersion: GradleVersion) {
+        project("simple".withPrefix, gradleVersion) {
+            gradleProperties.append(
+                """
+
+                useK2 = true
+                """.trimIndent()
+            )
+            build("build") {
+                assertKaptSuccessful()
+            }
+        }
+    }
+
+    @DisplayName("Kapt runs in fallback mode with languageVersion = 2.0")
+    @GradleTest
+    internal fun fallBackModeWithLanguageVersion2_0(gradleVersion: GradleVersion) {
+        project("simple".withPrefix, gradleVersion) {
+            gradleProperties.append(
+                """
+
+                languageVersion = 2.0
+                """.trimIndent()
+            )
+            build("build") {
+                assertKaptSuccessful()
             }
         }
     }

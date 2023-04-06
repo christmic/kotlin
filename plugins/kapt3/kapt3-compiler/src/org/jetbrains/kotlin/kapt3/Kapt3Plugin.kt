@@ -70,9 +70,10 @@ class Kapt3CommandLineProcessor : CommandLineProcessor {
         }
         if (configuration.getBoolean(CommonConfigurationKeys.USE_FIR)) {
             configuration[CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY]?.report(
-                CompilerMessageSeverity.ERROR,
-                "kapt currently doesn't support language version 2.0\nPlease use language version 1.9 or below"
+                CompilerMessageSeverity.WARNING,
+                "Kapt currently doesn't support language version 2.0.\nFalling back to 1.9."
             )
+            configuration.put(CommonConfigurationKeys.USE_FIR, false)
         }
 
         val kaptOptions = configuration[KAPT_OPTIONS]
