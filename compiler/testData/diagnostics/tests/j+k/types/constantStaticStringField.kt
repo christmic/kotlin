@@ -23,5 +23,6 @@ fun foo(w: Int): String {
         else -> JavaClass.Y
     }
 
+    // issue KT-57811
     return <!DEBUG_INFO_SMARTCAST!>x<!>
 }
