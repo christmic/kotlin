@@ -153,26 +153,36 @@ public class Char private constructor() : Comparable<Char> {
         /**
          * The minimum value of a supplementary code point, `\u0x10000`. Kotlin/Native specific.
          */
+        @Deprecated("Introduce your own constant with the value of `0x10000`", ReplaceWith("0x10000"))
+        @DeprecatedSinceKotlin(warningSince = "1.9")
         public const val MIN_SUPPLEMENTARY_CODE_POINT: Int = 0x10000
 
         /**
          * The minimum value of a Unicode code point. Kotlin/Native specific.
          */
+        @Deprecated("Introduce your own constant with the value of `0`", ReplaceWith("0"))
+        @DeprecatedSinceKotlin(warningSince = "1.9")
         public const val MIN_CODE_POINT = 0x000000
 
         /**
          * The maximum value of a Unicode code point. Kotlin/Native specific.
          */
+        @Deprecated("Introduce your own constant with the value of `0x10FFFF`", ReplaceWith("0x10FFFF"))
+        @DeprecatedSinceKotlin(warningSince = "1.9")
         public const val MAX_CODE_POINT = 0X10FFFF
 
         /**
          * The minimum radix available for conversion to and from strings.
          */
+        @Deprecated("Introduce your own constant with the value of `2`", ReplaceWith("2"))
+        @DeprecatedSinceKotlin(warningSince = "1.9")
         public const val MIN_RADIX: Int = 2
 
         /**
          * The maximum radix available for conversion to and from strings.
          */
+        @Deprecated("Introduce your own constant with the value of `36", ReplaceWith("36"))
+        @DeprecatedSinceKotlin(warningSince = "1.9")
         public const val MAX_RADIX: Int = 36
     }
 

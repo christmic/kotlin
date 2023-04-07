@@ -222,6 +222,7 @@ public actual val Char.category: CharCategory
  * Checks whether the given [radix] is valid radix for string to number and number to string conversion.
  */
 @PublishedApi
+@Suppress("DEPRECATION")
 internal actual fun checkRadix(radix: Int): Int {
     if(radix !in Char.MIN_RADIX..Char.MAX_RADIX) {
         throw IllegalArgumentException("radix $radix was not in valid range ${Char.MIN_RADIX..Char.MAX_RADIX}")
@@ -234,7 +235,7 @@ internal actual fun checkRadix(radix: Int): Int {
 // TODO: Make public when supplementary codepoints are supported.
 /** Converts a unicode code point to lower case. */
 internal fun Char.Companion.toLowerCase(codePoint: Int): Int =
-    if (codePoint < MIN_SUPPLEMENTARY_CODE_POINT) {
+    if (codePoint <= MAX_VALUE.code) {
         @Suppress("DEPRECATION")
         codePoint.toChar().lowercaseChar().toInt()
     } else {
@@ -243,7 +244,7 @@ internal fun Char.Companion.toLowerCase(codePoint: Int): Int =
 
 /** Converts a unicode code point to upper case. */
 internal fun Char.Companion.toUpperCase(codePoint: Int): Int =
-    if (codePoint < MIN_SUPPLEMENTARY_CODE_POINT) {
+    if (codePoint <= MAX_VALUE.code) {
         @Suppress("DEPRECATION")
         codePoint.toChar().uppercaseChar().toInt()
     } else {
@@ -256,6 +257,7 @@ public fun Char.Companion.toCodePoint(high: Char, low: Char): Int =
     (((high - MIN_HIGH_SURROGATE) shl 10) or (low - MIN_LOW_SURROGATE)) + 0x10000
 
 /** Checks if the codepoint specified is a supplementary codepoint or not. */
+@Suppress("DEPRECATION")
 // TODO: Consider removing from public API
 public fun Char.Companion.isSupplementaryCodePoint(codepoint: Int): Boolean =
     codepoint in MIN_SUPPLEMENTARY_CODE_POINT..MAX_CODE_POINT
