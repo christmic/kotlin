@@ -165,7 +165,10 @@ class K2JsIrCompiler : CLICompiler<K2JSCompilerArguments>() {
             }
         }
 
-        val libraries: List<String> = configureLibraries(arguments.libraries) + listOfNotNull(arguments.includes)
+        val stdlibPath = System.getProperty("kotlin.js.full.stdlib.path")
+            ?.let { File(it).absolutePath }
+            ?: error("No path to the JS standard stdlib specified")
+        val libraries: List<String> = configureLibraries(arguments.libraries) + listOfNotNull(arguments.includes) + listOf(stdlibPath)
         val friendLibraries: List<String> = configureLibraries(arguments.friendModules)
 
         configuration.put(JSConfigurationKeys.LIBRARIES, libraries)
