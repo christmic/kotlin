@@ -46,6 +46,8 @@ class ConstValueProviderImpl(
     ): FirAnnotation {
         if (firAnnotation is FirErrorAnnotationCall || firAnnotation.source == null) return firAnnotation
 
+        if (firAnnotation.argumentMapping.mapping.isEmpty()) return firAnnotation
+
         val irDeclaration = when (firAnnotationContainer) {
             is FirClass -> components.classifierStorage.getCachedIrClass(firAnnotationContainer)
             is FirEnumEntry -> components.classifierStorage.getCachedIrEnumEntry(firAnnotationContainer)
