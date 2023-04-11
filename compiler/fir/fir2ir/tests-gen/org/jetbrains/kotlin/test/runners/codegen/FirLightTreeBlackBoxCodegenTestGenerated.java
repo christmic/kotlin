@@ -22968,6 +22968,18 @@ public class FirLightTreeBlackBoxCodegenTestGenerated extends AbstractFirLightTr
         }
 
         @Test
+        @TestMetadata("secondaryConstructorExpectActual.kt")
+        public void testSecondaryConstructorExpectActual() throws Exception {
+            runTest("compiler/testData/codegen/box/inlineClasses/secondaryConstructorExpectActual.kt");
+        }
+
+        @Test
+        @TestMetadata("secondaryConstructorVisibilies.kt")
+        public void testSecondaryConstructorVisibilies() throws Exception {
+            runTest("compiler/testData/codegen/box/inlineClasses/secondaryConstructorVisibilies.kt", TransformersFunctions.getReplaceOptionalJvmInlineAnnotationWithReal());
+        }
+
+        @Test
         @TestMetadata("secondaryConstructorWithVararg.kt")
         public void testSecondaryConstructorWithVararg() throws Exception {
             runTest("compiler/testData/codegen/box/inlineClasses/secondaryConstructorWithVararg.kt", TransformersFunctions.getReplaceOptionalJvmInlineAnnotationWithReal());
@@ -43530,6 +43542,12 @@ public class FirLightTreeBlackBoxCodegenTestGenerated extends AbstractFirLightTr
                 }
 
                 @Test
+                @TestMetadata("secondaryConstructorVisibilies.kt")
+                public void testSecondaryConstructorVisibilies() throws Exception {
+                    runTest("compiler/testData/codegen/box/reflection/call/inlineClasses/secondaryConstructorVisibilies.kt", TransformersFunctions.getReplaceOptionalJvmInlineAnnotationWithReal());
+                }
+
+                @Test
                 @TestMetadata("simpleConstructorWithInlineClassParameter.kt")
                 public void testSimpleConstructorWithInlineClassParameter() throws Exception {
                     runTest("compiler/testData/codegen/box/reflection/call/inlineClasses/simpleConstructorWithInlineClassParameter.kt");
@@ -43849,6 +43867,12 @@ public class FirLightTreeBlackBoxCodegenTestGenerated extends AbstractFirLightTr
                 @TestMetadata("properties.kt")
                 public void testProperties() throws Exception {
                     runTest("compiler/testData/codegen/box/reflection/call/valueClasses/properties.kt");
+                }
+
+                @Test
+                @TestMetadata("secondaryConstructorVisibilies.kt")
+                public void testSecondaryConstructorVisibilies() throws Exception {
+                    runTest("compiler/testData/codegen/box/reflection/call/valueClasses/secondaryConstructorVisibilies.kt", TransformersFunctions.getReplaceOptionalJvmInlineAnnotationWithReal());
                 }
 
                 @Test
@@ -52092,6 +52116,18 @@ public class FirLightTreeBlackBoxCodegenTestGenerated extends AbstractFirLightTr
         }
 
         @Test
+        @TestMetadata("overrideFunctionWithDefaultParameter.kt")
+        public void testOverrideFunctionWithDefaultParameter() throws Exception {
+            runTest("compiler/testData/codegen/box/valueClasses/overrideFunctionWithDefaultParameter.kt", TransformersFunctions.getReplaceOptionalJvmInlineAnnotationWithReal());
+        }
+
+        @Test
+        @TestMetadata("overrideFunctionWithDefaultParameterGeneric.kt")
+        public void testOverrideFunctionWithDefaultParameterGeneric() throws Exception {
+            runTest("compiler/testData/codegen/box/valueClasses/overrideFunctionWithDefaultParameterGeneric.kt", TransformersFunctions.getReplaceOptionalJvmInlineAnnotationWithReal());
+        }
+
+        @Test
         @TestMetadata("overrides.kt")
         public void testOverrides() throws Exception {
             runTest("compiler/testData/codegen/box/valueClasses/overrides.kt");
@@ -52113,6 +52149,30 @@ public class FirLightTreeBlackBoxCodegenTestGenerated extends AbstractFirLightTr
         @TestMetadata("regularClassSecondaryConstructorWithMfvc.kt")
         public void testRegularClassSecondaryConstructorWithMfvc() throws Exception {
             runTest("compiler/testData/codegen/box/valueClasses/regularClassSecondaryConstructorWithMfvc.kt");
+        }
+
+        @Test
+        @TestMetadata("secondaryConstructorExpectActual.kt")
+        public void testSecondaryConstructorExpectActual() throws Exception {
+            runTest("compiler/testData/codegen/box/valueClasses/secondaryConstructorExpectActual.kt");
+        }
+
+        @Test
+        @TestMetadata("secondaryConstructorVisibilies.kt")
+        public void testSecondaryConstructorVisibilies() throws Exception {
+            runTest("compiler/testData/codegen/box/valueClasses/secondaryConstructorVisibilies.kt", TransformersFunctions.getReplaceOptionalJvmInlineAnnotationWithReal());
+        }
+
+        @Test
+        @TestMetadata("secondaryConstructorWithVararg.kt")
+        public void testSecondaryConstructorWithVararg() throws Exception {
+            runTest("compiler/testData/codegen/box/valueClasses/secondaryConstructorWithVararg.kt", TransformersFunctions.getReplaceOptionalJvmInlineAnnotationWithReal());
+        }
+
+        @Test
+        @TestMetadata("secondaryConstructorWithVarargGeneric.kt")
+        public void testSecondaryConstructorWithVarargGeneric() throws Exception {
+            runTest("compiler/testData/codegen/box/valueClasses/secondaryConstructorWithVarargGeneric.kt", TransformersFunctions.getReplaceOptionalJvmInlineAnnotationWithReal());
         }
 
         @Test
