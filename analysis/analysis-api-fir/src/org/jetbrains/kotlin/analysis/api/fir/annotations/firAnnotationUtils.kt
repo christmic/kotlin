@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.analysis.api.fir.annotations
 
+import java.lang.annotation.ElementType
 import org.jetbrains.kotlin.analysis.api.annotations.AnnotationUseSiteTargetFilter
 import org.jetbrains.kotlin.analysis.api.annotations.KtAnnotationApplicationInfo
 import org.jetbrains.kotlin.analysis.api.annotations.KtAnnotationApplicationWithArgumentsInfo
@@ -16,9 +17,10 @@ import org.jetbrains.kotlin.analysis.api.fir.toKtAnnotationInfo
 import org.jetbrains.kotlin.analysis.low.level.api.fir.util.withFirEntry
 import org.jetbrains.kotlin.analysis.utils.errors.checkWithAttachmentBuilder
 import org.jetbrains.kotlin.analysis.utils.errors.withClassEntry
+import org.jetbrains.kotlin.descriptors.annotations.KotlinTarget
 import org.jetbrains.kotlin.fir.FirAnnotationContainer
 import org.jetbrains.kotlin.fir.FirSession
-import org.jetbrains.kotlin.fir.analysis.checkers.findAllowedTargets
+import org.jetbrains.kotlin.fir.analysis.checkers.findFromRawArguments
 import org.jetbrains.kotlin.fir.declarations.FirResolvePhase
 import org.jetbrains.kotlin.fir.declarations.resolved
 import org.jetbrains.kotlin.fir.declarations.toAnnotationClassId
@@ -63,6 +65,11 @@ internal fun annotationsByClassId(
             .mapIndexedToAnnotationApplication(useSiteTargetFilter, useSiteSession, classId) { index, annotation ->
                 annotation.asKtAnnotationApplicationForTargetAnnotation(useSiteSession, index)
             }
+    } else if (classId == StandardClassIds.Annotations.Java.Target && firSymbol.fir.resolvePhase < FirResolvePhase.ANNOTATIONS_ARGUMENTS_MAPPING) {
+        annotationContainer.resolvedAnnotationsWithClassIds(firSymbol)
+            .mapIndexedToAnnotationApplication(useSiteTargetFilter, useSiteSession, classId) { index, annotation ->
+                annotation.asKtAnnotationApplicationForJavaTargetAnnotation(useSiteSession, index)
+            }
     } else {
         annotationContainer.resolvedAnnotationsWithArguments(firSymbol)
             .mapIndexedToAnnotationApplication(useSiteTargetFilter, useSiteSession, classId) { index, annotation ->
@@ -87,7 +94,10 @@ private fun FirAnnotation.asKtAnnotationApplicationForTargetAnnotation(
     useSiteSession: FirSession,
     index: Int,
 ): KtAnnotationApplicationWithArgumentsInfo {
-    val arguments = findAllowedTargets().ifNotEmpty {
+    val arguments = findFromRawArguments(
+        expectedEnumClass = StandardClassIds.AnnotationTarget,
+        { KotlinTarget.valueOrNull(it) },
+    ).ifNotEmpty {
         listOf(
             KtNamedAnnotationValue(
                 name = StandardClassIds.Annotations.ParameterNames.targetAllowedTargets,
@@ -96,6 +106,36 @@ private fun FirAnnotation.asKtAnnotationApplicationForTargetAnnotation(
                         KtEnumEntryAnnotationValue(
                             callableId = CallableId(
                                 classId = StandardClassIds.AnnotationTarget,
+                                callableName = Name.identifier(it.name),
+                            ),
+                            sourcePsi = null,
+                        )
+                    },
+                    sourcePsi = null,
+                )
+            )
+        )
+    }.orEmpty()
+
+    return toKtAnnotationApplication(useSiteSession, index, arguments)
+}
+
+private fun FirAnnotation.asKtAnnotationApplicationForJavaTargetAnnotation(
+    useSiteSession: FirSession,
+    index: Int,
+): KtAnnotationApplicationWithArgumentsInfo {
+    val arguments = findFromRawArguments(
+        expectedEnumClass = StandardClassIds.Annotations.Java.ElementType,
+        { ElementType.values().firstOrNull { enumValue -> enumValue.name == it } },
+    ).ifNotEmpty {
+        listOf(
+            KtNamedAnnotationValue(
+                name = StandardClassIds.Annotations.ParameterNames.value,
+                expression = KtArrayAnnotationValue(
+                    values = map {
+                        KtEnumEntryAnnotationValue(
+                            callableId = CallableId(
+                                classId = StandardClassIds.Annotations.Java.ElementType,
                                 callableName = Name.identifier(it.name),
                             ),
                             sourcePsi = null,

@@ -27,6 +27,7 @@ import org.jetbrains.kotlin.fir.symbols.lazyResolveToPhase
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassLikeSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.fir.types.*
+import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.StandardClassIds
 import org.jetbrains.kotlin.name.StandardClassIds.Annotations.ParameterNames
 import org.jetbrains.kotlin.resolve.UseSiteTargetsList
@@ -82,23 +83,19 @@ fun FirClassLikeSymbol<*>.getAllowedAnnotationTargets(session: FirSession): Set<
     }
 }
 
-fun FirAnnotation.findAllowedTargets(): Set<KotlinTarget> = buildSet {
+fun <T> FirAnnotation.findFromRawArguments(expectedEnumClass: ClassId, transformer: (String) -> T?): Set<T> = buildSet {
     fun addIfMatching(arg: FirExpression) {
         if (arg !is FirQualifiedAccessExpression) return
         val callableSymbol = arg.calleeReference.toResolvedCallableSymbol() ?: return
-        if (callableSymbol.containingClassLookupTag()?.classId != StandardClassIds.AnnotationTarget) return
+        if (callableSymbol.containingClassLookupTag()?.classId != expectedEnumClass) return
         val identifier = callableSymbol.callableId.callableName.identifier
-        KotlinTarget.values().firstOrNull { identifier == it.name }?.let(::add)
+        transformer(identifier)?.let(::add)
     }
 
-    if (this@findAllowedTargets is FirAnnotationCall) {
+    if (this@findFromRawArguments is FirAnnotationCall) {
         for (arg in argumentList.arguments) {
             arg.unwrapAndFlattenArgument().forEach(::addIfMatching)
         }
-    } else {
-        argumentMapping.mapping[ParameterNames.targetAllowedTargets]
-            ?.unwrapAndFlattenArgument()
-            ?.forEach(::addIfMatching)
     }
 }
 
