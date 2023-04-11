@@ -23,7 +23,7 @@ enum class PartialLinkageMode(val isEnabled: Boolean) {
     ENABLE(isEnabled = true), DISABLE(isEnabled = false);
 
     companion object {
-        val DEFAULT = DISABLE // TODO: should be changed to `ENABLE` (KT-51447, KT-51443)
+        val DEFAULT = ENABLE
 
         fun resolveMode(key: String): PartialLinkageMode? =
             values().firstOrNull { entry -> key == entry.name.lowercase() }
