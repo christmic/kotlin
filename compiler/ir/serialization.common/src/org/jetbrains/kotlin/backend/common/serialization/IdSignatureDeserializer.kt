@@ -7,6 +7,7 @@ package org.jetbrains.kotlin.backend.common.serialization
 
 import org.jetbrains.kotlin.ir.util.IdSignature
 import org.jetbrains.kotlin.ir.util.IdSignature.FileSignature
+import org.jetbrains.kotlin.utils.newHashMapWithExpectedSize
 import org.jetbrains.kotlin.backend.common.serialization.proto.AccessorIdSignature as ProtoAccessorIdSignature
 import org.jetbrains.kotlin.backend.common.serialization.proto.CommonIdSignature as ProtoCommonIdSignature
 import org.jetbrains.kotlin.backend.common.serialization.proto.CompositeSignature as ProtoCompositeSignature
@@ -95,6 +96,6 @@ class IdSignatureDeserializer(
 
     fun signatureToIndexMapping(): Map<IdSignature, Int> {
         if (signatureCache.isEmpty()) return emptyMap()
-        return signatureCache.entries.associateTo(HashMap(signatureCache.size)) { it.value to it.key }
+        return signatureCache.entries.associateTo(newHashMapWithExpectedSize(signatureCache.size)) { it.value to it.key }
     }
 }
