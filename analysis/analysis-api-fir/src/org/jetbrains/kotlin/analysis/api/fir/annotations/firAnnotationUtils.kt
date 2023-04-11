@@ -8,6 +8,9 @@ package org.jetbrains.kotlin.analysis.api.fir.annotations
 import org.jetbrains.kotlin.analysis.api.annotations.AnnotationUseSiteTargetFilter
 import org.jetbrains.kotlin.analysis.api.annotations.KtAnnotationApplicationInfo
 import org.jetbrains.kotlin.analysis.api.annotations.KtAnnotationApplicationWithArgumentsInfo
+import org.jetbrains.kotlin.analysis.api.annotations.KtArrayAnnotationValue
+import org.jetbrains.kotlin.analysis.api.annotations.KtEnumEntryAnnotationValue
+import org.jetbrains.kotlin.analysis.api.annotations.KtNamedAnnotationValue
 import org.jetbrains.kotlin.analysis.api.fir.toKtAnnotationApplication
 import org.jetbrains.kotlin.analysis.api.fir.toKtAnnotationInfo
 import org.jetbrains.kotlin.analysis.low.level.api.fir.util.withFirEntry
@@ -15,6 +18,7 @@ import org.jetbrains.kotlin.analysis.utils.errors.checkWithAttachmentBuilder
 import org.jetbrains.kotlin.analysis.utils.errors.withClassEntry
 import org.jetbrains.kotlin.fir.FirAnnotationContainer
 import org.jetbrains.kotlin.fir.FirSession
+import org.jetbrains.kotlin.fir.analysis.checkers.findAllowedTargets
 import org.jetbrains.kotlin.fir.declarations.FirResolvePhase
 import org.jetbrains.kotlin.fir.declarations.resolved
 import org.jetbrains.kotlin.fir.declarations.toAnnotationClassId
@@ -31,6 +35,9 @@ import org.jetbrains.kotlin.fir.symbols.resolvedCompilerRequiredAnnotations
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.fir.declarations.resolvePhase
+import org.jetbrains.kotlin.name.CallableId
+import org.jetbrains.kotlin.name.StandardClassIds
+import org.jetbrains.kotlin.utils.addToStdlib.ifNotEmpty
 
 internal fun mapAnnotationParameters(annotation: FirAnnotation): Map<Name, FirExpression> {
     if (annotation is FirAnnotationCall && annotation.arguments.isEmpty()) return emptyMap()
@@ -50,14 +57,57 @@ internal fun annotationsByClassId(
     useSiteTargetFilter: AnnotationUseSiteTargetFilter,
     useSiteSession: FirSession,
     annotationContainer: FirAnnotationContainer = firSymbol.fir,
-): List<KtAnnotationApplicationWithArgumentsInfo> {
-    return annotationContainer.resolvedAnnotationsWithArguments(firSymbol).mapIndexedNotNull { index, annotation ->
-        if (!useSiteTargetFilter.isAllowed(annotation.useSiteTarget) || annotation.toAnnotationClassId(useSiteSession) != classId) {
-            return@mapIndexedNotNull null
-        }
-
-        annotation.toKtAnnotationApplication(useSiteSession, index)
+): List<KtAnnotationApplicationWithArgumentsInfo> =
+    if (classId == StandardClassIds.Annotations.Target && firSymbol.fir.resolvePhase < FirResolvePhase.ANNOTATIONS_ARGUMENTS_MAPPING) {
+        annotationContainer.resolvedAnnotationsWithClassIds(firSymbol)
+            .mapIndexedToAnnotationApplication(useSiteTargetFilter, useSiteSession, classId) { index, annotation ->
+                annotation.asKtAnnotationApplicationForTargetAnnotation(useSiteSession, index)
+            }
+    } else {
+        annotationContainer.resolvedAnnotationsWithArguments(firSymbol)
+            .mapIndexedToAnnotationApplication(useSiteTargetFilter, useSiteSession, classId) { index, annotation ->
+                annotation.toKtAnnotationApplication(useSiteSession, index)
+            }
     }
+
+private inline fun List<FirAnnotation>.mapIndexedToAnnotationApplication(
+    useSiteTargetFilter: AnnotationUseSiteTargetFilter,
+    useSiteSession: FirSession,
+    classId: ClassId,
+    transformer: (index: Int, annotation: FirAnnotation) -> KtAnnotationApplicationWithArgumentsInfo?,
+): List<KtAnnotationApplicationWithArgumentsInfo> = mapIndexedNotNull { index, annotation ->
+    if (!useSiteTargetFilter.isAllowed(annotation.useSiteTarget) || annotation.toAnnotationClassId(useSiteSession) != classId) {
+        return@mapIndexedNotNull null
+    }
+
+    transformer(index, annotation)
+}
+
+private fun FirAnnotation.asKtAnnotationApplicationForTargetAnnotation(
+    useSiteSession: FirSession,
+    index: Int,
+): KtAnnotationApplicationWithArgumentsInfo {
+    val arguments = findAllowedTargets().ifNotEmpty {
+        listOf(
+            KtNamedAnnotationValue(
+                name = StandardClassIds.Annotations.ParameterNames.targetAllowedTargets,
+                expression = KtArrayAnnotationValue(
+                    values = map {
+                        KtEnumEntryAnnotationValue(
+                            callableId = CallableId(
+                                classId = StandardClassIds.AnnotationTarget,
+                                callableName = Name.identifier(it.name),
+                            ),
+                            sourcePsi = null,
+                        )
+                    },
+                    sourcePsi = null,
+                )
+            )
+        )
+    }.orEmpty()
+
+    return toKtAnnotationApplication(useSiteSession, index, arguments)
 }
 
 internal fun annotations(

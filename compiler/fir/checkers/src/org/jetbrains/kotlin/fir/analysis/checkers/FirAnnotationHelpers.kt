@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2021 JetBrains s.r.o. and Kotlin Programming Language contributors.
+ * Copyright 2010-2023 JetBrains s.r.o. and Kotlin Programming Language contributors.
  * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
  */
 
@@ -21,6 +21,7 @@ import org.jetbrains.kotlin.fir.resolve.fullyExpandedType
 import org.jetbrains.kotlin.fir.resolve.providers.symbolProvider
 import org.jetbrains.kotlin.fir.resolve.toSymbol
 import org.jetbrains.kotlin.fir.references.resolved
+import org.jetbrains.kotlin.fir.references.toResolvedCallableSymbol
 import org.jetbrains.kotlin.fir.references.toResolvedEnumEntrySymbol
 import org.jetbrains.kotlin.fir.symbols.lazyResolveToPhase
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassLikeSymbol
@@ -78,6 +79,26 @@ fun FirClassLikeSymbol<*>.getAllowedAnnotationTargets(session: FirSession): Set<
         val targetExpression = argument as? FirQualifiedAccessExpression
         val targetName = targetExpression?.calleeReference?.resolved?.name?.asString() ?: return@mapNotNullTo null
         KotlinTarget.values().firstOrNull { target -> target.name == targetName }
+    }
+}
+
+fun FirAnnotation.findAllowedTargets(): Set<KotlinTarget> = buildSet {
+    fun addIfMatching(arg: FirExpression) {
+        if (arg !is FirQualifiedAccessExpression) return
+        val callableSymbol = arg.calleeReference.toResolvedCallableSymbol() ?: return
+        if (callableSymbol.containingClassLookupTag()?.classId != StandardClassIds.AnnotationTarget) return
+        val identifier = callableSymbol.callableId.callableName.identifier
+        KotlinTarget.values().firstOrNull { identifier == it.name }?.let(::add)
+    }
+
+    if (this@findAllowedTargets is FirAnnotationCall) {
+        for (arg in argumentList.arguments) {
+            arg.unwrapAndFlattenArgument().forEach(::addIfMatching)
+        }
+    } else {
+        argumentMapping.mapping[ParameterNames.targetAllowedTargets]
+            ?.unwrapAndFlattenArgument()
+            ?.forEach(::addIfMatching)
     }
 }
 
