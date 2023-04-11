@@ -27,6 +27,13 @@ abstract class FirSerializerExtension {
 
     protected abstract val constValueProvider: ConstValueProvider?
 
+    internal inline fun <T> processFile(firFile: FirFile, action: () -> T): T {
+        constValueProvider?.processingFirFile = firFile
+        val result = action()
+        constValueProvider?.processingFirFile = null
+        return result
+    }
+
     open fun shouldUseTypeTable(): Boolean = false
     open fun shouldUseNormalizedVisibility(): Boolean = false
 

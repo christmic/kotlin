@@ -8,10 +8,14 @@ package org.jetbrains.kotlin.fir.backend
 import org.jetbrains.kotlin.constant.ConstantValue
 import org.jetbrains.kotlin.constant.EvaluatedConstTracker
 import org.jetbrains.kotlin.fir.FirSession
+import org.jetbrains.kotlin.fir.declarations.FirFile
 import org.jetbrains.kotlin.fir.expressions.FirExpression
 import org.jetbrains.kotlin.fir.expressions.FirQualifiedAccessExpression
+import org.jetbrains.kotlin.fir.packageFqName
 import org.jetbrains.kotlin.fir.serialization.constant.ConstValueProvider
 import org.jetbrains.kotlin.ir.UNDEFINED_OFFSET
+import org.jetbrains.kotlin.ir.declarations.name
+import org.jetbrains.kotlin.name.Name
 
 class ConstValueProviderImpl(
     components: Fir2IrComponents,
@@ -20,18 +24,20 @@ class ConstValueProviderImpl(
     override val evaluatedConstTracker: EvaluatedConstTracker = components.configuration.evaluatedConstTracker
 
     override fun findConstantValueFor(firExpression: FirExpression?): ConstantValue<*>? {
-        if (firExpression == null) return null
+        val firFile = processingFirFile
+        if (firExpression == null || firFile == null) return null
 
+        val fileName = firFile.packageFqName.child(Name.identifier(firFile.name)).asString()
         return if (firExpression is FirQualifiedAccessExpression) {
             // TODO check that this behavior is expected in ConversionUtils and if not fix it
             val calleeReference = firExpression.calleeReference
             val start = calleeReference.source?.startOffsetSkippingComments() ?: calleeReference.source?.startOffset ?: return null
             val end = firExpression.source?.endOffset ?: UNDEFINED_OFFSET
-            evaluatedConstTracker.load(start, end)
+            evaluatedConstTracker.load(start, end, fileName)
         } else {
             val start = firExpression.source?.startOffset ?: return null
             val end = firExpression.source?.endOffset ?: return null
-            evaluatedConstTracker.load(start, end)
+            evaluatedConstTracker.load(start, end, fileName)
         }
     }
 }

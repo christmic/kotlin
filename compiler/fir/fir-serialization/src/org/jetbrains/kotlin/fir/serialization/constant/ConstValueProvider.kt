@@ -8,11 +8,14 @@ package org.jetbrains.kotlin.fir.serialization.constant
 import org.jetbrains.kotlin.constant.ConstantValue
 import org.jetbrains.kotlin.constant.EvaluatedConstTracker
 import org.jetbrains.kotlin.fir.FirSession
+import org.jetbrains.kotlin.fir.declarations.FirFile
 import org.jetbrains.kotlin.fir.expressions.FirExpression
 
 abstract class ConstValueProvider {
     abstract val session: FirSession
     abstract val evaluatedConstTracker: EvaluatedConstTracker
+
+    var processingFirFile: FirFile? = null
 
     abstract fun findConstantValueFor(firExpression: FirExpression?): ConstantValue<*>?
 }
