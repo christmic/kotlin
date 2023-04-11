@@ -353,6 +353,8 @@ class IrModuleToJsTransformer(
             }
         }
 
+        optimizeFragmentByJsAst(result)
+
         return result
     }
 
