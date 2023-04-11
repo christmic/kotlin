@@ -745,6 +745,20 @@ public class SequenceTest {
         assertNull(fibonacci().take(10).firstNotNullOfOrNull { it.doubleIfNotMonodigit() })
     }
 
+    @Test fun toSet() {
+        assertEquals(emptySet(), emptySequence<Int>().toSet())
+        assertEquals(setOf(42), sequenceOf(42).toSet())
+        assertEquals(setOf(3, 2, 1), sequenceOf(3, 2, 1).toSet())
+        assertEquals(setOf(1, 2, 3), sequenceOf(1, 2, 1, 3, 2, 3).toSet())
+    }
+
+    @Test fun toList() {
+        assertEquals(emptyList(), emptySequence<Int>().toList())
+        assertEquals(listOf(42), sequenceOf(42).toList())
+        assertEquals(listOf(3, 2, 1), sequenceOf(3, 2, 1).toList())
+        assertEquals(listOf(1, 2, 1, 3, 2, 3), sequenceOf(1, 2, 1, 3, 2, 3).toList())
+    }
+
     /*
     test fun pairIterator() {
         val pairStr = (fibonacci() zip fibonacci().map { i -> i*2 }).joinToString(limit = 10)
