@@ -10,6 +10,7 @@ package kotlin.text
 // See: https://github.com/JetBrains/kotlin/tree/master/libraries/stdlib
 //
 
+@OptIn(kotlin.experimental.ExperimentalNativeApi::class)
 internal fun String.codePointAt(index: Int): Int {
     val high = this[index]
     if (high.isHighSurrogate() && index + 1 < this.length) {

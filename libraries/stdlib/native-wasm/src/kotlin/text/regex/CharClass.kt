@@ -22,6 +22,7 @@
 @file:Suppress("DEPRECATION") // Char.toInt()
 package kotlin.text.regex
 
+import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.BitSet
 import kotlin.native.ObsoleteNativeApi
 
@@ -72,6 +73,7 @@ internal class CharClass(val ignoreCase: Boolean = false, negative: Boolean = fa
      * We can use this method safely even if nonBitSet != null
      * due to specific of range constructions in regular expressions.
      */
+    @OptIn(ExperimentalNativeApi::class)
     fun add(ch: Int): CharClass {
         var character = ch
         if (ignoreCase) {
@@ -499,7 +501,7 @@ internal class CharClass(val ignoreCase: Boolean = false, negative: Boolean = fa
         }
     }
 
-    @OptIn(ExperimentalStdlibApi::class)
+    @OptIn(ExperimentalNativeApi::class)
     override val instance: AbstractCharClass
         get() {
 
@@ -533,7 +535,7 @@ internal class CharClass(val ignoreCase: Boolean = false, negative: Boolean = fa
             }
         }
 
-    @OptIn(ExperimentalStdlibApi::class)
+    @OptIn(ExperimentalNativeApi::class)
     //for debugging purposes only
     override fun toString(): String {
         val temp = StringBuilder()
