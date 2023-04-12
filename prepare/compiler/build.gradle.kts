@@ -9,8 +9,70 @@ plugins {
     // HACK: java plugin makes idea import dependencies on this project as source (with empty sources however),
     // this prevents reindexing of kotlin-compiler.jar after build on every change in compiler modules
     `java-library`
+    id("org.spdx.sbom")
+    id("org.cyclonedx.bom")
 }
 
+tasks{
+    cyclonedxBom {
+        // includeConfigs is the list of configuration names to include when generating the BOM (leave empty to include every configuration)
+        setIncludeConfigs(setOf("runtimeClasspath", "libraries", "librariesStripVersion", "compilerPlugins", "distCliBin")) // "runtimeClasspath"
+        // skipConfigs is a list of configuration names to exclude when generating the BOM
+        setSkipConfigs(listOf("testCompileClasspath"))
+        // skipProjects is a list of project names to exclude when generating the BOM
+        // setSkipProjects(listOf(rootProject.name))
+        // Specified the type of project being built. Defaults to 'library'
+        setProjectType("application")
+        // Specified the version of the CycloneDX specification to use. Defaults to 1.4.
+        setSchemaVersion("1.4")
+        // Boms destination directory (defaults to build/reports)
+        setDestination(project.file("build/reports"))
+        // The file name for the generated BOMs (before the file format suffix). Defaults to 'bom'
+        setOutputName("bom")
+        // The file format generated, can be xml, json or all for generating both
+        setOutputFormat("json")
+        // Exclude BOM Serial Number
+        setIncludeBomSerialNumber(false)
+        // Exclude License Text
+        setIncludeLicenseText(true)
+        // Override component version
+        setComponentVersion("2.0.0")
+    }
+}
+
+spdxSbom {
+    targets {
+        create(name) {
+            // use a different configuration (or multiple configurations)
+            configurations.set(setOf("runtimeClasspath", "libraries", "librariesStripVersion", "compilerPlugins", "distCliBin"))
+
+            // provide scm info (usually from your CI)
+            scm {
+                uri.set("https://github.com/JetBrains/kotlin.git")
+                revision.set("master")
+            }
+
+            // adjust properties of the document
+            document {
+                name.set("my spdx document")
+                namespace.set("https://my.org/spdx/<some UUID>")
+                creator.set("Person:Lucy Loosebazooka")
+
+                // add a root spdx package on the document between the document and the
+                // root module of the configuration being analyzed
+//                rootPackage {
+//                    // you must set all or none of these
+//                    name.set("goose")
+//                    version.set("1.2.3")
+//                    supplier.set("Organization:loosebazooka industries")
+//                }
+            }
+            // optionally have multiple targets
+            // create("another") {
+            // }
+        }
+    }
+}
 
 val fatJarContents by configurations.creating {
     isCanBeResolved = true
@@ -69,6 +131,8 @@ val distCommonContents by configurations.creating
 val distStdlibMinimalForTests by configurations.creating
 val buildNumber by configurations.creating
 val distJSContents by configurations.creating
+
+val distCliBin by configurations.creating
 
 val compilerBaseName = name
 
@@ -220,6 +284,8 @@ dependencies {
     fatJarContentsStripMetadata(commonDependency("org.jetbrains.intellij.deps:jdom")) { isTransitive = false }
     fatJarContentsStripMetadata(commonDependency("org.jetbrains.intellij.deps:log4j")) { isTransitive = false }
     fatJarContentsStripVersions(commonDependency("one.util:streamex")) { isTransitive = false }
+
+    distCliBin(files("$rootDir/compiler/cli/bin"))
 }
 
 publish()
@@ -344,9 +410,8 @@ val distKotlinc = distTask<Sync>("distKotlinc") {
 
     from(buildNumber)
 
-    val binFiles = files("$rootDir/compiler/cli/bin")
     into("bin") {
-        from(binFiles)
+        from(distCliBin)
     }
 
     val licenseFiles = files("$rootDir/license")
