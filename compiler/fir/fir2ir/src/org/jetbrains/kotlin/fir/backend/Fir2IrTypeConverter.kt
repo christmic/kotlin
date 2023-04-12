@@ -218,8 +218,12 @@ class Fir2IrTypeConverter(
                 original.toIrType(typeContext).makeNotNull()
             }
             is ConeIntersectionType -> {
-                // TODO: add intersectionTypeApproximation
-                intersectedTypes.first().toIrType(typeContext)
+                // When an intersection type A & B lands here, it should be known from the call site what the expected type is,
+                // e.g. when A.foo() is called on A & B receiver or val x : A is initialized with a value of type A & B.
+                // The expected type should be passed in typeContext.expectedType, otherwise it might indicate a bug.
+                intersectedTypes
+                    .first { typeContext.expectedType == null || it.isSubtypeOf(typeContext.expectedType, session) }
+                    .toIrType(typeContext)
             }
             is ConeStubType -> createErrorType()
             is ConeIntegerLiteralType -> createErrorType()
