@@ -1,3 +1,4 @@
+@file:OptIn(ObsoleteWorkersApi::class)
 import objclib.*
 import kotlin.native.concurrent.*
 import kotlinx.cinterop.*
