@@ -16,7 +16,6 @@
 
 package org.jetbrains.kotlin.resolve.diagnostics
 
-import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.util.CompositeModificationTracker
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.CachedValueProvider
@@ -32,6 +31,7 @@ class MutableDiagnosticsWithSuppression(
     private val delegateDiagnostics: Diagnostics,
 ) : Diagnostics {
     private val diagnosticList = ArrayList<Diagnostic>()
+
     @Volatile
     private var diagnosticsCallback: DiagnosticSink.DiagnosticsCallback? = null
 
@@ -79,7 +79,11 @@ class MutableDiagnosticsWithSuppression(
             diagnosticsCallback != null &&
                     // Due to a potential recursion in filter.invoke (via LazyAnnotations) do not try to report
                     // diagnostic on-the-fly if it happened in annotations, and do not report any potentially suppressed elements
-                    KtStubbedPsiUtil.getPsiOrStubParent(diagnostic.psiElement, KtAnnotated::class.java, false) == null &&
+                    KtStubbedPsiUtil.getPsiOrStubParent(
+                        diagnostic.psiElement,
+                        KtAnnotated::class.java,
+                        false
+                    )?.annotationEntries?.isNotEmpty() != true &&
                     suppressCache.filter.invoke(diagnostic)
         }
 
