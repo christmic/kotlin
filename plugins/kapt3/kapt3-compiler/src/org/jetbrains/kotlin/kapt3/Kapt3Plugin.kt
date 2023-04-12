@@ -77,19 +77,6 @@ class Kapt3CommandLineProcessor : CommandLineProcessor {
                     LanguageVersionSettingsImpl(LanguageVersion.KOTLIN_1_9, ApiVersion.KOTLIN_1_9)
                 else
                     object : LanguageVersionSettings {
-                        override fun getFeatureSupport(feature: LanguageFeature): LanguageFeature.State {
-                            val since = feature.sinceVersion
-                            return if (since != null && since > languageVersion || feature.sinceApiVersion > apiVersion)
-                                LanguageFeature.State.DISABLED
-                            else
-                                baseLanguageVersionSettings.getFeatureSupport(feature)
-                        }
-
-                        override fun isPreRelease(): Boolean = !languageVersion.isStable ||
-                                LanguageFeature.values().any {
-                                    getFeatureSupport(it) == LanguageFeature.State.ENABLED && it.forcesPreReleaseBinariesIfEnabled()
-                                }
-
                         @Suppress("UNCHECKED_CAST")
                         override fun <T> getFlag(flag: AnalysisFlag<T>): T =
                             when (flag) {
@@ -102,6 +89,9 @@ class Kapt3CommandLineProcessor : CommandLineProcessor {
 
                         override val languageVersion: LanguageVersion
                             get() = LanguageVersion.KOTLIN_1_9
+
+                        override val specificFeatures: Map<LanguageFeature, LanguageFeature.State>
+                            get() = baseLanguageVersionSettings.specificFeatures
                     }
             configuration.put(CommonConfigurationKeys.LANGUAGE_VERSION_SETTINGS, fallbackLanguageVersionSettings)
         }

@@ -503,7 +503,16 @@ fun LanguageVersion.isStableOrReadyForPreview(): Boolean =
 fun LanguageVersion.toKotlinVersion() = KotlinVersion(major, minor)
 
 interface LanguageVersionSettings {
-    fun getFeatureSupport(feature: LanguageFeature): LanguageFeature.State
+    fun getFeatureSupport(feature: LanguageFeature): LanguageFeature.State {
+        specificFeatures[feature]?.let { return it }
+
+        val since = feature.sinceVersion
+        if (since != null && languageVersion >= since && apiVersion >= feature.sinceApiVersion) {
+            return if (feature.isEnabledWithWarning) LanguageFeature.State.ENABLED_WITH_WARNING else LanguageFeature.State.ENABLED
+        }
+
+        return LanguageFeature.State.DISABLED
+    }
 
     fun supportsFeature(feature: LanguageFeature): Boolean =
         getFeatureSupport(feature).let {
@@ -511,7 +520,10 @@ interface LanguageVersionSettings {
                     it == LanguageFeature.State.ENABLED_WITH_WARNING
         }
 
-    fun isPreRelease(): Boolean
+    fun isPreRelease(): Boolean = !languageVersion.isStable ||
+            specificFeatures.any { (feature, state) ->
+                state == LanguageFeature.State.ENABLED && feature.forcesPreReleaseBinariesIfEnabled()
+            }
 
     fun <T> getFlag(flag: AnalysisFlag<T>): T
 
@@ -519,6 +531,8 @@ interface LanguageVersionSettings {
 
     // Please do not use this to enable/disable specific features/checks. Instead add a new LanguageFeature entry and call supportsFeature
     val languageVersion: LanguageVersion
+
+    val specificFeatures: Map<LanguageFeature, LanguageFeature.State>
 
     companion object {
         const val RESOURCE_NAME_TO_ALLOW_READING_FROM_ENVIRONMENT = "META-INF/allow-configuring-from-environment"
@@ -531,8 +545,8 @@ class LanguageVersionSettingsImpl @JvmOverloads constructor(
     analysisFlags: Map<AnalysisFlag<*>, Any?> = emptyMap(),
     specificFeatures: Map<LanguageFeature, LanguageFeature.State> = emptyMap()
 ) : LanguageVersionSettings {
-    private val analysisFlags: Map<AnalysisFlag<*>, *> = Collections.unmodifiableMap(analysisFlags)
-    private val specificFeatures: Map<LanguageFeature, LanguageFeature.State> = Collections.unmodifiableMap(specificFeatures)
+    val analysisFlags: Map<AnalysisFlag<*>, *> = Collections.unmodifiableMap(analysisFlags)
+    override val specificFeatures: Map<LanguageFeature, LanguageFeature.State> = Collections.unmodifiableMap(specificFeatures)
 
     @Suppress("UNCHECKED_CAST")
     override fun <T> getFlag(flag: AnalysisFlag<T>): T = analysisFlags[flag] as T? ?: flag.defaultValue

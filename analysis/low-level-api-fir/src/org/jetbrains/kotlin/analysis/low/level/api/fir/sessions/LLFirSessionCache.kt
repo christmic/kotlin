@@ -457,13 +457,6 @@ internal class LLFirSessionCache(private val project: Project) {
                     else -> original.getFeatureSupport(feature)
                 }
             }
-
-            override fun supportsFeature(feature: LanguageFeature): Boolean {
-                return when (getFeatureSupport(feature)) {
-                    LanguageFeature.State.ENABLED, LanguageFeature.State.ENABLED_WITH_WARNING -> true
-                    else -> false
-                }
-            }
         }
     }
 

@@ -31,11 +31,11 @@ data class CompilerTestLanguageVersionSettings(
     override val languageVersion: LanguageVersion,
     val analysisFlags: Map<AnalysisFlag<*>, Any?> = emptyMap()
 ) : LanguageVersionSettings {
-    val extraLanguageFeatures = specificFeaturesForTests() + initialLanguageFeatures
-    private val delegate = LanguageVersionSettingsImpl(languageVersion, apiVersion, emptyMap(), extraLanguageFeatures)
+    override val specificFeatures = specificFeaturesForTests() + initialLanguageFeatures
+    private val delegate = LanguageVersionSettingsImpl(languageVersion, apiVersion, emptyMap(), specificFeatures)
 
     override fun getFeatureSupport(feature: LanguageFeature): LanguageFeature.State =
-        extraLanguageFeatures[feature] ?: delegate.getFeatureSupport(feature)
+        specificFeatures[feature] ?: delegate.getFeatureSupport(feature)
 
     override fun isPreRelease(): Boolean = false
 
