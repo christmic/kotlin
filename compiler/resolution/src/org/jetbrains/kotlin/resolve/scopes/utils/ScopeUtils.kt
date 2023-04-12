@@ -24,7 +24,7 @@ import org.jetbrains.kotlin.resolve.scopes.*
 import org.jetbrains.kotlin.types.error.ErrorClassDescriptor
 import org.jetbrains.kotlin.types.error.ErrorEntity
 import org.jetbrains.kotlin.types.error.ErrorUtils
-import org.jetbrains.kotlin.utils.concat
+import org.jetbrains.kotlin.util.collectionUtils.concat
 import org.jetbrains.kotlin.utils.Printer
 import org.jetbrains.kotlin.utils.SmartList
 

@@ -20,8 +20,28 @@ import org.jetbrains.kotlin.descriptors.ClassifierDescriptor
 import org.jetbrains.kotlin.descriptors.ClassifierDescriptorWithTypeParameters
 import org.jetbrains.kotlin.resolve.scopes.MemberScope
 import org.jetbrains.kotlin.utils.SmartList
-import org.jetbrains.kotlin.utils.concat
 import org.jetbrains.kotlin.utils.filterIsInstanceAndTo
+
+/**
+ * Concatenates the contents of this collection with the given collection, avoiding allocations if possible.
+ * Can modify `this` if it is a mutable collection.
+ */
+fun <T> Collection<T>?.concat(collection: Collection<T>): Collection<T>? {
+    if (collection.isEmpty()) {
+        return this
+    }
+    if (this == null) {
+        return collection
+    }
+    if (this is LinkedHashSet) {
+        addAll(collection)
+        return this
+    }
+
+    val result = LinkedHashSet(this)
+    result.addAll(collection)
+    return result
+}
 
 inline fun <Scope, T> getFromAllScopes(scopes: Array<Scope>, callback: (Scope) -> Collection<T>): Collection<T> =
     when (scopes.size) {

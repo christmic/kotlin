@@ -36,25 +36,3 @@ inline fun <reified T, reified R, C : MutableCollection<in R>> Iterable<*>.filte
     }
     return destination
 }
-
-/**
- * Concatenates the contents of this collection with the given collection, avoiding allocations if possible.
- * Can modify `this` if it is a mutable collection.
- */
-fun <T> Collection<T>?.concat(collection: Collection<T>): Collection<T>? {
-    if (collection.isEmpty()) {
-        return this
-    }
-    if (this == null) {
-        return collection
-    }
-    if (this is LinkedHashSet) {
-        addAll(collection)
-        return this
-    }
-
-    val result = LinkedHashSet(this)
-    result.addAll(collection)
-    return result
-}
-
