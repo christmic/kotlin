@@ -26,7 +26,7 @@ public final class Array<T> {
      * The function [init] is called for each array element sequentially starting from the first one.
      * It should return the value for an array element given its index.
      */
-    @Suppress("TYPE_PARAMETER_AS_REIFIED")
+    @Suppress("TYPE_PARAMETER_AS_REIFIED", "WRONG_MODIFIER_TARGET")
     public inline constructor(size: Int, init: (Int) -> T): this(size) {
         var index = 0
         while (index < size) {

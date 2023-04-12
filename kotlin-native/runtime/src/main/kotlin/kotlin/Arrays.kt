@@ -31,6 +31,7 @@ public final class ByteArray {
      * The function [init] is called for each array element sequentially starting from the first one.
      * It should return the value for an array element given its index.
      */
+    @Suppress("WRONG_MODIFIER_TARGET")
     public inline constructor(size: Int, init: (Int) -> Byte): this(size) {
         for (i in 0..size - 1) {
             this[i] = init(i)
@@ -94,6 +95,7 @@ public final class CharArray {
      * The function [init] is called for each array element sequentially starting from the first one.
      * It should return the value for an array element given its index.
      */
+    @Suppress("WRONG_MODIFIER_TARGET")
     public inline constructor(size: Int, init: (Int) -> Char): this(size) {
         for (i in 0..size - 1) {
             this[i] = init(i)
@@ -158,6 +160,7 @@ public final class ShortArray {
      * The function [init] is called for each array element sequentially starting from the first one.
      * It should return the value for an array element given its index.
      */
+    @Suppress("WRONG_MODIFIER_TARGET")
     public inline constructor(size: Int, init: (Int) -> Short): this(size) {
         for (i in 0..size - 1) {
             this[i] = init(i)
@@ -222,6 +225,7 @@ public final class IntArray {
      * The function [init] is called for each array element sequentially starting from the first one.
      * It should return the value for an array element given its index.
      */
+    @Suppress("WRONG_MODIFIER_TARGET")
     public inline constructor(size: Int, init: (Int) -> Int): this(size) {
         for (i in 0..size - 1) {
             this[i] = init(i)
@@ -286,6 +290,7 @@ public final class LongArray {
      * The function [init] is called for each array element sequentially starting from the first one.
      * It should return the value for an array element given its index.
      */
+    @Suppress("WRONG_MODIFIER_TARGET")
     public inline constructor(size: Int, init: (Int) -> Long): this(size) {
         for (i in 0..size - 1) {
             this[i] = init(i)
@@ -350,6 +355,7 @@ public final class FloatArray {
      * The function [init] is called for each array element sequentially starting from the first one.
      * It should return the value for an array element given its index.
      */
+    @Suppress("WRONG_MODIFIER_TARGET")
     public inline constructor(size: Int, init: (Int) -> Float): this(size) {
         for (i in 0..size - 1) {
             this[i] = init(i)
@@ -410,6 +416,7 @@ public final class DoubleArray {
      * The function [init] is called for each array element sequentially starting from the first one.
      * It should return the value for an array element given its index.
      */
+    @Suppress("WRONG_MODIFIER_TARGET")
     public inline constructor(size: Int, init: (Int) -> Double): this(size) {
         for (i in 0..size - 1) {
             this[i] = init(i)
@@ -470,6 +477,7 @@ public final class BooleanArray {
      * The function [init] is called for each array element sequentially starting from the first one.
      * It should return the value for an array element given its index.
      */
+    @Suppress("WRONG_MODIFIER_TARGET")
     public inline constructor(size: Int, init: (Int) -> Boolean): this(size) {
         for (i in 0..size - 1) {
             this[i] = init(i)
