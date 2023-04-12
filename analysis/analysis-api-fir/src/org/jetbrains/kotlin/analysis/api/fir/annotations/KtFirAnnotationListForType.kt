@@ -88,7 +88,6 @@ private fun ConeKotlinType.customAnnotationsWithLazyResolve(phase: FirResolvePha
     val annotations = custom.annotations.ifEmpty { return emptyList() }
 
     for (containerSymbol in custom.containerSymbols) {
-        if (annotations.isEmpty()) continue
         when (phase) {
             FirResolvePhase.TYPES -> resolveAnnotationsWithClassIds(containerSymbol)
             FirResolvePhase.ANNOTATIONS_ARGUMENTS_MAPPING -> annotations.resolveAnnotationsWithArguments(containerSymbol)
