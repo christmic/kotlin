@@ -27537,6 +27537,12 @@ public class LLFirPreresolvedReversedDiagnosticCompilerFE10TestDataTestGenerated
             }
 
             @Test
+            @TestMetadata("invisibleInternalSetterAccessFromDeriviedClass.kt")
+            public void testInvisibleInternalSetterAccessFromDeriviedClass() throws Exception {
+                runTest("compiler/testData/diagnostics/tests/scopes/invisibleInternalSetterAccessFromDeriviedClass.kt");
+            }
+
+            @Test
             @TestMetadata("invisibleSetter.kt")
             public void testInvisibleSetter() throws Exception {
                 runTest("compiler/testData/diagnostics/tests/scopes/invisibleSetter.kt");
