@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.utils
 
+import java.util.*
 import kotlin.math.min
 
 /**
@@ -13,7 +14,7 @@ import kotlin.math.min
  */
 inline fun <T, R> Collection<T>.memoryOptimizedMap(transform: (T) -> R): List<R> {
     if (isEmpty()) return emptyList()
-    if (size == 1) return SmartList(transform(first()))
+    if (size == 1) return Collections.singletonList(transform(first()))
     return mapTo(ArrayList(size), transform)
 }
 
@@ -31,7 +32,7 @@ inline fun <T, R : Any> Collection<T>.memoryOptimizedMapNotNull(transform: (T) -
  */
 inline fun <T, R> Collection<T>.memoryOptimizedMapIndexed(transform: (index: Int, T) -> R): List<R> {
     if (isEmpty()) return emptyList()
-    if (size == 1) return SmartList(transform(0, first()))
+    if (size == 1) return Collections.singletonList(transform(0, first()))
     return mapIndexedTo(ArrayList<R>(size), transform)
 }
 
@@ -74,7 +75,7 @@ inline fun <reified T> Collection<*>.memoryOptimizedFilterIsInstance(): List<T> 
 infix fun <T> List<T>.memoryOptimizedPlus(elements: List<T>): List<T> =
     when (val resultSize = size + elements.size) {
         0 -> emptyList()
-        1 -> SmartList(if (isEmpty()) elements.first() else first())
+        1 -> Collections.singletonList(if (isEmpty()) elements.first() else first())
         else -> ArrayList<T>(resultSize).also {
             it.addAll(this)
             it.addAll(elements)
@@ -87,7 +88,7 @@ infix fun <T> List<T>.memoryOptimizedPlus(elements: List<T>): List<T> =
  */
 infix fun <T> List<T>.memoryOptimizedPlus(element: T): List<T> =
     when (size) {
-        0 -> SmartList(element)
+        0 -> Collections.singletonList(element)
         else -> ArrayList<T>(size + 1).also {
             it.addAll(this)
             it.add(element)
@@ -100,7 +101,7 @@ infix fun <T> List<T>.memoryOptimizedPlus(element: T): List<T> =
  */
 infix fun <T, R> Collection<T>.memoryOptimizedZip(other: Collection<R>): List<Pair<T, R>> {
     if (isEmpty() || other.isEmpty()) return emptyList()
-    if (min(size, other.size) == 1) return SmartList(first() to other.first())
+    if (min(size, other.size) == 1) return Collections.singletonList(first() to other.first())
     return zip(other) { t1, t2 -> t1 to t2 }
 }
 
@@ -135,13 +136,12 @@ inline fun <reified T> Iterable<*>.findIsInstanceAnd(predicate: (T) -> Boolean):
 /**
  * The same as [org.jetbrains.kotlin.utils.compact] extension function, but it could be used with the
  * immutable list type (without [java.util.ArrayList.trimToSize] for the collections with more than 1 element)
- * and return mutable [SmartList] for single element instead of [java.util.Collections.SingletonList] for single element container
  * @see org.jetbrains.kotlin.utils.compact
  */
 fun <T> List<T>.smartCompact(): List<T> =
     when (size) {
         0 -> emptyList()
-        1 -> SmartList(first())
+        1 -> Collections.singletonList(first())
         else -> apply {
             if (this is ArrayList<*>) trimToSize()
         }
