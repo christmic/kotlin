@@ -105,6 +105,7 @@ class FirTypeResolverImpl(private val session: FirSession) : FirTypeResolver() {
             }
 
             if (resolveDeprecations) {
+                // TODO: drop this condition after KT-57648
                 val deprecation = if (symbol is FirClassLikeSymbol<*>) {
                     symbol.getDeprecation(session, useSiteFile)
                 } else {
