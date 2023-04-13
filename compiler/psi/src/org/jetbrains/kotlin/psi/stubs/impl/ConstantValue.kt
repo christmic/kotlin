@@ -62,8 +62,8 @@ sealed class ConstantValue<out T>(open val value: T, val constantValueKind: Cons
                 ConstantValueKind.ANNO -> {
                     val classId = StubUtils.deserializeClassId(dataStream)!!
                     val numberOfArgs = dataStream.readInt() - 1
-                    AnnotationValue(classId, (0..numberOfArgs).map {
-                        createConstantValue(dataStream)!!
+                    AnnotationValue(classId, (0..numberOfArgs).associate {
+                        Name.identifier(dataStream.readNameString()!!) to createConstantValue(dataStream)!!
                     })
                 }
             }
@@ -191,20 +191,21 @@ class ULongValue(longValue: Long) : UnsignedValueConstant<Long>(longValue, Const
     }
 }
 
-data class AnnotationData(val annoClassId: ClassId, val args: List<ConstantValue<*>>)
-class AnnotationValue(val annoClassId: ClassId, val args: List<ConstantValue<*>>) :
+data class AnnotationData(val annoClassId: ClassId, val args: Map<Name, ConstantValue<*>>)
+class AnnotationValue(val annoClassId: ClassId, val args: Map<Name, ConstantValue<*>>) :
     ConstantValue<AnnotationData>(AnnotationData(annoClassId, args), ConstantValueKind.ANNO) {
 
     override fun toString(): String {
-        return args.joinToString(", ", "${annoClassId.asFqNameString()}[", "]") { it.toString() }
+        return args.entries.joinToString(", ", "${annoClassId.asFqNameString()}[", "]") { it.toString() }
     }
 
     override fun serializeValue(dataStream: StubOutputStream) {
         StubUtils.serializeClassId(dataStream, annoClassId)
         dataStream.writeInt(args.size)
         for (arg in args) {
-            dataStream.writeInt(arg.getKind())
-            arg.serializeValue(dataStream)
+            dataStream.writeName(arg.key.asString())
+            dataStream.writeInt(arg.value.getKind())
+            arg.value.serializeValue(dataStream)
         }
     }
 }
@@ -260,7 +261,7 @@ fun createConstantValue(value: ProtoBuf.Annotation.Argument.Value, nameResolver:
         )
         ProtoBuf.Annotation.Argument.Value.Type.ANNOTATION -> {
             val args =
-                value.annotation.argumentList.map { createConstantValue(it.value, nameResolver) }
+                value.annotation.argumentList.associate { nameResolver.getName(it.nameId) to createConstantValue(it.value, nameResolver) }
             AnnotationValue(nameResolver.getClassId(value.annotation.id), args)
         }
         ProtoBuf.Annotation.Argument.Value.Type.ARRAY -> ArrayValue(

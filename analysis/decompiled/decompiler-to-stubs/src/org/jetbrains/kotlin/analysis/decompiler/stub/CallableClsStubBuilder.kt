@@ -512,7 +512,7 @@ open class AnnotationMemberDefaultValueVisitor : KotlinJvmBinaryClass.Annotation
         val visitor = AnnotationMemberDefaultValueVisitor()
         return object : KotlinJvmBinaryClass.AnnotationArgumentVisitor by visitor {
             override fun visitEnd() {
-                args[nameOrSpecial(name)] = createConstantValue(AnnotationData(classId, visitor.args.values.toList()))
+                args[nameOrSpecial(name)] = createConstantValue(AnnotationData(classId, visitor.args))
             }
         }
     }
@@ -537,7 +537,7 @@ open class AnnotationMemberDefaultValueVisitor : KotlinJvmBinaryClass.Annotation
                 val visitor = AnnotationMemberDefaultValueVisitor()
                 return object : KotlinJvmBinaryClass.AnnotationArgumentVisitor by visitor {
                     override fun visitEnd() {
-                        elements.addIfNotNull(AnnotationData(classId, visitor.args.values.toList()))
+                        elements.addIfNotNull(AnnotationData(classId, visitor.args))
                     }
                 }
             }
