@@ -1551,6 +1551,20 @@ public inline fun <T, R> Iterable<T>.map(transform: (T) -> R): List<R> {
 
 /**
  * Returns a list containing the results of applying the given [transform] function
+ * to each element in the original collection.
+ * 
+ * @sample samples.collections.Collections.Transformations.map
+ */
+public inline fun <T, R> Collection<T>.map(transform: (T) -> R): List<R> {
+    return when (size) {
+        0 -> emptyList()
+        1 -> listOf(transform.invoke(first()))
+        else -> mapTo(ArrayList<R>(size), transform)
+    }
+}
+
+/**
+ * Returns a list containing the results of applying the given [transform] function
  * to each element and its index in the original collection.
  * @param [transform] function that takes the index of an element and the element itself
  * and returns the result of the transform applied to the element.

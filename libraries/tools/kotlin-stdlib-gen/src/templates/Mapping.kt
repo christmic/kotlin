@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2020 JetBrains s.r.o. and Kotlin Programming Language contributors.
+ * Copyright 2010-2023 JetBrains s.r.o. and Kotlin Programming Language contributors.
  * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
  */
 
@@ -82,9 +82,18 @@ object Mapping : TemplateGroupBase() {
         }
     }
 
+    private fun generateMapForCollection(sizeProperty: String) =
+        """
+        return when ($sizeProperty) {
+            0 -> emptyList()
+            1 -> listOf(transform.invoke(first()))
+            else -> mapTo(ArrayList<R>($sizeProperty), transform)
+        }
+        """
+
     val f_map = fn("map(transform: (T) -> R)") {
         includeDefault()
-        include(Maps, CharSequences, ArraysOfUnsigned)
+        include(Maps, CharSequences, ArraysOfUnsigned, Collections)
     } builder {
         inline()
         specialFor(ArraysOfUnsigned) { inlineOnly() }
@@ -96,7 +105,7 @@ object Mapping : TemplateGroupBase() {
             """
         }
 
-        specialFor(Iterables, Sequences, ArraysOfObjects, ArraysOfPrimitives, ArraysOfUnsigned) {
+        specialFor(Iterables, Sequences, ArraysOfObjects, ArraysOfPrimitives, ArraysOfUnsigned, Collections) {
             sample("samples.collections.Collections.Transformations.map")
         }
 
@@ -113,11 +122,14 @@ object Mapping : TemplateGroupBase() {
         body(Iterables) {
             "return mapTo(ArrayList<R>(collectionSizeOrDefault(10)), transform)"
         }
-        body(ArraysOfObjects, ArraysOfPrimitives, ArraysOfUnsigned, Maps) {
-            "return mapTo(ArrayList<R>(size), transform)"
+        body(ArraysOfObjects, ArraysOfPrimitives, ArraysOfUnsigned, Collections) {
+            generateMapForCollection("size")
+        }
+        body(Maps) {
+            "return if (isEmpty()) emptyList() else mapTo(ArrayList<R>(size), transform)"
         }
         body(CharSequences) {
-            "return mapTo(ArrayList<R>(length), transform)"
+            generateMapForCollection("length")
         }
 
         specialFor(Sequences) {
