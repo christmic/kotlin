@@ -82,15 +82,6 @@ object Mapping : TemplateGroupBase() {
         }
     }
 
-    private fun generateMapForCollection(sizeProperty: String) =
-        """
-        return when ($sizeProperty) {
-            0 -> emptyList()
-            1 -> listOf(transform.invoke(first()))
-            else -> mapTo(ArrayList<R>($sizeProperty), transform)
-        }
-        """
-
     val f_map = fn("map(transform: (T) -> R)") {
         includeDefault()
         include(Maps, CharSequences, ArraysOfUnsigned, Collections)
@@ -122,14 +113,11 @@ object Mapping : TemplateGroupBase() {
         body(Iterables) {
             "return mapTo(ArrayList<R>(collectionSizeOrDefault(10)), transform)"
         }
-        body(ArraysOfObjects, ArraysOfPrimitives, ArraysOfUnsigned, Collections) {
-            generateMapForCollection("size")
-        }
-        body(Maps) {
-            "return if (isEmpty()) emptyList() else mapTo(ArrayList<R>(size), transform)"
+        body(ArraysOfObjects, ArraysOfPrimitives, ArraysOfUnsigned, Maps, Collections) {
+            "return mapTo(ArrayList<R>(size), transform)"
         }
         body(CharSequences) {
-            generateMapForCollection("length")
+            "return mapTo(ArrayList<R>(length), transform)"
         }
 
         specialFor(Sequences) {

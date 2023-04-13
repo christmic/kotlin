@@ -122,7 +122,7 @@ public inline fun <K, V, R, C : MutableCollection<in R>> Map<out K, V>.flatMapTo
  * @sample samples.collections.Maps.Transformations.mapToList
  */
 public inline fun <K, V, R> Map<out K, V>.map(transform: (Map.Entry<K, V>) -> R): List<R> {
-    return if (isEmpty()) emptyList() else mapTo(ArrayList<R>(size), transform)
+    return mapTo(ArrayList<R>(size), transform)
 }
 
 /**

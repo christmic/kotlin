@@ -11332,11 +11332,7 @@ public inline fun <T, K> Array<out T>.groupingBy(crossinline keySelector: (T) ->
  * @sample samples.collections.Collections.Transformations.map
  */
 public inline fun <T, R> Array<out T>.map(transform: (T) -> R): List<R> {
-    return when (size) {
-        0 -> emptyList()
-        1 -> listOf(transform.invoke(first()))
-        else -> mapTo(ArrayList<R>(size), transform)
-    }
+    return mapTo(ArrayList<R>(size), transform)
 }
 
 /**
@@ -11346,11 +11342,7 @@ public inline fun <T, R> Array<out T>.map(transform: (T) -> R): List<R> {
  * @sample samples.collections.Collections.Transformations.map
  */
 public inline fun <R> ByteArray.map(transform: (Byte) -> R): List<R> {
-    return when (size) {
-        0 -> emptyList()
-        1 -> listOf(transform.invoke(first()))
-        else -> mapTo(ArrayList<R>(size), transform)
-    }
+    return mapTo(ArrayList<R>(size), transform)
 }
 
 /**
@@ -11360,11 +11352,7 @@ public inline fun <R> ByteArray.map(transform: (Byte) -> R): List<R> {
  * @sample samples.collections.Collections.Transformations.map
  */
 public inline fun <R> ShortArray.map(transform: (Short) -> R): List<R> {
-    return when (size) {
-        0 -> emptyList()
-        1 -> listOf(transform.invoke(first()))
-        else -> mapTo(ArrayList<R>(size), transform)
-    }
+    return mapTo(ArrayList<R>(size), transform)
 }
 
 /**
@@ -11374,11 +11362,7 @@ public inline fun <R> ShortArray.map(transform: (Short) -> R): List<R> {
  * @sample samples.collections.Collections.Transformations.map
  */
 public inline fun <R> IntArray.map(transform: (Int) -> R): List<R> {
-    return when (size) {
-        0 -> emptyList()
-        1 -> listOf(transform.invoke(first()))
-        else -> mapTo(ArrayList<R>(size), transform)
-    }
+    return mapTo(ArrayList<R>(size), transform)
 }
 
 /**
@@ -11388,11 +11372,7 @@ public inline fun <R> IntArray.map(transform: (Int) -> R): List<R> {
  * @sample samples.collections.Collections.Transformations.map
  */
 public inline fun <R> LongArray.map(transform: (Long) -> R): List<R> {
-    return when (size) {
-        0 -> emptyList()
-        1 -> listOf(transform.invoke(first()))
-        else -> mapTo(ArrayList<R>(size), transform)
-    }
+    return mapTo(ArrayList<R>(size), transform)
 }
 
 /**
@@ -11402,11 +11382,7 @@ public inline fun <R> LongArray.map(transform: (Long) -> R): List<R> {
  * @sample samples.collections.Collections.Transformations.map
  */
 public inline fun <R> FloatArray.map(transform: (Float) -> R): List<R> {
-    return when (size) {
-        0 -> emptyList()
-        1 -> listOf(transform.invoke(first()))
-        else -> mapTo(ArrayList<R>(size), transform)
-    }
+    return mapTo(ArrayList<R>(size), transform)
 }
 
 /**
@@ -11416,11 +11392,7 @@ public inline fun <R> FloatArray.map(transform: (Float) -> R): List<R> {
  * @sample samples.collections.Collections.Transformations.map
  */
 public inline fun <R> DoubleArray.map(transform: (Double) -> R): List<R> {
-    return when (size) {
-        0 -> emptyList()
-        1 -> listOf(transform.invoke(first()))
-        else -> mapTo(ArrayList<R>(size), transform)
-    }
+    return mapTo(ArrayList<R>(size), transform)
 }
 
 /**
@@ -11430,11 +11402,7 @@ public inline fun <R> DoubleArray.map(transform: (Double) -> R): List<R> {
  * @sample samples.collections.Collections.Transformations.map
  */
 public inline fun <R> BooleanArray.map(transform: (Boolean) -> R): List<R> {
-    return when (size) {
-        0 -> emptyList()
-        1 -> listOf(transform.invoke(first()))
-        else -> mapTo(ArrayList<R>(size), transform)
-    }
+    return mapTo(ArrayList<R>(size), transform)
 }
 
 /**
@@ -11444,11 +11412,7 @@ public inline fun <R> BooleanArray.map(transform: (Boolean) -> R): List<R> {
  * @sample samples.collections.Collections.Transformations.map
  */
 public inline fun <R> CharArray.map(transform: (Char) -> R): List<R> {
-    return when (size) {
-        0 -> emptyList()
-        1 -> listOf(transform.invoke(first()))
-        else -> mapTo(ArrayList<R>(size), transform)
-    }
+    return mapTo(ArrayList<R>(size), transform)
 }
 
 /**

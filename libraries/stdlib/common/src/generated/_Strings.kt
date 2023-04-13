@@ -967,11 +967,7 @@ public inline fun <K> CharSequence.groupingBy(crossinline keySelector: (Char) ->
  * @sample samples.text.Strings.map
  */
 public inline fun <R> CharSequence.map(transform: (Char) -> R): List<R> {
-    return when (length) {
-        0 -> emptyList()
-        1 -> listOf(transform.invoke(first()))
-        else -> mapTo(ArrayList<R>(length), transform)
-    }
+    return mapTo(ArrayList<R>(length), transform)
 }
 
 /**

@@ -1556,11 +1556,7 @@ public inline fun <T, R> Iterable<T>.map(transform: (T) -> R): List<R> {
  * @sample samples.collections.Collections.Transformations.map
  */
 public inline fun <T, R> Collection<T>.map(transform: (T) -> R): List<R> {
-    return when (size) {
-        0 -> emptyList()
-        1 -> listOf(transform.invoke(first()))
-        else -> mapTo(ArrayList<R>(size), transform)
-    }
+    return mapTo(ArrayList<R>(size), transform)
 }
 
 /**
