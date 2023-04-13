@@ -125,10 +125,7 @@ open class FirFrontendFacade(
         val moduleName = Name.special("<${mainModule.name}>")
         val binaryModuleData = BinaryModuleData.initialize(moduleName, targetPlatform, analyzerServices)
 
-        val compilerConfigurationProvider = testServices.compilerConfigurationProvider
-        val configuration = compilerConfigurationProvider.getCompilerConfiguration(mainModule)
-
-        val libraryList = initializeLibraryList(mainModule, binaryModuleData, targetPlatform, configuration)
+        val libraryList = DependencyListForCliModule.build(binaryModuleData)
 
         val moduleInfoProvider = testServices.firModuleInfoProvider
         val moduleDataMap = mutableMapOf<TestModule, FirModuleData>()
@@ -153,30 +150,6 @@ open class FirFrontendFacade(
         }
 
         return moduleDataMap to libraryList.moduleDataProvider
-    }
-
-    private fun initializeLibraryList(
-        mainModule: TestModule,
-        binaryModuleData: BinaryModuleData,
-        targetPlatform: TargetPlatform,
-        configuration: CompilerConfiguration,
-    ): DependencyListForCliModule {
-        return DependencyListForCliModule.build(binaryModuleData) {
-            when {
-                targetPlatform.isCommon() || targetPlatform.isJvm() || targetPlatform.isNative() -> {
-                    dependencies(configuration.jvmModularRoots.map { it.toPath() })
-                    dependencies(configuration.jvmClasspathRoots.map { it.toPath() })
-                    friendDependencies(configuration[JVMConfigurationKeys.FRIEND_PATHS] ?: emptyList())
-                }
-                targetPlatform.isJs() -> {
-                    val (runtimeKlibsPaths, transitiveLibraries, friendLibraries) = getJsDependencies(mainModule, testServices)
-                    dependencies(runtimeKlibsPaths.map { Paths.get(it).toAbsolutePath() })
-                    dependencies(transitiveLibraries.map { it.toPath().toAbsolutePath() })
-                    friendDependencies(friendLibraries.map { it.toPath().toAbsolutePath() })
-                }
-                else -> error("Unsupported")
-            }
-        }
     }
 
     private fun createLibrarySession(
