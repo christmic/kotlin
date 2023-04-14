@@ -28,7 +28,7 @@ object Aggregates : TemplateGroupBase() {
 
     val f_all = fn("all(predicate: (T) -> Boolean)") {
         includeDefault()
-        include(Maps, CharSequences, ArraysOfUnsigned)
+        include(Maps, CharSequences, ArraysOfUnsigned, Collections)
     } builder {
         inline()
         specialFor(ArraysOfUnsigned) { inlineOnly() }
@@ -48,6 +48,7 @@ object Aggregates : TemplateGroupBase() {
             """
             ${when (f) {
                 Iterables -> "if (this is Collection && isEmpty()) return true"
+                Collections -> "if (isEmpty()) return true"
                 Maps -> "if (isEmpty()) return true"
                 else -> ""
             }}
@@ -59,7 +60,7 @@ object Aggregates : TemplateGroupBase() {
 
     val f_none_predicate = fn("none(predicate: (T) -> Boolean)") {
         includeDefault()
-        include(Maps, CharSequences, ArraysOfUnsigned)
+        include(Maps, CharSequences, ArraysOfUnsigned, Collections)
     } builder {
         inline()
         specialFor(ArraysOfUnsigned) { inlineOnly() }
@@ -75,6 +76,7 @@ object Aggregates : TemplateGroupBase() {
             """
             ${when (f) {
                 Iterables -> "if (this is Collection && isEmpty()) return true"
+                Collections -> "if (isEmpty()) return true"
                 Maps -> "if (isEmpty()) return true"
                 else -> ""
             }}
@@ -86,7 +88,7 @@ object Aggregates : TemplateGroupBase() {
 
     val f_none = fn("none()") {
         includeDefault()
-        include(Maps, CharSequences, ArraysOfUnsigned)
+        include(Maps, CharSequences, ArraysOfUnsigned, Collections)
     } builder {
         specialFor(ArraysOfUnsigned) { inlineOnly() }
 
@@ -109,14 +111,14 @@ object Aggregates : TemplateGroupBase() {
             }
         }
 
-        body(Maps, CharSequences, ArraysOfObjects, ArraysOfPrimitives, ArraysOfUnsigned) {
+        body(Maps, CharSequences, ArraysOfObjects, ArraysOfPrimitives, ArraysOfUnsigned, Collections) {
             "return isEmpty()"
         }
     }
 
     val f_any_predicate = fn("any(predicate: (T) -> Boolean)") {
         includeDefault()
-        include(Maps, CharSequences, ArraysOfUnsigned)
+        include(Maps, CharSequences, ArraysOfUnsigned, Collections)
     } builder {
         inline()
         specialFor(ArraysOfUnsigned) { inlineOnly() }
@@ -132,6 +134,7 @@ object Aggregates : TemplateGroupBase() {
             """
             ${when (f) {
                 Iterables -> "if (this is Collection && isEmpty()) return false"
+                Collections -> "if (isEmpty()) return false"
                 Maps -> "if (isEmpty()) return false"
                 else -> ""
             }}
@@ -143,7 +146,7 @@ object Aggregates : TemplateGroupBase() {
 
     val f_any = fn("any()") {
         includeDefault()
-        include(Maps, CharSequences, ArraysOfUnsigned)
+        include(Maps, CharSequences, ArraysOfUnsigned, Collections)
     } builder {
         doc {
             """
@@ -161,7 +164,7 @@ object Aggregates : TemplateGroupBase() {
             return iterator().hasNext()
             """
         }
-        body(Maps, CharSequences, ArraysOfObjects, ArraysOfPrimitives) { "return !isEmpty()" }
+        body(Maps, CharSequences, ArraysOfObjects, ArraysOfPrimitives, Collections) { "return !isEmpty()" }
 
         specialFor(ArraysOfUnsigned) {
             inlineOnly()
@@ -172,7 +175,7 @@ object Aggregates : TemplateGroupBase() {
 
     val f_count_predicate = fn("count(predicate: (T) -> Boolean)") {
         includeDefault()
-        include(Maps, CharSequences, ArraysOfUnsigned)
+        include(Maps, CharSequences, ArraysOfUnsigned, Collections)
     } builder {
         inline()
         specialFor(ArraysOfUnsigned) { inlineOnly() }
@@ -184,6 +187,7 @@ object Aggregates : TemplateGroupBase() {
             """
             ${when (f) {
                 Iterables -> "if (this is Collection && isEmpty()) return 0"
+                Collections -> "if (isEmpty()) return 0"
                 Maps -> "if (isEmpty()) return 0"
                 else -> ""
             }}

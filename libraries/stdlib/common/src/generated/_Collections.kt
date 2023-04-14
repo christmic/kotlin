@@ -1181,6 +1181,21 @@ public inline fun <T, K, V> Iterable<T>.associate(transform: (T) -> Pair<K, V>):
 }
 
 /**
+ * Returns a [Map] containing key-value pairs provided by [transform] function
+ * applied to elements of the given collection.
+ * 
+ * If any of two pairs would have the same key the last one gets added to the map.
+ * 
+ * The returned map preserves the entry iteration order of the original collection.
+ * 
+ * @sample samples.collections.Collections.Transformations.associate
+ */
+public inline fun <T, K, V> Collection<T>.associate(transform: (T) -> Pair<K, V>): Map<K, V> {
+    val capacity = mapCapacity(size).coerceAtLeast(16)
+    return associateTo(LinkedHashMap<K, V>(capacity), transform)
+}
+
+/**
  * Returns a [Map] containing the elements from the given collection indexed by the key
  * returned from [keySelector] function applied to each element.
  * 
@@ -1196,6 +1211,21 @@ public inline fun <T, K> Iterable<T>.associateBy(keySelector: (T) -> K): Map<K, 
 }
 
 /**
+ * Returns a [Map] containing the elements from the given collection indexed by the key
+ * returned from [keySelector] function applied to each element.
+ * 
+ * If any two elements would have the same key returned by [keySelector] the last one gets added to the map.
+ * 
+ * The returned map preserves the entry iteration order of the original collection.
+ * 
+ * @sample samples.collections.Collections.Transformations.associateBy
+ */
+public inline fun <T, K> Collection<T>.associateBy(keySelector: (T) -> K): Map<K, T> {
+    val capacity = mapCapacity(size).coerceAtLeast(16)
+    return associateByTo(LinkedHashMap<K, T>(capacity), keySelector)
+}
+
+/**
  * Returns a [Map] containing the values provided by [valueTransform] and indexed by [keySelector] functions applied to elements of the given collection.
  * 
  * If any two elements would have the same key returned by [keySelector] the last one gets added to the map.
@@ -1206,6 +1236,20 @@ public inline fun <T, K> Iterable<T>.associateBy(keySelector: (T) -> K): Map<K, 
  */
 public inline fun <T, K, V> Iterable<T>.associateBy(keySelector: (T) -> K, valueTransform: (T) -> V): Map<K, V> {
     val capacity = mapCapacity(collectionSizeOrDefault(10)).coerceAtLeast(16)
+    return associateByTo(LinkedHashMap<K, V>(capacity), keySelector, valueTransform)
+}
+
+/**
+ * Returns a [Map] containing the values provided by [valueTransform] and indexed by [keySelector] functions applied to elements of the given collection.
+ * 
+ * If any two elements would have the same key returned by [keySelector] the last one gets added to the map.
+ * 
+ * The returned map preserves the entry iteration order of the original collection.
+ * 
+ * @sample samples.collections.Collections.Transformations.associateByWithValueTransform
+ */
+public inline fun <T, K, V> Collection<T>.associateBy(keySelector: (T) -> K, valueTransform: (T) -> V): Map<K, V> {
+    val capacity = mapCapacity(size).coerceAtLeast(16)
     return associateByTo(LinkedHashMap<K, V>(capacity), keySelector, valueTransform)
 }
 
@@ -1269,6 +1313,22 @@ public inline fun <T, K, V, M : MutableMap<in K, in V>> Iterable<T>.associateTo(
 @SinceKotlin("1.3")
 public inline fun <K, V> Iterable<K>.associateWith(valueSelector: (K) -> V): Map<K, V> {
     val result = LinkedHashMap<K, V>(mapCapacity(collectionSizeOrDefault(10)).coerceAtLeast(16))
+    return associateWithTo(result, valueSelector)
+}
+
+/**
+ * Returns a [Map] where keys are elements from the given collection and values are
+ * produced by the [valueSelector] function applied to each element.
+ * 
+ * If any two elements are equal, the last one gets added to the map.
+ * 
+ * The returned map preserves the entry iteration order of the original collection.
+ * 
+ * @sample samples.collections.Collections.Transformations.associateWith
+ */
+@SinceKotlin("1.3")
+public inline fun <K, V> Collection<K>.associateWith(valueSelector: (K) -> V): Map<K, V> {
+    val result = LinkedHashMap<K, V>(mapCapacity(size).coerceAtLeast(16))
     return associateWithTo(result, valueSelector)
 }
 
@@ -1749,6 +1809,21 @@ public inline fun <T> Iterable<T>.all(predicate: (T) -> Boolean): Boolean {
 }
 
 /**
+ * Returns `true` if all elements match the given [predicate].
+ * 
+ * Note that if the collection contains no elements, the function returns `true`
+ * because there are no elements in it that _do not_ match the predicate.
+ * See a more detailed explanation of this logic concept in ["Vacuous truth"](https://en.wikipedia.org/wiki/Vacuous_truth) article.
+ * 
+ * @sample samples.collections.Collections.Aggregates.all
+ */
+public inline fun <T> Collection<T>.all(predicate: (T) -> Boolean): Boolean {
+    if (isEmpty()) return true
+    for (element in this) if (!predicate(element)) return false
+    return true
+}
+
+/**
  * Returns `true` if collection has at least one element.
  * 
  * @sample samples.collections.Collections.Aggregates.any
@@ -1759,12 +1834,32 @@ public fun <T> Iterable<T>.any(): Boolean {
 }
 
 /**
+ * Returns `true` if collection has at least one element.
+ * 
+ * @sample samples.collections.Collections.Aggregates.any
+ */
+public fun <T> Collection<T>.any(): Boolean {
+    return !isEmpty()
+}
+
+/**
  * Returns `true` if at least one element matches the given [predicate].
  * 
  * @sample samples.collections.Collections.Aggregates.anyWithPredicate
  */
 public inline fun <T> Iterable<T>.any(predicate: (T) -> Boolean): Boolean {
     if (this is Collection && isEmpty()) return false
+    for (element in this) if (predicate(element)) return true
+    return false
+}
+
+/**
+ * Returns `true` if at least one element matches the given [predicate].
+ * 
+ * @sample samples.collections.Collections.Aggregates.anyWithPredicate
+ */
+public inline fun <T> Collection<T>.any(predicate: (T) -> Boolean): Boolean {
+    if (isEmpty()) return false
     for (element in this) if (predicate(element)) return true
     return false
 }
@@ -1794,6 +1889,16 @@ public inline fun <T> Iterable<T>.count(predicate: (T) -> Boolean): Int {
     if (this is Collection && isEmpty()) return 0
     var count = 0
     for (element in this) if (predicate(element)) checkCountOverflow(++count)
+    return count
+}
+
+/**
+ * Returns the number of elements matching the given [predicate].
+ */
+public inline fun <T> Collection<T>.count(predicate: (T) -> Boolean): Int {
+    if (isEmpty()) return 0
+    var count = 0
+    for (element in this) if (predicate(element)) ++count
     return count
 }
 
@@ -2636,12 +2741,32 @@ public fun <T> Iterable<T>.none(): Boolean {
 }
 
 /**
+ * Returns `true` if the collection has no elements.
+ * 
+ * @sample samples.collections.Collections.Aggregates.none
+ */
+public fun <T> Collection<T>.none(): Boolean {
+    return isEmpty()
+}
+
+/**
  * Returns `true` if no elements match the given [predicate].
  * 
  * @sample samples.collections.Collections.Aggregates.noneWithPredicate
  */
 public inline fun <T> Iterable<T>.none(predicate: (T) -> Boolean): Boolean {
     if (this is Collection && isEmpty()) return true
+    for (element in this) if (predicate(element)) return false
+    return true
+}
+
+/**
+ * Returns `true` if no elements match the given [predicate].
+ * 
+ * @sample samples.collections.Collections.Aggregates.noneWithPredicate
+ */
+public inline fun <T> Collection<T>.none(predicate: (T) -> Boolean): Boolean {
+    if (isEmpty()) return true
     for (element in this) if (predicate(element)) return false
     return true
 }
