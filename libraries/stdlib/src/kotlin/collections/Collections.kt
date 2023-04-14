@@ -98,6 +98,10 @@ private class SingletonList<T>(private val element: T) : AbstractList<T>(), Rand
     override fun contains(element: T): Boolean = this.element == element
 
     override fun containsAll(elements: Collection<T>): Boolean = elements.all { it == element }
+
+    // Ignore sorting for compatibility with JVM's Collections.listOf(value)
+    @Suppress("UNUSED")
+    fun sort(@Suppress("UNUSED_PARAMETER") cmp: Comparator<T>?) = Unit
 }
 
 /**
