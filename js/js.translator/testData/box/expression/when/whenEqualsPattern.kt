@@ -1,5 +1,5 @@
 // KJS_WITH_FULL_RUNTIME
-// EXPECTED_REACHABLE_NODES: 1692
+// EXPECTED_REACHABLE_NODES: 1366
 package foo
 
 data class A(val bar: Int)

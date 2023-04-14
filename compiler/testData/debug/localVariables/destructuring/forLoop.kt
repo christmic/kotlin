@@ -18,11 +18,11 @@ fun box() {
 // EXPECTATIONS JS_IR
 // test.kt:5 box:
 // test.kt:5 box:
-// test.kt:6 box: map=kotlin.collections.HashMap
-// test.kt:6 box: map=kotlin.collections.HashMap
-// test.kt:6 box: map=kotlin.collections.HashMap
-// test.kt:6 box: map=kotlin.collections.HashMap
-// test.kt:6 box: map=kotlin.collections.HashMap, a="1":kotlin.String
-// test.kt:7 box: map=kotlin.collections.HashMap, a="1":kotlin.String, b="23":kotlin.String
-// test.kt:6 box: map=kotlin.collections.HashMap, a="1":kotlin.String, b="23":kotlin.String
-// test.kt:9 box: map=kotlin.collections.HashMap, a="1":kotlin.String, b="23":kotlin.String
+// test.kt:6 box: map=SingletonMap
+// test.kt:6 box: map=SingletonMap
+// test.kt:6 box: map=SingletonMap
+// test.kt:6 box: map=SingletonMap
+// test.kt:6 box: map=SingletonMap, a="1":kotlin.String
+// test.kt:7 box: map=SingletonMap, a="1":kotlin.String, b="23":kotlin.String
+// test.kt:6 box: map=SingletonMap, a="1":kotlin.String, b="23":kotlin.String
+// test.kt:9 box: map=SingletonMap, a="1":kotlin.String, b="23":kotlin.String
