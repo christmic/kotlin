@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2021 JetBrains s.r.o. and Kotlin Programming Language contributors.
+ * Copyright 2010-2023 JetBrains s.r.o. and Kotlin Programming Language contributors.
  * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
  */
 
@@ -42,6 +42,36 @@ public fun <T> emptySet(): Set<T> = EmptySet
  * @sample samples.collections.Collections.Sets.readOnlySet
  */
 public fun <T> setOf(vararg elements: T): Set<T> = if (elements.size > 0) elements.toSet() else emptySet()
+
+/**
+ * Returns an immutable set containing only the specified object [element].
+ * The returned set is serializable (JVM).
+ */
+public fun <T> setOf(element: T): Set<T> = SingletonSet(element)
+
+private class SingletonSet<T>(private val element: T) : AbstractSet<T>(), Serializable {
+    override val size: Int get() = 1
+
+    override fun contains(element: T): Boolean = this.element == element
+
+    override fun containsAll(elements: Collection<T>): Boolean = elements.all { it == element }
+
+    override fun iterator(): Iterator<T> = IteratorImpl()
+
+    inner class IteratorImpl : Iterator<T> {
+        private var hasNext: Boolean = true
+
+        override fun hasNext(): Boolean = hasNext
+
+        override fun next(): T {
+            if (hasNext) {
+                hasNext = false
+                return element
+            }
+            throw NoSuchElementException()
+        }
+    }
+}
 
 /**
  * Returns an empty read-only set.  The returned set is serializable (JVM).

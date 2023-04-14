@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2021 JetBrains s.r.o. and Kotlin Programming Language contributors.
+ * Copyright 2010-2023 JetBrains s.r.o. and Kotlin Programming Language contributors.
  * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
  */
 
@@ -75,6 +75,30 @@ public fun <T> emptyList(): List<T> = EmptyList
  * @sample samples.collections.Collections.Lists.readOnlyList
  */
 public fun <T> listOf(vararg elements: T): List<T> = if (elements.size > 0) elements.asList() else emptyList()
+
+/**
+ * Returns an immutable list containing only the specified object [element].
+ * The returned list is serializable (JVM).
+ * @sample samples.collections.Collections.Lists.singletonReadOnlyList
+ */
+public fun <T> listOf(element: T): List<T> = SingletonList(element)
+
+private class SingletonList<T>(private val element: T) : AbstractList<T>(), RandomAccess, Serializable {
+    override val size: Int get() = 1
+
+    override fun get(index: Int): T {
+        if (index != 0) throw IndexOutOfBoundsException("Index: $index, Size: 1")
+        return element
+    }
+
+    override fun indexOf(element: T): Int = if (this.element == element) 0 else -1
+
+    override fun lastIndexOf(element: T): Int = if (this.element == element) 0 else -1
+
+    override fun contains(element: T): Boolean = this.element == element
+
+    override fun containsAll(elements: Collection<T>): Boolean = elements.all { it == element }
+}
 
 /**
  * Returns an empty read-only list.  The returned list is serializable (JVM).

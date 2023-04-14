@@ -60,12 +60,6 @@ internal actual fun <T> copyToArrayImpl(collection: Collection<*>, array: Array<
     return array
 }
 
-
-/**
- * Returns an immutable list containing only the specified object [element].
- */
-public fun <T> listOf(element: T): List<T> = arrayListOf(element)
-
 @PublishedApi
 @SinceKotlin("1.3")
 @kotlin.internal.InlineOnly
@@ -81,12 +75,6 @@ internal actual inline fun <E> buildListInternal(capacity: Int, builderAction: M
     return ArrayList<E>(capacity).apply(builderAction).build()
 }
 
-
-/**
- * Returns an immutable set containing only the specified object [element].
- */
-public fun <T> setOf(element: T): Set<T> = hashSetOf(element)
-
 @PublishedApi
 @SinceKotlin("1.3")
 @kotlin.internal.InlineOnly
@@ -100,13 +88,6 @@ internal actual inline fun <E> buildSetInternal(builderAction: MutableSet<E>.() 
 internal actual inline fun <E> buildSetInternal(capacity: Int, builderAction: MutableSet<E>.() -> Unit): Set<E> {
     return LinkedHashSet<E>(capacity).apply(builderAction).build()
 }
-
-
-/**
- * Returns an immutable map, mapping only the specified key to the
- * specified value.
- */
-public fun <K, V> mapOf(pair: Pair<K, V>): Map<K, V> = hashMapOf(pair)
 
 @PublishedApi
 @SinceKotlin("1.3")
