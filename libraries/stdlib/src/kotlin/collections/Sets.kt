@@ -46,6 +46,7 @@ public fun <T> setOf(vararg elements: T): Set<T> = if (elements.size > 0) elemen
 /**
  * Returns an immutable set containing only the specified object [element].
  * The returned set is serializable (JVM).
+ * @sample samples.collections.Collections.Sets.singletonReadOnlySet
  */
 public fun <T> setOf(element: T): Set<T> = SingletonSet(element)
 
