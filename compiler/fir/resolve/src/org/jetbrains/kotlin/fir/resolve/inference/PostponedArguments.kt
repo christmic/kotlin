@@ -8,6 +8,7 @@ package org.jetbrains.kotlin.fir.resolve.inference
 import org.jetbrains.kotlin.builtins.functions.FunctionTypeKind
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.declarations.FirAnonymousFunction
+import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
 import org.jetbrains.kotlin.fir.expressions.FirAnonymousFunctionExpression
 import org.jetbrains.kotlin.fir.expressions.FirCallableReferenceAccess
 import org.jetbrains.kotlin.fir.resolve.calls.ArgumentTypeMismatch
@@ -121,7 +122,11 @@ private fun extractLambdaInfo(
 
     val nothingType = session.builtinTypes.nothingType.type
     val parameters = argument.valueParameters.map {
-        it.returnTypeRef.coneTypeSafe<ConeKotlinType>() ?: nothingType
+        it.returnTypeRef.coneTypeSafe<ConeKotlinType>()
+            ?: when (candidate?.symbol?.origin) {
+                FirDeclarationOrigin.DynamicScope -> ConeDynamicType.create(session)
+                else -> nothingType
+            }
     }
 
     val contextReceivers = argument.contextReceivers.map {
