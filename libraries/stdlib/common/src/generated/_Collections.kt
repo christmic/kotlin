@@ -1570,6 +1570,16 @@ public inline fun <T, R> Iterable<T>.mapIndexed(transform: (index: Int, T) -> R)
 }
 
 /**
+ * Returns a list containing the results of applying the given [transform] function
+ * to each element and its index in the original collection.
+ * @param [transform] function that takes the index of an element and the element itself
+ * and returns the result of the transform applied to the element.
+ */
+public inline fun <T, R> Collection<T>.mapIndexed(transform: (index: Int, T) -> R): List<R> {
+    return mapIndexedTo(ArrayList<R>(size), transform)
+}
+
+/**
  * Returns a list containing only the non-null results of applying the given [transform] function
  * to each element and its index in the original collection.
  * @param [transform] function that takes the index of an element and the element itself

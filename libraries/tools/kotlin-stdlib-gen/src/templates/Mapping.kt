@@ -49,7 +49,7 @@ object Mapping : TemplateGroupBase() {
 
     val f_mapIndexed = fn("mapIndexed(transform: (index: Int, T) -> R)") {
         includeDefault()
-        include(CharSequences, ArraysOfUnsigned)
+        include(CharSequences, ArraysOfUnsigned, Collections)
     } builder {
         inline()
         specialFor(ArraysOfUnsigned) { inlineOnly() }
@@ -67,7 +67,7 @@ object Mapping : TemplateGroupBase() {
         body(Iterables) {
             "return mapIndexedTo(ArrayList<R>(collectionSizeOrDefault(10)), transform)"
         }
-        body(ArraysOfObjects, ArraysOfPrimitives, ArraysOfUnsigned) {
+        body(ArraysOfObjects, ArraysOfPrimitives, ArraysOfUnsigned, Collections) {
             "return mapIndexedTo(ArrayList<R>(size), transform)"
         }
         body(CharSequences) {
