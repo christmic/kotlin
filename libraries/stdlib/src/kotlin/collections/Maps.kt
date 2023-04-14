@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2021 JetBrains s.r.o. and Kotlin Programming Language contributors.
+ * Copyright 2010-2023 JetBrains s.r.o. and Kotlin Programming Language contributors.
  * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
  */
 
@@ -53,6 +53,74 @@ public fun <K, V> emptyMap(): Map<K, V> = @Suppress("UNCHECKED_CAST") (EmptyMap 
  */
 public fun <K, V> mapOf(vararg pairs: Pair<K, V>): Map<K, V> =
     if (pairs.size > 0) pairs.toMap(LinkedHashMap(mapCapacity(pairs.size))) else emptyMap()
+
+/**
+ * Returns an immutable map, mapping only the specified key to the
+ * specified value.
+ *
+ * The returned map is serializable (JVM).
+ *
+ * @sample samples.collections.Maps.Instantiation.mapFromPairs
+ */
+public expect fun <K, V> mapOf(pair: Pair<K, V>): Map<K, V>
+
+internal class SingletonMap<K, V>(private val key: K, private val value: V) : AbstractMap<K, V>() {
+    private var keySet: Set<K>? = null
+    private var valueList: List<V>? = null
+    private var entrySet: Set<Map.Entry<K, V>>? = null
+
+    override val keys: Set<K>
+        get() {
+            if (keySet == null) {
+                keySet = setOf(key)
+            }
+            return keySet!!
+        }
+
+    override val values: Collection<V>
+        get() {
+            if (valueList == null) {
+                valueList = listOf(value)
+            }
+            return valueList!!
+        }
+
+    override val entries: Set<Map.Entry<K, V>>
+        get() {
+            if (entrySet == null) {
+                entrySet = setOf(Entry())
+            }
+            return entrySet!!
+        }
+
+    override val size: Int get() = 1
+
+    override fun containsKey(key: K): Boolean = key == this.key
+
+    override fun containsValue(value: V): Boolean = value == this.value
+
+    override fun get(key: K): V? = if (key == this.key) value else null
+
+    inner class Entry : Map.Entry<K, V> {
+        override val key: K get() = this@SingletonMap.key
+        override val value: V get() = this@SingletonMap.value
+
+        override fun equals(other: Any?): Boolean = when {
+            other === this -> true
+            other == null -> false
+            other is Map.Entry<*, *> -> key == other.key && value == other.value
+            else -> false
+        }
+
+        override fun hashCode(): Int = key.hashCode() xor value.hashCode()
+
+        override fun toString(): String = "$key=$value"
+    }
+
+    companion object {
+        private const val serialVersionUID: Long = 0L
+    }
+}
 
 /**
  * Returns an empty read-only map.

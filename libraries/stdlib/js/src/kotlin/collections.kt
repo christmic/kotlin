@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2018 JetBrains s.r.o. and Kotlin Programming Language contributors.
+ * Copyright 2010-2023 JetBrains s.r.o. and Kotlin Programming Language contributors.
  * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
  */
 
@@ -241,3 +241,13 @@ internal actual fun mapCapacity(expectedSize: Int) = expectedSize
 internal fun checkBuilderCapacity(capacity: Int) {
     require(capacity >= 0) { "capacity must be non-negative." }
 }
+
+/**
+ * Returns an immutable map, mapping only the specified key to the
+ * specified value.
+ *
+ * The returned map is serializable (JVM).
+ *
+ * @sample samples.collections.Maps.Instantiation.mapFromPairs
+ */
+public actual fun <K, V> mapOf(pair: Pair<K, V>): Map<K, V> = SingletonMap(pair.first, pair.second)

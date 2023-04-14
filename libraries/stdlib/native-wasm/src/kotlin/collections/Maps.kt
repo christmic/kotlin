@@ -34,3 +34,13 @@ internal actual fun <K, V> Map<out K, V>.toSingletonMap(): Map<K, V>
  */
 @PublishedApi
 internal actual fun mapCapacity(expectedSize: Int) = expectedSize
+
+/**
+ * Returns an immutable map, mapping only the specified key to the
+ * specified value.
+ *
+ * The returned map is serializable (JVM).
+ *
+ * @sample samples.collections.Maps.Instantiation.mapFromPairs
+ */
+public actual fun <K, V> mapOf(pair: Pair<K, V>): Map<K, V> = SingletonMap(pair.first, pair.second)
