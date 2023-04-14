@@ -16,12 +16,7 @@ ap/Processor.kt
 
 # copy
 ap/META-INF/services/javax.annotation.processing.Processor
-META-INF/services/javax.annotation.processing.Processor
-
-# jar
-uf
-output/ap.jar
-META-INF/services/javax.annotation.processing.Processor
+output/ap/META-INF/services/javax.annotation.processing.Processor
 
 # kapt
 -Xuse-k2
@@ -29,7 +24,7 @@ META-INF/services/javax.annotation.processing.Processor
 -Kapt-stubs=output/stubs
 -Kapt-classes=output/classes
 -Kapt-sources=output/sources
--Kapt-classpath=output/ap.jar
+-Kapt-classpath=output/ap
 -d output/classes
 -cp output/ap.jar:%KOTLIN_STDLIB%
 Test.kt
@@ -47,7 +42,7 @@ output/sources/generated/Test.java
 -Kapt-stubs=output/stubsAlt
 -Kapt-classes=output/classesAlt
 -Kapt-sources=output/sourcesAlt
--Kapt-classpath=output/ap.jar
+-Kapt-classpath=output/ap
 -d output/classesAlt
 -cp output/ap.jar:%KOTLIN_STDLIB%
 Test.kt
