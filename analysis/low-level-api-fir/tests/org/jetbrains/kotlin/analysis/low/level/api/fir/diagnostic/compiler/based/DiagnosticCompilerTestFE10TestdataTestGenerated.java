@@ -21256,6 +21256,12 @@ public class DiagnosticCompilerTestFE10TestdataTestGenerated extends AbstractDia
                 runTest("compiler/testData/diagnostics/tests/modifiers/repeatedModifiers.kt");
             }
 
+            @Test
+            @TestMetadata("suspendAnonymousFunction.kt")
+            public void testSuspendAnonymousFunction() throws Exception {
+                runTest("compiler/testData/diagnostics/tests/modifiers/suspendAnonymousFunction.kt");
+            }
+
             @Nested
             @TestMetadata("compiler/testData/diagnostics/tests/modifiers/const")
             @TestDataPath("$PROJECT_ROOT")
