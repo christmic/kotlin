@@ -1,3 +1,4 @@
+// FIR_IDENTICAL
 // ISSUE: KT-57880
 
 fun outerLambda(action: String.() -> Unit) {}
