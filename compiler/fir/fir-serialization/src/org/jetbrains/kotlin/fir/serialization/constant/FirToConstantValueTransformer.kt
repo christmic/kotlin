@@ -115,7 +115,7 @@ private abstract class FirToConstantValueTransformer(
 
         return when {
             symbol.fir is FirEnumEntry -> {
-                val classId = symbol.fir.returnTypeRef.coneTypeSafe<ConeClassLikeType>()?.classId ?: return null
+                val classId = symbol.callableId.classId ?: return null
                 EnumValue(classId, (symbol.fir as FirEnumEntry).name)
             }
 
