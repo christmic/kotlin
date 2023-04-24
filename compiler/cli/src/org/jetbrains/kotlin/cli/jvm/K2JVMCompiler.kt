@@ -52,6 +52,7 @@ import java.io.File
 
 class K2JVMCompiler : CLICompiler<K2JVMCompilerArguments>() {
 
+    // call by CLICompiler
     override fun doExecute(
         arguments: K2JVMCompilerArguments,
         configuration: CompilerConfiguration,
@@ -191,6 +192,18 @@ class K2JVMCompiler : CLICompiler<K2JVMCompilerArguments>() {
         }
     }
 
+    // K2 jvm compiler env
+    // K2 environment use the intellij core project env
+    /**
+     * @see com.intellij.core.CoreProjectEnvironment
+     * use the
+     * @see com.intellij.core.CoreApplicationEnvironment
+     * @see org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreApplicationEnvironment
+     *
+     * the project env is created by
+     * @see org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment.Companion.getOrCreateApplicationEnvironment
+     * @see org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment.Companion.createApplicationEnvironment
+     */
     private fun createCoreEnvironment(
         rootDisposable: Disposable,
         configuration: CompilerConfiguration,
@@ -233,6 +246,7 @@ class K2JVMCompiler : CLICompiler<K2JVMCompilerArguments>() {
         }
     }
 
+    // jvm compiler arguments
     override fun createArguments(): K2JVMCompilerArguments = K2JVMCompilerArguments().apply {
         if (System.getenv("KOTLIN_REPORT_PERF") != null) {
             reportPerf = true
@@ -248,6 +262,8 @@ class K2JVMCompiler : CLICompiler<K2JVMCompilerArguments>() {
     companion object {
         @JvmStatic
         fun main(args: Array<String>) {
+            // This is then entry of jvm compiler based K2
+            // and args is passed by cli or others
             CLITool.doMain(K2JVMCompiler(), args)
         }
 
