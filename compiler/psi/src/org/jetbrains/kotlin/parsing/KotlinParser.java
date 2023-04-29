@@ -39,6 +39,19 @@ public class KotlinParser implements PsiParser {
         throw new IllegalStateException("use another parse");
     }
 
+
+    /**
+     * according to the language -> parse definition
+     * parser will parse the file into AST
+     * definition can also be recovered to PSI from ast
+     * ------
+     * the builder is actually the instance or wrapper of
+     *
+     * @see com.intellij.lang.impl.PsiBuilderImpl
+     *
+     * parse -> parsing -> rely on the builder -> the builder use the lexer to build/query the
+     * item
+     */
     // we need this method because we need psiFile
     @NotNull
     public static ASTNode parse(PsiBuilder psiBuilder, PsiFile psiFile) {

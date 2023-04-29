@@ -83,6 +83,12 @@ object AnalyzingUtils {
         return ""
     }
 
+
+    /**
+     * add error visitor method for syntax analysis.
+     *
+     * when builder to build file and find syntax error. it can be accessed
+     */
     abstract class PsiErrorElementVisitor : KtTreeVisitorVoid() {
         abstract override fun visitErrorElement(element: PsiErrorElement)
     }

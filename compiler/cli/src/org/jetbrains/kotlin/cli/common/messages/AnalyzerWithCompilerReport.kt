@@ -251,6 +251,17 @@ class AnalyzerWithCompilerReport(
 
             val visitor = ErrorReportingVisitor()
 
+            /**
+             * Visited(File) ---accept--> Visitor
+             * Visitor ----visit--> File
+             *
+             * File -> Top to down to each item and call item.accept(visitor)
+             * visitor -> do logic for each item.
+             *
+             * @see org.jetbrains.kotlin.psi.KtPsiUtil.visitChildren
+             *
+             * walk around the whole file AST
+             */
             file.accept(visitor)
 
             return SyntaxErrorReport(visitor.hasErrors, visitor.allErrorsAtEof)

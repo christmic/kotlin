@@ -113,6 +113,20 @@ fun createSourceFilesFromSourceRoots(
     val psiManager = PsiManager.getInstance(project)
     val result = mutableListOf<KtFile>()
     sourceRoots.forAllFiles(configuration, project, reportLocation) { virtualFile, isCommon, moduleName ->
+
+        /**
+         * psiManager -> load file and build the Psi-File
+         * @see com.intellij.psi.impl.file.impl.FileManagerImpl.findFile
+         *
+         * KotlinFileViewProvider will be registered
+         * @see org.jetbrains.kotlin.analysis.providers.impl.KotlinStaticDeclarationProviderFactory.KtClassFileViewProvider
+         * @see com.intellij.psi.SingleRootFileViewProvider.getPsiInner
+         * according to the language to load the PsiFile
+         * @see com.intellij.psi.AbstractFileViewProvider.createFile(com.intellij.openapi.vfs.VirtualFile, com.intellij.openapi.fileTypes.FileType, com.intellij.lang.Language)
+         * @see com.intellij.lang.ParserDefinition.createFile
+         * pass the FileViewProvider to the definition to create the KtPsiFile (not really parsed just return the object)
+         * @see org.jetbrains.kotlin.parsing.KotlinParserDefinition
+         */
         psiManager.findFile(virtualFile)?.let {
             if (it is KtFile) {
                 it.isCommonSource = isCommon

@@ -193,6 +193,10 @@ class KotlinCoreEnvironment private constructor(
         val project = projectEnvironment.project
         project.registerService(DeclarationProviderFactoryService::class.java, CliDeclarationProviderFactoryService(sourceFiles))
 
+        // as init
+        // the source file name given by the freeArg or parsed from build file
+        // !! how the standard file is converted to the KtFile.
+        // -> The KotlinSourceRoot
         sourceFiles += createSourceFilesFromSourceRoots(configuration, project, getSourceRootsCheckingForDuplicates())
 
         collectAdditionalSources(project)

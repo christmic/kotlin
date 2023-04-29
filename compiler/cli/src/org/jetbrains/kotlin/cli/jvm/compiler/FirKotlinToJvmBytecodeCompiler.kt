@@ -136,6 +136,7 @@ object FirKotlinToJvmBytecodeCompiler {
         performanceManager?.notifyAnalysisStarted()
         ProgressIndicatorAndCompilationCanceledStatus.checkCanceled()
 
+        // package name of user source file could not be started with kotlin
         if (!checkKotlinPackageUsage(moduleConfiguration, allSources)) return null
 
         val renderDiagnosticNames = moduleConfiguration.getBoolean(CLIConfigurationKeys.RENDER_DIAGNOSTIC_INTERNAL_NAME)
@@ -153,6 +154,8 @@ object FirKotlinToJvmBytecodeCompiler {
         performanceManager?.notifyIRTranslationStarted()
 
         val fir2IrExtensions = JvmFir2IrExtensions(moduleConfiguration, JvmIrDeserializerImpl(), JvmIrMangler)
+
+        // Fir->IR
         val fir2IrAndIrActualizerResult = firResult.convertToIrAndActualizeForJvm(
             fir2IrExtensions,
             irGenerationExtensions,
@@ -163,6 +166,7 @@ object FirKotlinToJvmBytecodeCompiler {
 
         performanceManager?.notifyIRTranslationFinished()
 
+        // backend
         val generationState = runBackend(
             allSources,
             fir2IrAndIrActualizerResult,
@@ -179,7 +183,22 @@ object FirKotlinToJvmBytecodeCompiler {
         return firResult to generationState
     }
 
+    /**
+     * Compile the source to Fir
+     */
     private fun CompilationContext.runFrontend(ktFiles: List<KtFile>, diagnosticsReporter: BaseDiagnosticsCollector): FirResult? {
+        /**
+         * syntax analysis
+         * @see org.jetbrains.kotlin.cli.common.messages.AnalyzerWithCompilerReport.Companion#reportSyntaxErrors(com.intellij.psi.PsiElement, org.jetbrains.kotlin.cli.common.messages.DiagnosticMessageReporter)
+         *
+         * visitor mode to do syntax checking
+         * @see ErrorReportingVisitor is KtVisitor
+         * @see org.jetbrains.kotlin.psi.KtVisitor.visitKtFile
+         * @see org.jetbrains.kotlin.psi.KtFile#accept(com.intellij.psi.PsiElementVisitor)
+         *
+         *
+         * TODO - how it works and write a simple case.
+         */
         val syntaxErrors = ktFiles.fold(false) { errorsFound, ktFile ->
             AnalyzerWithCompilerReport.reportSyntaxErrors(ktFile, messageCollector).isHasErrors or errorsFound
         }
@@ -210,6 +229,12 @@ object FirKotlinToJvmBytecodeCompiler {
             createProviderAndScopeForIncrementalCompilation = { providerAndScopeForIncrementalCompilation }
         )
 
+        /**
+         * @see org.jetbrains.kotlin.fir.pipeline.FirUtilsKt.buildFirFromKtFiles
+         * @see org.jetbrains.kotlin.psi.KtFile.accept(org.jetbrains.kotlin.psi.KtVisitor<R,D>, D)
+         *
+         * @see org.jetbrains.kotlin.fir.builder.RawFirBuilder.Visitor
+         */
         val outputs = sessionsWithSources.map { (session, sources) ->
             buildResolveAndCheckFir(session, sources, diagnosticsReporter)
         }
@@ -275,18 +300,29 @@ object FirKotlinToJvmBytecodeCompiler {
         return generationState
     }
 
+    /**
+     * One compilation unit for each module/chunk.
+     *
+     * compile execution
+     * @see org.jetbrains.kotlin.cli.jvm.compiler.FirKotlinToJvmBytecodeCompiler.compileModule
+     * included the following
+     * FIR
+     * @see org.jetbrains.kotlin.cli.jvm.compiler.FirKotlinToJvmBytecodeCompiler.runFrontend
+     *
+     * @see org.jetbrains.kotlin.fir.pipeline.ConvertToIrKt.convertToIrAndActualizeForJvm
+     */
     private class CompilationContext(
-        val module: Module,
-        val allSources: List<KtFile>,
-        val projectEnvironment: AbstractProjectEnvironment,
-        val messageCollector: MessageCollector,
-        val renderDiagnosticName: Boolean,
-        val moduleConfiguration: CompilerConfiguration,
-        val performanceManager: CommonCompilerPerformanceManager?,
-        val targetIds: List<TargetId>?,
+        val module: Module, // the to be compiled module
+        val allSources: List<KtFile>, // entry files in this module
+        val projectEnvironment: AbstractProjectEnvironment, // env
+        val messageCollector: MessageCollector, // processing messgae collector
+        val renderDiagnosticName: Boolean, // -
+        val moduleConfiguration: CompilerConfiguration, // module strategy?
+        val performanceManager: CommonCompilerPerformanceManager?, // performance
+        val targetIds: List<TargetId>?, // as the result id ?
         val incrementalComponents: IncrementalCompilationComponents?,
-        val extensionRegistrars: List<FirExtensionRegistrar>,
-        val irGenerationExtensions: Collection<IrGenerationExtension>
+        val extensionRegistrars: List<FirExtensionRegistrar>, // generate Fir
+        val irGenerationExtensions: Collection<IrGenerationExtension> // generate IR
     )
 }
 

@@ -40,6 +40,12 @@ import org.jetbrains.kotlin.resolve.jvm.KotlinJavaPsiFacade
 import java.io.File
 
 object KotlinToJVMBytecodeCompiler {
+
+    /**
+     * env - both project && compiler env included for whole compilation.
+     * buildFile - the build config file.
+     * chunk - the entry to be compiled files (from args or buildFile)
+     */
     internal fun compileModules(
         environment: KotlinCoreEnvironment,
         buildFile: File?,
@@ -48,6 +54,7 @@ object KotlinToJVMBytecodeCompiler {
     ): Boolean {
         ProgressIndicatorAndCompilationCanceledStatus.checkCanceled()
 
+        // Ignore this just for performance
         val repeats = environment.configuration[CLIConfigurationKeys.REPEAT_COMPILE_MODULES]
         if (repeats != null && !repeat) {
             val performanceManager = environment.configuration[CLIConfigurationKeys.PERF_MANAGER]
@@ -58,6 +65,8 @@ object KotlinToJVMBytecodeCompiler {
             }.last()
         }
 
+
+        // add module to the manager - visible/accessible
         val moduleVisibilityManager = ModuleVisibilityManager.SERVICE.getInstance(environment.project)
         for (module in chunk) {
             moduleVisibilityManager.addModule(module)
@@ -68,8 +77,12 @@ object KotlinToJVMBytecodeCompiler {
             moduleVisibilityManager.addFriendPath(path)
         }
 
+        // in this round - we analysis the FIR compilation phase
         val projectConfiguration = environment.configuration
         if (projectConfiguration.getBoolean(CommonConfigurationKeys.USE_FIR)) {
+
+            // I guess this is used to load files
+            // re-register it back to the env
             val projectEnvironment =
                 VfsBasedProjectEnvironment(
                     environment.project,

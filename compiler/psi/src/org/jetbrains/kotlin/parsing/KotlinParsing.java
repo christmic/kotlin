@@ -33,6 +33,7 @@ import static org.jetbrains.kotlin.parsing.KotlinParsing.AnnotationParsingMode.*
 import static org.jetbrains.kotlin.parsing.KotlinWhitespaceAndCommentsBindersKt.PRECEDING_ALL_BINDER;
 import static org.jetbrains.kotlin.parsing.KotlinWhitespaceAndCommentsBindersKt.TRAILING_ALL_BINDER;
 
+// parsing use PisBuilder to parse the files
 public class KotlinParsing extends AbstractKotlinParsing {
     private static final TokenSet GT_COMMA_COLON_SET = TokenSet.create(GT, COMMA, COLON);
     private static final Logger LOG = Logger.getInstance(KotlinParsing.class);

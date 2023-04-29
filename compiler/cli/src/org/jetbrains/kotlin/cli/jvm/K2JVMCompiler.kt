@@ -21,6 +21,7 @@ import org.jetbrains.kotlin.backend.jvm.jvmPhases
 import org.jetbrains.kotlin.cli.common.*
 import org.jetbrains.kotlin.cli.common.ExitCode.*
 import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments
+import org.jetbrains.kotlin.cli.common.config.kotlinSourceRoots
 import org.jetbrains.kotlin.cli.common.extensions.ScriptEvaluationExtension
 import org.jetbrains.kotlin.cli.common.extensions.ShellExtension
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity.*
@@ -79,6 +80,9 @@ class K2JVMCompiler : CLICompiler<K2JVMCompilerArguments>() {
         configuration.configureAdvancedJvmOptions(arguments)
         configuration.configureKlibPaths(arguments)
 
+
+        //  Ignore this
+        //  Works as the REPL - shell/scripts
         if (
             arguments.buildFile == null &&
             !arguments.version &&
@@ -131,6 +135,12 @@ class K2JVMCompiler : CLICompiler<K2JVMCompilerArguments>() {
 
         messageCollector.report(LOGGING, "Configuring the compilation environment")
         try {
+            // all these are based on the configuration - parsed from argument or builtin config
+            // parse the source file from argument
+            //  - the given file by the free args included
+            //  - the build-file e.g. multiple modules
+            // configure the jdk
+
             val buildFile = arguments.buildFile?.let { File(it) }
 
             val moduleChunk = configuration.configureModuleChunk(arguments, buildFile)
@@ -143,6 +153,8 @@ class K2JVMCompiler : CLICompiler<K2JVMCompilerArguments>() {
             val targetDescription = chunk.map { input -> input.getModuleName() + "-" + input.getModuleType() }.let { names ->
                 names.singleOrNull() ?: names.joinToString()
             }
+
+            // Ignore here - Light Tree
             if (configuration.getBoolean(CommonConfigurationKeys.USE_FIR) && configuration.getBoolean(CommonConfigurationKeys.USE_LIGHT_TREE))  {
                 val projectEnvironment =
                     createProjectEnvironment(configuration, rootDisposable, EnvironmentConfigFiles.JVM_CONFIG_FILES, messageCollector)
@@ -151,6 +163,11 @@ class K2JVMCompiler : CLICompiler<K2JVMCompilerArguments>() {
                     projectEnvironment, configuration, messageCollector, buildFile, chunk, targetDescription
                 )
             } else {
+
+                // Here it works for CLI-compiler
+                // Init the compile env -
+                //   - include the project env. e.g. idea  project model, fileSystem, Psi-Model
+                //   - include the app env e.g. compilation configuration.
                 val environment = createCoreEnvironment(
                     rootDisposable, configuration, messageCollector,
                     targetDescription
@@ -211,6 +228,8 @@ class K2JVMCompiler : CLICompiler<K2JVMCompilerArguments>() {
         targetDescription: String
     ): KotlinCoreEnvironment? {
         if (messageCollector.hasErrors()) return null
+
+        println("K2JVMCompiler#createCoreEnvironment#initKotlinSourceRoots ${configuration.kotlinSourceRoots.joinToString { it.path }}")
 
         val environment = KotlinCoreEnvironment.createForProduction(rootDisposable, configuration, EnvironmentConfigFiles.JVM_CONFIG_FILES)
 
@@ -282,6 +301,14 @@ class K2JVMCompiler : CLICompiler<K2JVMCompilerArguments>() {
         K2JVMCompiler::class.java.classLoader.getResource("META-INF/unsafe-allow-use-old-backend") != null
 }
 
+/**
+ * configure the build-source file
+ *  <br>
+ * * by the buildFile - the configuration that describe the source file. then load the modules from the config
+ * * the second way is configured from the arguments passed in.
+ *    * include prefix arguments
+ *    * also include the freeArgs that have no prefix
+ */
 fun CompilerConfiguration.configureModuleChunk(
     arguments: K2JVMCompilerArguments,
     buildFile: File?
@@ -321,6 +348,9 @@ fun CompilerConfiguration.configureModuleChunk(
             this[CommonConfigurationKeys.MODULE_NAME] ?: JvmProtoBufUtil.DEFAULT_MODULE_NAME,
             destination?.path ?: ".", "java-production"
         )
+
+        // get module info from arguments
+        // in this way only one module.
         module.configureFromArgs(arguments)
 
         ModuleChunk(listOf(module))

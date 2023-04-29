@@ -180,6 +180,7 @@ fun ModuleBuilder.configureFromArgs(args: K2JVMCompilerArguments) {
     }
 
     val commonSources = args.commonSources?.toSet().orEmpty()
+    // free args will be added into sourceFiles
     for (arg in args.freeArgs) {
         if (arg.endsWith(JavaFileType.DOT_DEFAULT_EXTENSION)) {
             addJavaSourceRoot(JavaRootPath(arg, args.javaPackagePrefix))
